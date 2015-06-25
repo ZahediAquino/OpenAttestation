@@ -113,9 +113,13 @@
 		</plugins>
 	</build>
 	
-	<dependencies>
-		<dependency>
-			<groupId>com.intel.mtwilson.core.integration</groupId>
+        <dependencies>
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>com.intel.mtwilson.core.integration</groupId>
 			<artifactId>api-datatypes</artifactId>
 			<version>${project.version}</version>
 		</dependency>

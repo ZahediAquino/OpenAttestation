@@ -30,6 +30,11 @@ package com.intel.mtwilson.tag.rest.rpc;
 //import com.intel.mtwilson.tag.selection.xml.AttributeType;
 //import com.intel.mtwilson.tag.selection.xml.SelectionType;
 //import com.intel.mtwilson.tag.selection.xml.SelectionsType;
+import com.intel.mtwilson.datatypes.ApiException;
+import com.intel.mtwilson.datatypes.TagConfiguration;
+import com.intel.mtwilson.datatypes.SelectionsType;
+import com.intel.mtwilson.datatypes.CertificateRequestLocator;
+import com.intel.mtwilson.datatypes.Certificate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,7 +50,7 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-//import javax.ws.rs.BeanParam;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -343,7 +348,7 @@ public class ProvisionTagCertificate  {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    @RequiresPermissions("tag_certificates:create")         
+//    @RequiresPermissions("tag_certificates:create")         
     public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException  {
          TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());

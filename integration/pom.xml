@@ -16,6 +16,8 @@
     <module>http-authorization</module>
     <module>api-datatypes-jar</module>
     <module>api-client-jar</module>
+    <module>oat-tag-selection-json</module>
+    <module>oat-tag-selection-xml</module>
   </modules>
 
 </project>

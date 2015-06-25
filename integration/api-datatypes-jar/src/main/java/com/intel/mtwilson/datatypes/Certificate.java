@@ -4,18 +4,19 @@
  */
 package com.intel.mtwilson.datatypes;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnore;
 //import com.fasterxml.jackson.annotation.JsonCreator;
 //import com.fasterxml.jackson.annotation.JsonIgnore;
 //import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-//import com.intel.dcsg.cpg.crypto.Sha1Digest;
-//import com.intel.dcsg.cpg.crypto.Sha256Digest;
-//import com.intel.dcsg.cpg.validation.Regex;
-//import com.intel.dcsg.cpg.validation.RegexPatterns;
-//import com.intel.dcsg.cpg.validation.Unchecked;
-//import com.intel.dcsg.cpg.x509.X509CertificateEncodingException;
-//import com.intel.dcsg.cpg.x509.X509CertificateFormatException;
-//import com.intel.dcsg.cpg.x509.X509Util;
-//import com.intel.mtwilson.jaxrs2.CertificateDocument;
+import com.intel.dcsg.cpg.crypto.Sha1Digest;
+import com.intel.dcsg.cpg.crypto.Sha256Digest;
+import com.intel.dcsg.cpg.validation.Regex;
+import com.intel.dcsg.cpg.validation.RegexPatterns;
+import com.intel.dcsg.cpg.validation.Unchecked;
+import com.intel.dcsg.cpg.x509.X509CertificateEncodingException;
+import com.intel.dcsg.cpg.x509.X509CertificateFormatException;
+import com.intel.dcsg.cpg.x509.X509Util;
 import java.io.UnsupportedEncodingException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
@@ -27,7 +28,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author ssbangal
  */
-@JacksonXmlRootElement(localName="certificate")
+//@JacksonXmlRootElement(localName="certificate")
 public class Certificate extends CertificateDocument{
     
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Certificate.class);

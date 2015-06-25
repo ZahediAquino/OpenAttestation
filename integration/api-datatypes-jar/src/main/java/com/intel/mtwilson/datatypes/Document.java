@@ -30,8 +30,8 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public abstract class Document extends AbstractDocument {
     private URL href;
-    private final HashMap<String,Object> meta = new HashMap<>();
-    private final HashMap<String,Object> links = new HashMap<>();
+    private final HashMap<String,Object> meta = new HashMap<String,Object>();
+    private final HashMap<String,Object> links = new HashMap<String,Object>();
     private String etag;
     private Date createdOn; 
     private Date modifiedOn;
