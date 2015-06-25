@@ -4,12 +4,12 @@
  */
 package com.intel.mtwilson.tag.selection.json;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+//import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  *
  * @author jbuhacoff
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public abstract class TextAttributeTypeMixIn {
 }

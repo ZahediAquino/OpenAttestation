@@ -49,11 +49,15 @@ public class ReadXmlTest {
 
     @BeforeClass
     public static void createValidator() throws Exception {
-        try (InputStream xsd = ReadXmlTest.class.getResourceAsStream("/jaxb/mtwilson-tag-selection/mtwilson-tag-selection.xsd")) {
+        InputStream xsd = ReadXmlTest.class.getResourceAsStream("/jaxb/mtwilson-tag-selection/mtwilson-tag-selection.xsd");
+        try{
             SchemaFactory factory =
                     SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema = factory.newSchema(new StreamSource(xsd));
             validator = schema.newValidator();
+        }
+        catch(Exception e){
+            throw e;
         }
     }
     
@@ -64,20 +68,28 @@ public class ReadXmlTest {
      * @throws Exception
      */
     private void validateXML(String xmlfile) throws Exception {
-        try (InputStream xml = getClass().getResourceAsStream(xmlfile)) {
+        InputStream xml = getClass().getResourceAsStream(xmlfile);
+        try{
 
             validator.validate(new StreamSource(xml));
+        }
+        catch(Exception e){
+            throw e;
         }
     }
 
     private void mapXmlToJson(String xmlfile) throws Exception {
         JAXB jaxb = new JAXB();
-        try (InputStream in = getClass().getResourceAsStream(xmlfile)) {
+        InputStream in = getClass().getResourceAsStream(xmlfile);
+        try{
             String xml = IOUtils.toString(in);
             SelectionsType selections = jaxb.read(xml, SelectionsType.class);
             ObjectMapper mapper = new ObjectMapper();
             mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY); // omit empty attributes, for example {"selection":[{"subject":[],"attribute":[],"id":"8ed9140b-e6a1-41b2-a8d4-258948633153","name":null,"notBefore":null,"notAfter":null}]}  becomes   {"selection":[{"id":"8ed9140b-e6a1-41b2-a8d4-258948633153"}]}
             log.debug("{}: {}",xmlfile, mapper.writeValueAsString(selections));
+        }
+        catch(Exception e){
+            throw e;
         }
     }
     

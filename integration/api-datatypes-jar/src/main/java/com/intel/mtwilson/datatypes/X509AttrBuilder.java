@@ -4,11 +4,12 @@
  */
 package com.intel.mtwilson.tag.common;
 
-import com.intel.mtwilson.tag.model.OID;
+import com.intel.mtwilson.datatypes.OID;
 import com.intel.mtwilson.tag.model.x509.*;
 import com.intel.dcsg.cpg.crypto.RsaCredentialX509;
 import com.intel.dcsg.cpg.io.UUID;
 import com.intel.dcsg.cpg.validation.BuilderModel;
+import com.intel.mtwilson.datatypes.UTF8NameValueSequence;
 import java.io.IOException;
 import org.bouncycastle.asn1.ASN1Encodable;
 import java.math.BigInteger;
@@ -62,7 +63,7 @@ public class X509AttrBuilder extends BuilderModel {
     private X500Name subjectName = null;
     private Date notBefore = null;
     private Date notAfter = null;
-    private ArrayList<Attribute> attributes = new ArrayList<>();
+    private ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 
     public static class Attribute {
         public ASN1ObjectIdentifier oid;

@@ -34,10 +34,10 @@
                             <schemaIncludes>
                                 <include>jaxb/mtwilson-tag-selection/*.xsd</include>
                             </schemaIncludes>
-                            <episodeFile>${project.build.directory}/generated-sources/xjc/META-INF/mtwilson-tag-selection.episode</episodeFile>
+                            <episodeFile>${project.build.directory}/generated-sources/xjc/META-INF/oat-tag-selection.episode</episodeFile>
                             <generatePackage>com.intel.mtwilson.tag.selection.xml</generatePackage>
                         </configuration>
-                        <id>mtwilson-tag-selection</id>
+                        <id>oat-tag-selection</id>
                     </execution>
                 </executions>
                 <configuration>
@@ -59,10 +59,10 @@
                     <groupId>com.sun.xml.bind</groupId>
                     <version>2.2.7</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.intel.mtwilson.util</groupId>
             <artifactId>mtwilson-util-xml</artifactId>
-        </dependency>
+        </dependency>-->
         
         <!-- testing -->
         <dependency>
@@ -70,7 +70,24 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-xml</artifactId>
+        </dependency>
+<!--       
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -100,7 +117,7 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>woodstox-core-asl</artifactId>
@@ -115,11 +132,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
 
         <!-- end logging -->
     

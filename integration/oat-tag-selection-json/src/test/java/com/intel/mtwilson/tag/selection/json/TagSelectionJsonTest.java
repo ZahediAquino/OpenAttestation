@@ -4,8 +4,8 @@
  */
 package com.intel.mtwilson.tag.selection.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import com.intel.mtwilson.tag.selection.SelectionBuilder;
 import com.intel.mtwilson.tag.selection.xml.AttributeType;
 import com.intel.mtwilson.tag.selection.xml.SelectionType;
@@ -64,13 +64,13 @@ public class TagSelectionJsonTest {
     }
     
     @Test
-    public void createTagSelectionJson() throws JsonProcessingException {
+    public void createTagSelectionJson() throws JsonProcessingException, IOException {
         SelectionsType selections = SelectionBuilder.factory().selection().textAttributeKV("Country", "US").build();
         log.debug("selections: {}", mapper.writeValueAsString(selections)); // {"selections":[{"attributes":[{"text":{"value":"Country=US"},"oid":"2.5.4.789.1"}]}]}
     }
 
     @Test
-    public void createTagSelectionJsonById() throws JsonProcessingException {
+    public void createTagSelectionJsonById() throws JsonProcessingException, IOException {
         SelectionsType selections = SelectionBuilder.factory().selection().name("California Finance").build();
         log.debug("selections: {}", mapper.writeValueAsString(selections)); // {"selections":[{"attributes":[{"text":{"value":"Country=US"},"oid":"2.5.4.789.1"}]}]}
     }
@@ -90,7 +90,7 @@ public class TagSelectionJsonTest {
      * @throws JsonProcessingException 
      */
     @Test
-    public void createTagSelectionWithDefaultJson() throws JsonProcessingException {
+    public void createTagSelectionWithDefaultJson() throws JsonProcessingException, IOException {
         SelectionsType selections = SelectionBuilder.factory()
                 .options().cacheMode("on")
                 .defaultSelection().textAttributeKV("Country", "US")

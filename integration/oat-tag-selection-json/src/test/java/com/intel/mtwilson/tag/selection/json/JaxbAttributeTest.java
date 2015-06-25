@@ -4,13 +4,12 @@
  */
 package com.intel.mtwilson.tag.selection.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import org.codehaus.jackson.JsonProcessingException;
+//import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+//import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+//import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 //import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
-import com.fasterxml.jackson.dataformat.xml.jaxb.XmlJaxbAnnotationIntrospector;
+//import com.fasterxml.jackson.dataformat.xml.jaxb.XmlJaxbAnnotationIntrospector;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.junit.Test;
@@ -37,16 +36,14 @@ public class JaxbAttributeTest {
         ProblemJaxb problem = new ProblemJaxb();
         problem.id = "aaa";
         problem.description = "test";
-        XmlMapper xmlMapper = new XmlMapper();
-        xmlMapper.setAnnotationIntrospector(new XmlJaxbAnnotationIntrospector(xmlMapper.getTypeFactory())); // works!  <problem xmlns="" id="aaa"><description>test</description></problem>
-//        xmlMapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector(xmlMapper.getTypeFactory()));  // <problem xmlns=""><id>aaa</id><description>test</description></problem>
-//        xmlMapper.getSerializationConfig().with(new JaxbAnnotationIntrospector(xmlMapper.getTypeFactory())); // <ProblemJaxb xmlns=""><id>aaa</id><description>test</description></ProblemJaxb>
-        log.debug("ProblemJaxb: {}", xmlMapper.writeValueAsString(problem)); 
+//        XmlMapper xmlMapper = new XmlMapper();
+//        xmlMapper.setAnnotationIntrospector(new XmlJaxbAnnotationIntrospector(xmlMapper.getTypeFactory())); // works!  <problem xmlns="" id="aaa"><description>test</description></problem>
+//        log.debug("ProblemJaxb: {}", xmlMapper.writeValueAsString(problem)); 
     }
 
-    @JacksonXmlRootElement(localName="problem")
+//    @JacksonXmlRootElement(localName="problem")
     public static class ProblemJackson {
-        @JacksonXmlProperty(isAttribute=true)
+//        @JacksonXmlProperty(isAttribute=true)
         public String id;
         public String description;
     }
@@ -56,8 +53,8 @@ public class JaxbAttributeTest {
         ProblemJackson problem = new ProblemJackson();
         problem.id = "aaa";
         problem.description = "test";
-        XmlMapper xmlMapper = new XmlMapper();
-        log.debug("ProblemJackson: {}", xmlMapper.writeValueAsString(problem)); // <problem xmlns="" id="aaa"><description>test</description></problem>
+//        XmlMapper xmlMapper = new XmlMapper();
+//        log.debug("ProblemJackson: {}", xmlMapper.writeValueAsString(problem)); // <problem xmlns="" id="aaa"><description>test</description></problem>
     }
     
     /*

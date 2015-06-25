@@ -6,7 +6,6 @@ package com.intel.mtwilson.datatypes;
 import org.codehaus.jackson.map.ObjectMapper;
 import com.intel.dcsg.cpg.xml.JAXB;
 import com.intel.mtwilson.tag.common.X509AttrBuilder;
-import com.intel.mtwilson.tag.model.x509.UTF8NameValueMicroformat;
 import com.intel.mtwilson.tag.selection.json.TagSelectionModule;
 import com.intel.mtwilson.tag.selection.xml.AttributeType;
 import com.intel.mtwilson.tag.selection.xml.ObjectFactory;

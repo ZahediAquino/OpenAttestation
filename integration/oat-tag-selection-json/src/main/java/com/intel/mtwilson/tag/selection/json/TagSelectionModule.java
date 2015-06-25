@@ -4,11 +4,9 @@
  */
 package com.intel.mtwilson.tag.selection.json;
 
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import org.codehaus.jackson.Version;
+//import com.fasterxml.jackson.core.Version;
+import org.codehaus.jackson.map.Module;
 import com.intel.mtwilson.tag.selection.xml.AttributeType;
 import com.intel.mtwilson.tag.selection.xml.CacheModeAttribute;
 import com.intel.mtwilson.tag.selection.xml.DefaultType;
@@ -29,7 +27,8 @@ public class TagSelectionModule extends Module {
 
     @Override
     public Version version() {
-        return new Version(1,0,0,"com.intel.mtwilson.integration","mtwilson-tag-selection-json",null);
+        return new Version(1,0,0,"com.intel.mtwilson.integration");
+//        return new Version(1,0,0,"com.intel.mtwilson.integration","mtwilson-tag-selection-json",null);
     }
 
     @Override

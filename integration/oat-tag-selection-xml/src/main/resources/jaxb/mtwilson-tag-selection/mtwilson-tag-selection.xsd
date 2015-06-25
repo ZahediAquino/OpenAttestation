@@ -1,6 +1,6 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-           targetNamespace="urn:mtwilson-tag-selection"
-           xmlns="urn:mtwilson-tag-selection"
+           targetNamespace="urn:oat-tag-selection"
+           xmlns="urn:oat-tag-selection"
            elementFormDefault="qualified">
 
     <xs:element name="selections" type="selectionsType" />

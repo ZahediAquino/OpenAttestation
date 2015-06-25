@@ -4,16 +4,18 @@
  */
 package com.intel.mtwilson.tag.selection.json;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonValue;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
+//import com.fasterxml.jackson.annotation.JsonCreator;
+//import com.fasterxml.jackson.annotation.JsonInclude;
+//import com.fasterxml.jackson.annotation.JsonValue;
 import com.intel.mtwilson.tag.selection.xml.CacheModeAttribute;
 
 /**
  *
  * @author jbuhacoff
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public abstract class CacheModeAttributeMixIn {
     @JsonValue
     abstract String value();

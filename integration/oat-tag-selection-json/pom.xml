@@ -26,11 +26,16 @@
 
 
     <dependencies>
-		<dependency>
-			<groupId>com.intel.mtwilson.integration</groupId>
-			<artifactId>mtwilson-tag-selection-xml</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.11</version> <!-- in 1.0-RC2 we used 1.5.5 -->
+        </dependency>
+        <dependency>
+            <groupId>com.intel.mtwilson.core.integration</groupId>
+            <artifactId>oat-tag-selection-xml</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 	
         <dependency>
             <groupId>junit</groupId>
@@ -38,9 +43,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
         </dependency>
+        <!--        
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -61,7 +67,7 @@
     <dependency>
     	<groupId>com.fasterxml.jackson.dataformat</groupId>
     	<artifactId>jackson-dataformat-xml</artifactId>
-    </dependency>
+    </dependency>-->
     <!--
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>

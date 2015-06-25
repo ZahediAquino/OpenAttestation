@@ -4,10 +4,9 @@
  */
 package com.intel.mtwilson.tag.selection.json;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import org.codehaus.jackson.annotate.JsonProperty;
+//import com.fasterxml.jackson.annotation.JsonInclude;
+//import com.fasterxml.jackson.annotation.JsonProperty;
 import com.intel.mtwilson.tag.selection.xml.SelectionType;
 import java.util.List;
 
@@ -20,7 +19,7 @@ import java.util.List;
 public abstract class DefaultTypeMixIn {
 
     @JsonProperty("selections")
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    //@JsonInclude(JsonInclude.Include.NON_EMPTY)
     /*
     @JacksonXmlElementWrapper(localName="selections")
     @JacksonXmlProperty(localName="selection")
