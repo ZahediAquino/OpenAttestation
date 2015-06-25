@@ -1,2 +1,8 @@
 /integration/oat-tag-selection-xml/target/
 /integration/oat-tag-selection-json/target/
+/util/oat-util-cpg/target/
+/common/io/target/
+/common/validation/target/
+/common/crypto/target/
+/util/oat-util-xml/target/
+/integration/api-datatypes-jar/target/

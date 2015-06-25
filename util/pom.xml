@@ -16,6 +16,7 @@
   
     <modules>
         <module>oat-util-xml</module>
+        <module>oat-util-cpg</module>
     </modules>
 
 </project>
