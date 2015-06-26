@@ -48,6 +48,10 @@
             <artifactId>oat-util-xml</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-cpg</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
         </dependency>    

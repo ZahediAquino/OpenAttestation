@@ -6,3 +6,13 @@
 /common/crypto/target/
 /util/oat-util-xml/target/
 /integration/api-datatypes-jar/target/
+/common/jpa/target/
+/database/mysql/target/
+/database/postgres/target/
+/integration/http-authorization/target/
+/services/webservice-util/target/
+/services/ASCommon/target/
+/services/ASData/target/
+/integration/api-client-jar/target/
+/services/trust-utils-jar/target/
+/services/AttestationService/target/

@@ -6,8 +6,8 @@ package com.intel.mtwilson.datatypes;
 
 //import com.fasterxml.jackson.annotation.JsonIgnore;
 //import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.intel.dcsg.cpg.io.Attributes;
-import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.util.io.Attributes;
+import com.intel.mtwilson.util.io.UUID;
 import org.codehaus.jackson.annotate.JsonUnwrapped;
 import org.codehaus.jackson.annotate.JsonIgnore;
 

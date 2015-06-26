@@ -5,7 +5,7 @@
 package com.intel.mtwilson.tag.rest.rpc;
 
 //import com.intel.dcsg.cpg.io.ByteArrayResource;
-//import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.util.io.UUID;
 //import com.intel.mtwilson.My;
 //import com.intel.mtwilson.MyFilesystem;
 //import com.intel.mtwilson.api.ApiException;
@@ -13,7 +13,7 @@ package com.intel.mtwilson.tag.rest.rpc;
 //import com.intel.mtwilson.jaxrs2.mediatype.CryptoMediaType;
 //import com.intel.mtwilson.launcher.ws.ext.V2;
 //import com.intel.mtwilson.tag.PlaintextFilenameFilter;
-//import com.intel.mtwilson.tag.TagCertificateAuthority;
+import com.intel.mtwilson.datatypes.TagCertificateAuthority;
 //import com.intel.mtwilson.tag.TagConfiguration;
 //import com.intel.mtwilson.tag.Util;
 //import com.intel.mtwilson.tag.common.Global;
@@ -21,20 +21,22 @@ package com.intel.mtwilson.tag.rest.rpc;
 //import com.intel.mtwilson.tag.model.Certificate;
 //import com.intel.mtwilson.tag.model.CertificateCollection;
 //import com.intel.mtwilson.tag.model.CertificateFilterCriteria;
-//import com.intel.mtwilson.tag.model.CertificateRequest;
+import com.intel.mtwilson.datatypes.CertificateRequest;
 //import com.intel.mtwilson.tag.model.CertificateRequestLocator;
 //import com.intel.mtwilson.tag.model.X509AttributeCertificate;
 //import com.intel.mtwilson.tag.rest.v2.repository.CertificateRepository;
 //import com.intel.mtwilson.tag.rest.v2.repository.CertificateRequestRepository;
 //import com.intel.mtwilson.tag.selection.SelectionBuilder;
 //import com.intel.mtwilson.tag.selection.xml.AttributeType;
-//import com.intel.mtwilson.tag.selection.xml.SelectionType;
+import com.intel.mtwilson.tag.selection.xml.SelectionType;
 //import com.intel.mtwilson.tag.selection.xml.SelectionsType;
 import com.intel.mtwilson.datatypes.ApiException;
 import com.intel.mtwilson.datatypes.TagConfiguration;
-import com.intel.mtwilson.datatypes.SelectionsType;
+import com.intel.mtwilson.tag.selection.xml.SelectionsType;
 import com.intel.mtwilson.datatypes.CertificateRequestLocator;
 import com.intel.mtwilson.datatypes.Certificate;
+import com.intel.mtwilson.datatypes.Util;
+import com.intel.mtwilson.tag.rest.repository.CertificateRepository;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -88,18 +90,18 @@ public class ProvisionTagCertificate  {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProvisionTagCertificate.class);
 
 
-//   private CertificateRepository certificateRepository;
+   private CertificateRepository certificateRepository;
 //   private CertificateRequestRepository repository;
 //    
-//    public ProvisionTagCertificate() {
+    public ProvisionTagCertificate() {
 //        repository = new CertificateRequestRepository();
-//        certificateRepository = new CertificateRepository();
-//    }
-//    
+        certificateRepository = new CertificateRepository();
+    }
+    
 //    protected CertificateRequestRepository getRepository() {
 //        return repository;
 //    }
-    
+//    
     protected boolean isAsync(HttpServletRequest request) {
         String async = request.getHeader("Asynchronous");
         return async != null && async.equalsIgnoreCase("true");
@@ -122,15 +124,15 @@ public class ProvisionTagCertificate  {
 //            response.setStatus(Response.Status.ACCEPTED.getStatusCode());        
 //    }
 //    
-//    protected Certificate storeTagCertificate(String subject, byte[] attributeCertificateBytes) throws IOException {
-//        X509AttributeCertificateHolder certificateHolder = new X509AttributeCertificateHolder(attributeCertificateBytes);
-//        Certificate certificate = Certificate.valueOf(certificateHolder.getEncoded());
-//        certificate.setId(new UUID());
-//
-//        // Call into the certificate repository to create the new certificate entry in the database.
-//        certificateRepository.create(certificate);
-//        return certificate;
-//    }
+    protected Certificate storeTagCertificate(String subject, byte[] attributeCertificateBytes) throws IOException {
+        X509AttributeCertificateHolder certificateHolder = new X509AttributeCertificateHolder(attributeCertificateBytes);
+        Certificate certificate = Certificate.valueOf(certificateHolder.getEncoded());
+        certificate.setId(new UUID());
+
+        // Call into the certificate repository to create the new certificate entry in the database.
+        certificateRepository.create(certificate);
+        return certificate;
+    }
 //    
 //    /**
 //     * Returns the tag certificate bytes or null if one was not generated
@@ -142,89 +144,89 @@ public class ProvisionTagCertificate  {
 //     * @return
 //     * @throws IOException
 //     */
-//    public Certificate createOne(String subject, SelectionsType selections, HttpServletRequest request, HttpServletResponse response) 
-//            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException {        
-//        TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
-//        TagCertificateAuthority ca = new TagCertificateAuthority(configuration);
-//        // if the subject is an ip address or hostname, resolve it to a hardware uuid with mtwilson - if the host isn't registered in mtwilson we can't get the hardware uuid so we have to reject the request
-//        if( !UUID.isValid(subject)) {
-//            String subjectUuid = ca.findSubjectHardwareUuid(subject);
-//            if (subjectUuid == null) {
-//                log.error("Cannot find hardware uuid for subject: {}", subject);
-//                throw new IllegalArgumentException("Invalid subject specified in the call");
-//            }
-//            subject = subjectUuid;
-//        }
-//        if( selections == null ) {
-//            log.error("Selection input is null");
-//            throw new IllegalArgumentException("Invalid selections specified.");
-//        }
-//        // if external ca is configured then we only save the request to the database and indicate async processing in our response
+    public Certificate createOne(String subject, SelectionsType selections, HttpServletRequest request, HttpServletResponse response) 
+            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException {        
+        TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
+        TagCertificateAuthority ca = new TagCertificateAuthority(configuration);
+        // if the subject is an ip address or hostname, resolve it to a hardware uuid with mtwilson - if the host isn't registered in mtwilson we can't get the hardware uuid so we have to reject the request
+        if( !UUID.isValid(subject)) {
+            String subjectUuid = ca.findSubjectHardwareUuid(subject);
+            if (subjectUuid == null) {
+                log.error("Cannot find hardware uuid for subject: {}", subject);
+                throw new IllegalArgumentException("Invalid subject specified in the call");
+            }
+            subject = subjectUuid;
+        }
+        if( selections == null ) {
+            log.error("Selection input is null");
+            throw new IllegalArgumentException("Invalid selections specified.");
+        }
+        // if external ca is configured then we only save the request to the database and indicate async processing in our response
 //        if( configuration.isTagProvisionExternal() || isAsync(request) ) {
 //            // requires async processing - we store the request, and an external ca will poll for requests, generate certs, and post the certs back to us; the client can periodically check the status and then download the cert when it's available
 //            storeAsyncRequest(subject, selections, response);
 //            return null;
 //        }
-//        // if always-generate/no-cache (cache mode off) is enabled then generate it right now and return it - no need to check database for existing certs etc. 
-//        String cacheMode = "on";
-//        if( selections.getOptions() != null && selections.getOptions().getCache() != null && selections.getOptions().getCache().getMode() != null ) {
-//            cacheMode = selections.getOptions().getCache().getMode().value();
-//        }
-//        
-//        // first figure out which selection will be used for the given subject - also filters selections to ones that are currently valid or not marked with validity period
-//        SelectionType targetSelection = ca.findCurrentSelectionForSubject(UUID.valueOf(subject), selections); // throws exception if there is no matching selection and no matching default selection
-//        
-//        log.debug("Cache mode {}", cacheMode);
-//        if( "off".equals(cacheMode) && targetSelection != null ) {
-//            byte[] certificateBytes = ca.createTagCertificate(UUID.valueOf(subject), targetSelection);
-//            Certificate certificate = storeTagCertificate(subject, certificateBytes);
-//            return certificate;
-//        }
-//        
-//        // if there is an existing currently valid certificate we return it
-//        CertificateFilterCriteria criteria = new CertificateFilterCriteria();
-//        criteria.subjectEqualTo = subject;
-//        criteria.revoked = false;
-//        criteria.validOn = new Date(); 
-//        CertificateCollection results = certificateRepository.search(criteria);
-//        Date today = new Date();
-//        Certificate latestCert = null;
-//        BigInteger latestCreateTime = BigInteger.ZERO;
-//        //  pick the most recently created cert that is currently valid and has the same attributes specified in the selection.  we evaluate the notBefore and notAfter fields of the certificate itself even though we already narrowed the search to currently valid certs using the search criteria. 
-//        if( !results.getCertificates().isEmpty() ) {
-//            for (Certificate certificate : results.getCertificates()) {
-//                X509AttributeCertificate attributeCertificate = X509AttributeCertificate.valueOf(certificate.getCertificate());
-//                if (today.before(attributeCertificate.getNotBefore())) {
-//                    continue;
-//                }
-//                if (today.after(attributeCertificate.getNotAfter())) {
-//                    continue;
-//                }
-//                if( targetSelection != null && !certificateAttributesEqual(attributeCertificate, targetSelection)) {
-//                    continue;
-//                }
-//                // While creating the certificates we are storing the create time in the serial number field
-//                // And here we want to return the latest certificate so we keep track as we look through the results.
-//                if (latestCreateTime.compareTo(attributeCertificate.getSerialNumber()) <= 0) {
-//                    latestCreateTime = attributeCertificate.getSerialNumber();
-//                    latestCert = certificate;
-//                }
-//            }
-//        }
-//        // Check if a valid certificate was found during the search.
-//        if (latestCert != null) {
-//            return latestCert;
-//        }
-//        
-//        // no cached certificate so generate a new certificate
-//        if( targetSelection == null ) {
-//            throw new IllegalArgumentException("No cached certificate and no default selection provided");
-//        }
-//        byte[] certificateBytes = ca.createTagCertificate(UUID.valueOf(subject), targetSelection);
-//        Certificate certificate = storeTagCertificate(subject, certificateBytes);
-//        return certificate;
-//        
-//    }
+        // if always-generate/no-cache (cache mode off) is enabled then generate it right now and return it - no need to check database for existing certs etc. 
+        String cacheMode = "on";
+        if( selections.getOptions() != null && selections.getOptions().getCache() != null && selections.getOptions().getCache().getMode() != null ) {
+            cacheMode = selections.getOptions().getCache().getMode().value();
+        }
+        
+        // first figure out which selection will be used for the given subject - also filters selections to ones that are currently valid or not marked with validity period
+        SelectionType targetSelection = ca.findCurrentSelectionForSubject(UUID.valueOf(subject), selections); // throws exception if there is no matching selection and no matching default selection
+        
+        log.debug("Cache mode {}", cacheMode);
+        if( "off".equals(cacheMode) && targetSelection != null ) {
+            byte[] certificateBytes = ca.createTagCertificate(UUID.valueOf(subject), targetSelection);
+            Certificate certificate = storeTagCertificate(subject, certificateBytes);
+            return certificate;
+        }
+        
+        // if there is an existing currently valid certificate we return it
+        CertificateFilterCriteria criteria = new CertificateFilterCriteria();
+        criteria.subjectEqualTo = subject;
+        criteria.revoked = false;
+        criteria.validOn = new Date(); 
+        CertificateCollection results = certificateRepository.search(criteria);
+        Date today = new Date();
+        Certificate latestCert = null;
+        BigInteger latestCreateTime = BigInteger.ZERO;
+        //  pick the most recently created cert that is currently valid and has the same attributes specified in the selection.  we evaluate the notBefore and notAfter fields of the certificate itself even though we already narrowed the search to currently valid certs using the search criteria. 
+        if( !results.getCertificates().isEmpty() ) {
+            for (Certificate certificate : results.getCertificates()) {
+                X509AttributeCertificate attributeCertificate = X509AttributeCertificate.valueOf(certificate.getCertificate());
+                if (today.before(attributeCertificate.getNotBefore())) {
+                    continue;
+                }
+                if (today.after(attributeCertificate.getNotAfter())) {
+                    continue;
+                }
+                if( targetSelection != null && !certificateAttributesEqual(attributeCertificate, targetSelection)) {
+                    continue;
+                }
+                // While creating the certificates we are storing the create time in the serial number field
+                // And here we want to return the latest certificate so we keep track as we look through the results.
+                if (latestCreateTime.compareTo(attributeCertificate.getSerialNumber()) <= 0) {
+                    latestCreateTime = attributeCertificate.getSerialNumber();
+                    latestCert = certificate;
+                }
+            }
+        }
+        // Check if a valid certificate was found during the search.
+        if (latestCert != null) {
+            return latestCert;
+        }
+        
+        // no cached certificate so generate a new certificate
+        if( targetSelection == null ) {
+            throw new IllegalArgumentException("No cached certificate and no default selection provided");
+        }
+        byte[] certificateBytes = ca.createTagCertificate(UUID.valueOf(subject), targetSelection);
+        Certificate certificate = storeTagCertificate(subject, certificateBytes);
+        return certificate;
+        
+    }
 //    
 //    /**
 //     * Check that the attributes in the certificate are the same as the attributes in the given selection.

@@ -1,0 +1,5 @@
+com.intel.mountwilson.common
+com.intel.mountwilson.trustagent
+com.intel.mountwilson.trustagent.commands
+com.intel.mountwilson.trustagent.data
+com.intel.mountwilson.trustagent.datatype

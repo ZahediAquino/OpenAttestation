@@ -2,14 +2,14 @@
  * Copyright (C) 2013 Intel Corporation
  * All rights reserved.
  */
-package com.intel.mtwilson.tag.common;
+package com.intel.mtwilson.datatypes;
 
-import com.intel.mtwilson.datatypes.OID;
-import com.intel.mtwilson.tag.model.x509.*;
-import com.intel.dcsg.cpg.crypto.RsaCredentialX509;
-import com.intel.dcsg.cpg.io.UUID;
-import com.intel.dcsg.cpg.validation.BuilderModel;
-import com.intel.mtwilson.datatypes.UTF8NameValueSequence;
+//import com.intel.mtwilson.datatypes.OID;
+//import com.intel.mtwilson.util.x509.*;
+import com.intel.mtwilson.util.crypto.RsaCredentialX509;
+import com.intel.mtwilson.util.io.UUID;
+import com.intel.mtwilson.util.validation.BuilderModel;
+//import com.intel.mtwilson.datatypes.UTF8NameValueSequence;
 import java.io.IOException;
 import org.bouncycastle.asn1.ASN1Encodable;
 import java.math.BigInteger;

@@ -6,8 +6,8 @@ package com.intel.mtwilson.datatypes;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import com.intel.dcsg.cpg.crypto.Sha256Digest;
-import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.util.crypto.Sha256Digest;
+import com.intel.mtwilson.util.io.UUID;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;

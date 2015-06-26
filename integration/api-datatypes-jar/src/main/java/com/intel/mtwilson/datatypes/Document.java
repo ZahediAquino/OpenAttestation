@@ -6,9 +6,9 @@ package com.intel.mtwilson.datatypes;
 
 //import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 //import com.fasterxml.jackson.annotation.JsonInclude;
-import com.intel.dcsg.cpg.crypto.Sha1Digest;
-import com.intel.dcsg.cpg.io.UUID;
-import com.intel.dcsg.cpg.io.ByteArray;
+import com.intel.mtwilson.util.crypto.Sha1Digest;
+import com.intel.mtwilson.util.io.UUID;
+import com.intel.mtwilson.util.io.ByteArray;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;

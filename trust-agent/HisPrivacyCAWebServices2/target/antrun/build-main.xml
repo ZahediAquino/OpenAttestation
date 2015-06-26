@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <ant antfile="C:\DCG_OAT\repos\oat-internal\trust-agent\HisPrivacyCAWebServices2/build.xml" target="server"/>
+  <ant antfile="C:\DCG_OAT\repos\oat-internal\trust-agent\HisPrivacyCAWebServices2/build.xml" target="client"/>
+</target>
+</project>

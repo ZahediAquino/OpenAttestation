@@ -5,7 +5,7 @@
 package com.intel.mtwilson.datatypes;
 
 //import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.util.io.UUID;
 //import com.intel.mtwilson.jaxrs2.Document;
 
 /**
