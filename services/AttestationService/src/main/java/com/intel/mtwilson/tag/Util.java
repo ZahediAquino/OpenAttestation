@@ -2,10 +2,13 @@
  * Copyright (C) 2014 Intel Corporation
  * All rights reserved.
  */
-package com.intel.mtwilson.datatypes;
+package com.intel.mtwilson.tag;
 
+import com.intel.mtwilson.tag.common.X509AttrBuilder;
 import org.codehaus.jackson.map.ObjectMapper;
 import com.intel.dcsg.cpg.xml.JAXB;
+import com.intel.mtwilson.datatypes.UTF8NameValueMicroformat;
+import com.intel.mtwilson.datatypes.UTF8NameValueMicroformat;
 //import com.intel.mtwilson.tag.common.X509AttrBuilder;
 import com.intel.mtwilson.tag.selection.json.TagSelectionModule;
 import com.intel.mtwilson.tag.selection.xml.AttributeType;

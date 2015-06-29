@@ -2,10 +2,12 @@
  * Copyright (C) 2013 Intel Corporation
  * All rights reserved.
  */
-package com.intel.mtwilson.datatypes;
+package com.intel.mtwilson.tag.common;
 
 //import com.intel.mtwilson.datatypes.OID;
 //import com.intel.mtwilson.util.x509.*;
+import com.intel.mtwilson.datatypes.OID;
+import com.intel.mtwilson.datatypes.UTF8NameValueSequence;
 import com.intel.mtwilson.util.crypto.RsaCredentialX509;
 import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.util.validation.BuilderModel;

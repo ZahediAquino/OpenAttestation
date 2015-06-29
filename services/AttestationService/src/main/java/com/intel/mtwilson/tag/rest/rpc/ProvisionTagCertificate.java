@@ -35,7 +35,7 @@ import com.intel.mtwilson.datatypes.TagConfiguration;
 import com.intel.mtwilson.tag.selection.xml.SelectionsType;
 import com.intel.mtwilson.datatypes.CertificateRequestLocator;
 import com.intel.mtwilson.datatypes.Certificate;
-import com.intel.mtwilson.datatypes.Util;
+import com.intel.mtwilson.tag.Util;
 import com.intel.mtwilson.tag.rest.repository.CertificateRepository;
 import java.io.File;
 import java.io.FileInputStream;
