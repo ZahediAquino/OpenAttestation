@@ -12,11 +12,11 @@ import com.intel.mtwilson.datatypes.ApiException;
 import com.intel.mtwilson.datatypes.AssetTagCertCreateRequest;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
 import com.intel.mtwilson.tag.common.Global;
-import com.intel.mtwilson.tag.common.X509AttrBuilder;
+import com.intel.mtwilson.datatypes.X509AttrBuilder;
 import com.intel.mtwilson.tag.dao.TagJdbi;
-import com.intel.mtwilson.tag.dao.jdbi.*;
-import com.intel.mtwilson.tag.model.*;
-import com.intel.mtwilson.tag.model.x509.UTF8NameValueMicroformat;
+//import com.intel.mtwilson.tag.dao.jdbi.*;
+//import com.intel.mtwilson.tag.model.*;
+import com.intel.mtwilson.datatypes.UTF8NameValueMicroformat;
 import com.intel.mtwilson.tag.selection.SelectionBuilder;
 import com.intel.mtwilson.tag.selection.SelectionUtil;
 import com.intel.mtwilson.tag.selection.xml.*;
@@ -100,22 +100,22 @@ public class TagCertificateAuthority {
         return null;
     }
 
-    protected SelectionType findSelectionById(String id) throws SQLException {
-        try (SelectionDAO selectionDao = TagJdbi.selectionDao()) {
-            Selection selection = selectionDao.findById(UUID.valueOf(id));
-            if (selection != null) {
-                try (SelectionKvAttributeDAO selectionKvAttributeDAO = TagJdbi.selectionKvAttributeDao()) {
-                    SelectionBuilder builder = SelectionBuilder.factory().selection();
-                    List<SelectionKvAttribute> kvAttributes = selectionKvAttributeDAO.findBySelectionIdWithValues(selection.getId());
-                    for (SelectionKvAttribute kvAttribute : kvAttributes) {
-                        builder.textAttributeKV(kvAttribute.getKvAttributeName(), kvAttribute.getKvAttributeValue());
-                    }
-                    return builder.build().getSelection().get(0);
-                }
-            }
-        }
-        return null;
-    }
+//    protected SelectionType findSelectionById(String id) throws SQLException {
+//        try (SelectionDAO selectionDao = TagJdbi.selectionDao()) {
+//            Selection selection = selectionDao.findById(UUID.valueOf(id));
+//            if (selection != null) {
+//                try (SelectionKvAttributeDAO selectionKvAttributeDAO = TagJdbi.selectionKvAttributeDao()) {
+//                    SelectionBuilder builder = SelectionBuilder.factory().selection();
+//                    List<SelectionKvAttribute> kvAttributes = selectionKvAttributeDAO.findBySelectionIdWithValues(selection.getId());
+//                    for (SelectionKvAttribute kvAttribute : kvAttributes) {
+//                        builder.textAttributeKV(kvAttribute.getKvAttributeName(), kvAttribute.getKvAttributeValue());
+//                    }
+//                    return builder.build().getSelection().get(0);
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     protected SelectionType getInlineOrLookupSelection(SelectionType selection) throws SQLException {
         if (selection.getAttribute().isEmpty()) {
@@ -277,7 +277,13 @@ public class TagCertificateAuthority {
                     Global.mtwilson().importAssetTagCertificate(request);
                 }
             }
-        } catch (IOException | ApiException | SignatureException e) {
+        } catch(IOException e) {
+            log.error("Failed to auto-import tag certificate to Mt Wilson", e);
+        }
+        catch(ApiException e){
+            log.error("Failed to auto-import tag certificate to Mt Wilson", e);
+        }
+        catch(SignatureException e){
             log.error("Failed to auto-import tag certificate to Mt Wilson", e);
         }
 

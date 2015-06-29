@@ -19,11 +19,11 @@ import com.intel.mtwilson.datatypes.TagCertificateAuthority;
 //import com.intel.mtwilson.tag.common.Global;
 //import com.intel.mtwilson.tag.common.X509AttrBuilder;
 //import com.intel.mtwilson.tag.model.Certificate;
-//import com.intel.mtwilson.tag.model.CertificateCollection;
-//import com.intel.mtwilson.tag.model.CertificateFilterCriteria;
+import com.intel.mtwilson.datatypes.CertificateCollection;
+import com.intel.mtwilson.datatypes.CertificateFilterCriteria;
 import com.intel.mtwilson.datatypes.CertificateRequest;
 //import com.intel.mtwilson.tag.model.CertificateRequestLocator;
-//import com.intel.mtwilson.tag.model.X509AttributeCertificate;
+import com.intel.mtwilson.datatypes.X509AttributeCertificate;
 //import com.intel.mtwilson.tag.rest.v2.repository.CertificateRepository;
 //import com.intel.mtwilson.tag.rest.v2.repository.CertificateRequestRepository;
 //import com.intel.mtwilson.tag.selection.SelectionBuilder;
@@ -35,6 +35,7 @@ import com.intel.mtwilson.datatypes.TagConfiguration;
 import com.intel.mtwilson.tag.selection.xml.SelectionsType;
 import com.intel.mtwilson.datatypes.CertificateRequestLocator;
 import com.intel.mtwilson.datatypes.Certificate;
+import com.intel.mtwilson.datatypes.TxtHostRecord;
 import com.intel.mtwilson.datatypes.Util;
 import com.intel.mtwilson.tag.rest.repository.CertificateRepository;
 import java.io.File;
@@ -146,11 +147,11 @@ public class ProvisionTagCertificate  {
 //     */
     public Certificate createOne(String subject, SelectionsType selections, HttpServletRequest request, HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException {        
-        TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
-        TagCertificateAuthority ca = new TagCertificateAuthority(configuration);
+//        TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
+//        TagCertificateAuthority ca = new TagCertificateAuthority(configuration);
         // if the subject is an ip address or hostname, resolve it to a hardware uuid with mtwilson - if the host isn't registered in mtwilson we can't get the hardware uuid so we have to reject the request
         if( !UUID.isValid(subject)) {
-            String subjectUuid = ca.findSubjectHardwareUuid(subject);
+            String subjectUuid = findSubjectHardwareUuid(subject);
             if (subjectUuid == null) {
                 log.error("Cannot find hardware uuid for subject: {}", subject);
                 throw new IllegalArgumentException("Invalid subject specified in the call");
@@ -168,20 +169,20 @@ public class ProvisionTagCertificate  {
 //            return null;
 //        }
         // if always-generate/no-cache (cache mode off) is enabled then generate it right now and return it - no need to check database for existing certs etc. 
-        String cacheMode = "on";
-        if( selections.getOptions() != null && selections.getOptions().getCache() != null && selections.getOptions().getCache().getMode() != null ) {
-            cacheMode = selections.getOptions().getCache().getMode().value();
-        }
+//        String cacheMode = "on";
+//        if( selections.getOptions() != null && selections.getOptions().getCache() != null && selections.getOptions().getCache().getMode() != null ) {
+//            cacheMode = selections.getOptions().getCache().getMode().value();
+//        }
         
-        // first figure out which selection will be used for the given subject - also filters selections to ones that are currently valid or not marked with validity period
-        SelectionType targetSelection = ca.findCurrentSelectionForSubject(UUID.valueOf(subject), selections); // throws exception if there is no matching selection and no matching default selection
-        
-        log.debug("Cache mode {}", cacheMode);
-        if( "off".equals(cacheMode) && targetSelection != null ) {
-            byte[] certificateBytes = ca.createTagCertificate(UUID.valueOf(subject), targetSelection);
-            Certificate certificate = storeTagCertificate(subject, certificateBytes);
-            return certificate;
-        }
+//        // first figure out which selection will be used for the given subject - also filters selections to ones that are currently valid or not marked with validity period
+//        SelectionType targetSelection = ca.findCurrentSelectionForSubject(UUID.valueOf(subject), selections); // throws exception if there is no matching selection and no matching default selection
+//        
+//        log.debug("Cache mode {}", cacheMode);
+//        if( "off".equals(cacheMode) && targetSelection != null ) {
+//            byte[] certificateBytes = ca.createTagCertificate(UUID.valueOf(subject), targetSelection);
+//            Certificate certificate = storeTagCertificate(subject, certificateBytes);
+//            return certificate;
+//        }
         
         // if there is an existing currently valid certificate we return it
         CertificateFilterCriteria criteria = new CertificateFilterCriteria();
@@ -373,6 +374,26 @@ public class ProvisionTagCertificate  {
         else {
             throw new WebApplicationException(Response.Status.BAD_REQUEST); 
         }
+    }
+    
+    /**
+     * Looks up hardware uuid of host in mtwilson; host already be registered.
+     *
+     * @param ip address or hostname
+     * @return
+     */
+    public String findSubjectHardwareUuid(String ip) throws IOException, ApiException, SignatureException {
+        log.debug("Querying host {} in Mt Wilson", ip);
+        List<TxtHostRecord> hostList = Global.mtwilson().queryForHosts(ip, true);
+        if (hostList == null || hostList.isEmpty()) {
+            log.debug("host uuid lookup didn't return back any results");
+            //throw new ASException(new Exception("No host records found, please verify your host is in mtwilson or provide a hardware uuid in the subject field.")); // 
+            log.warn("No host records found for {}, please verify your host is in mtwilson or provide a hardware uuid in the subject field", ip);
+            return null;
+        }
+        log.debug("get host uuid returned " + hostList.get(0).Hardware_Uuid);
+        return hostList.get(0).Hardware_Uuid;
+
     }
         
 }

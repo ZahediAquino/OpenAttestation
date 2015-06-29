@@ -35,6 +35,7 @@
     <module>trust-utils-jar</module>
     <module>AttestationService</module>
     <module>WLMService</module>
+    <module>oat-tag-jdbi</module>
   </modules>
 
 </project>
