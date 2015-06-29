@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Intel Corporation
  * All rights reserved.
  */
-package com.intel.mtwilson.repository;
+package com.intel.mtwilson.datatypes;
 
 /**
  *

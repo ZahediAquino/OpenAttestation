@@ -5,12 +5,11 @@
 package com.intel.mtwilson.datatypes;
 
 import com.intel.mtwilson.util.validation.ValidationUtil;
-import com.intel.mtwilson.datatypes.CertificateDocument;
-import com.intel.mtwilson.datatypes.DocumentCollection;
-import com.intel.mtwilson.repository.FilterCriteria;
-import com.intel.mtwilson.repository.Locator;
-import com.intel.mtwilson.jaxrs2.PatchLink;
-import com.intel.mtwilson.jaxrs2.mediatype.CryptoMediaType;
+//import com.intel.mtwilson.datatypes.CertificateDocument;
+//import com.intel.mtwilson.datatypes.DocumentCollection;
+//import com.intel.mtwilson.repository.FilterCriteria;
+//import com.intel.mtwilson.repository.Locator;
+//import com.intel.mtwilson.jaxrs2.PatchLink;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import javax.ws.rs.BeanParam;
