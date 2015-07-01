@@ -16,3 +16,4 @@
 /integration/api-client-jar/target/
 /services/trust-utils-jar/target/
 /services/AttestationService/target/
+/util/oat-util-jdbi/target/

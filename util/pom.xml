@@ -17,6 +17,7 @@
     <modules>
         <module>oat-util-xml</module>
         <module>oat-util-cpg</module>
+        <module>oat-util-jdbi</module>
     </modules>
 
 </project>

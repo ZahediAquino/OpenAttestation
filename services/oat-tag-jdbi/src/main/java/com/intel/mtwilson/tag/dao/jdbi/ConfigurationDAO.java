@@ -4,8 +4,8 @@
  */
 package com.intel.mtwilson.tag.dao.jdbi;
 
-import com.intel.mtwilson.tag.model.Configuration;
-import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.util.configuration.Configuration;
+import com.intel.mtwilson.util.io.UUID;
 import java.io.Closeable;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;

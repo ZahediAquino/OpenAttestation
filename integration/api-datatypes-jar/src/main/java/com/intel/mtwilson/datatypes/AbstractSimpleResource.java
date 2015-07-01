@@ -6,7 +6,7 @@ package com.intel.mtwilson.datatypes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.intel.mtwilson.jaxrs2.server.PATCH;
+import com.intel.mtwilson.util.jaxrs2.server.PATCH;
 import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.util.validation.Fault;
 import com.intel.mtwilson.util.validation.Faults;

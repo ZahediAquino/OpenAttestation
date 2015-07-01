@@ -7,10 +7,10 @@ package com.intel.mtwilson.tag.dao;
 import com.intel.dcsg.cpg.jpa.PersistenceManager;
 import com.intel.mtwilson.tag.dao.jdbi.CertificateRequestDAO;
 import com.intel.mtwilson.tag.dao.jdbi.CertificateDAO;
-import com.intel.mtwilson.tag.dao.jdbi.TpmPasswordDAO;
-import com.intel.mtwilson.tag.dao.jdbi.KvAttributeDAO;
+//import com.intel.mtwilson.tag.dao.jdbi.TpmPasswordDAO;
+//import com.intel.mtwilson.tag.dao.jdbi.KvAttributeDAO;
 import com.intel.mtwilson.tag.dao.jdbi.SelectionDAO;
-import com.intel.mtwilson.tag.dao.jdbi.SelectionKvAttributeDAO;
+//import com.intel.mtwilson.tag.dao.jdbi.SelectionKvAttributeDAO;
 import com.intel.mtwilson.tag.dao.jdbi.ConfigurationDAO;
 import com.intel.mtwilson.My;
 import com.intel.mtwilson.tag.dao.jdbi.FileDAO;
@@ -50,11 +50,11 @@ public class TagJdbi {
         }
         return ds;
     }
-
-    public static KvAttributeDAO kvAttributeDao() throws SQLException {
-        DBI dbi = new DBI(getDataSource());
-        return dbi.open(KvAttributeDAO.class);
-    }
+//
+//    public static KvAttributeDAO kvAttributeDao() throws SQLException {
+//        DBI dbi = new DBI(getDataSource());
+//        return dbi.open(KvAttributeDAO.class);
+//    }
 
     public static CertificateRequestDAO certificateRequestDao() throws SQLException {
         DBI dbi = new DBI(getDataSource());
@@ -70,21 +70,21 @@ public class TagJdbi {
         DBI dbi = new DBI(getDataSource());
         return dbi.open(SelectionDAO.class);
     }
-
-    public static SelectionKvAttributeDAO selectionKvAttributeDao() throws SQLException {
-        DBI dbi = new DBI(getDataSource());
-        return dbi.open(SelectionKvAttributeDAO.class);
-    }
+//
+//    public static SelectionKvAttributeDAO selectionKvAttributeDao() throws SQLException {
+//        DBI dbi = new DBI(getDataSource());
+//        return dbi.open(SelectionKvAttributeDAO.class);
+//    }
 
     public static ConfigurationDAO configurationDao() throws SQLException {
         DBI dbi = new DBI(getDataSource());
         return dbi.open(ConfigurationDAO.class);
     }
 
-    public static TpmPasswordDAO tpmPasswordDao() throws SQLException {
-        DBI dbi = new DBI(getDataSource());
-        return dbi.open(TpmPasswordDAO.class);
-    }
+//    public static TpmPasswordDAO tpmPasswordDao() throws SQLException {
+//        DBI dbi = new DBI(getDataSource());
+//        return dbi.open(TpmPasswordDAO.class);
+//    }
 
     public static FileDAO fileDao() throws SQLException {
         DBI dbi = new DBI(getDataSource());

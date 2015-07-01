@@ -4,10 +4,10 @@
  */
 package com.intel.mtwilson.tag.dao.jdbi;
 
-import com.intel.mtwilson.tag.model.File;
+import com.intel.mtwilson.datatypes.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.util.io.UUID;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 

@@ -4,8 +4,8 @@
  */
 package com.intel.mtwilson.tag.dao.jdbi;
 
-import com.intel.mtwilson.tag.model.CertificateRequest;
-import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.datatypes.CertificateRequest;
+import com.intel.mtwilson.util.io.UUID;
 import java.io.Closeable;
 import java.util.List;
 import org.skife.jdbi.v2.sqlobject.Bind;

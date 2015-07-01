@@ -4,8 +4,8 @@
  */
 package com.intel.mtwilson.tag.dao.jdbi;
 
-import com.intel.mtwilson.tag.model.Certificate;
-import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.datatypes.Certificate;
+import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.jdbi.util.DateArgument;
 import java.io.Closeable;
 import java.util.Date;

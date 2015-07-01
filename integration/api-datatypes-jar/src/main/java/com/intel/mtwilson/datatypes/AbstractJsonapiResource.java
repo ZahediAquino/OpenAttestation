@@ -4,7 +4,7 @@
  */
 package com.intel.mtwilson.datatypes;
 
-//import com.intel.mtwilson.jaxrs2.server.PATCH;
+import com.intel.mtwilson.util.jaxrs2.server.PATCH;
 import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.util.validation.ValidationUtil;
 //import com.intel.mtwilson.jaxrs2.AbstractDocument;

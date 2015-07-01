@@ -4,13 +4,13 @@
  */
 package com.intel.mtwilson.tag.dao.jdbi;
 
-import com.intel.mtwilson.tag.model.Certificate;
-import com.intel.mtwilson.tag.model.CertificateRequest;
-import com.intel.dcsg.cpg.crypto.Sha1Digest;
-import com.intel.dcsg.cpg.crypto.Sha256Digest;
+import com.intel.mtwilson.datatypes.Certificate;
+//import com.intel.mtwilson.datatypes.CertificateRequest;
+import com.intel.mtwilson.util.crypto.Sha1Digest;
+import com.intel.mtwilson.util.crypto.Sha256Digest;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.intel.dcsg.cpg.io.UUID;
+import com.intel.mtwilson.util.io.UUID;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 

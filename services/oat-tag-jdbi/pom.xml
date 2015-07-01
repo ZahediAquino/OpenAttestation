@@ -80,9 +80,20 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
 
 
     <dependencies>
+        
+         <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-jdbi</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intel.mtwilson.core.integration</groupId>
+            <artifactId>api-datatypes</artifactId>
+            <version>2.2</version>
+        </dependency>
         <dependency>
             <groupId>com.intel.mtwilson.util</groupId>
-            <artifactId>mtwilson-util-jdbi</artifactId>
+            <artifactId>oat-util-jdbi</artifactId>
             <version>${project.version}</version>        
         </dependency>
         <dependency>
@@ -124,17 +135,22 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
             <artifactId>mtwilson-tag-model</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-cpg</artifactId>
+        </dependency>
+<!--        <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-jdbi</artifactId>
+        </dependency>-->
+        
    <!-- <dependency>
             <groupId>com.intel.mtwilson.services</groupId>
             <artifactId>mtwilson-tag-ws-v2</artifactId>
             <version>${project.version}</version>
         </dependency> -->
-
-        <dependency>
-            <groupId>com.intel.mtwilson.util</groupId>
-            <artifactId>mtwilson-util-io</artifactId>
-        </dependency>
+<!--
+        
         <dependency>
             <groupId>com.intel.mtwilson.util</groupId>
             <artifactId>mtwilson-util-jpa</artifactId>
@@ -158,7 +174,7 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
         <dependency>
             <groupId>com.intel.mtwilson.util</groupId>
             <artifactId>mtwilson-util-jdbc</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!-- mtwilson integration -->
 		<!--
@@ -193,18 +209,18 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-        </dependency>        
+        </dependency>        -->
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-        </dependency>
+        </dependency>-->
     <!--
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -235,7 +251,7 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
 	<version>1.9.11</version>
 </dependency>
 -->
-    <dependency>
+<!--    <dependency>
     	<groupId>com.fasterxml.jackson.core</groupId>
     	<artifactId>jackson-core</artifactId>
     	<scope>test</scope>
@@ -249,7 +265,7 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
     	<groupId>com.fasterxml.jackson.core</groupId>
     	<artifactId>jackson-databind</artifactId>
     	<scope>test</scope>
-    </dependency>
+    </dependency>-->
 
 <!-- jooq  database query assembly -->
 <dependency>
@@ -316,6 +332,7 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi</artifactId>
             <version>2.53</version>
+            <type>jar</type>
         </dependency>        
         
         
@@ -374,10 +391,10 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>com.intel.mtwilson.util</groupId>
             <artifactId>mtwilson-util-dbcp</artifactId>
-        </dependency>
+        </dependency>-->
 
 
     </dependencies>  
