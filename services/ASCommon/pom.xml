@@ -102,15 +102,21 @@
 	    <version>${project.version}</version>
   	</dependency>
 	<dependency>
-	    <groupId>com.intel.mtwilson.core.services</groupId>
-	    <artifactId>webservice-util</artifactId>
-	    <version>${project.version}</version>
-  	</dependency>
-    <dependency>
-		<groupId>org.apache.commons</groupId>
-		<artifactId>commons-math3</artifactId>
-		<version>3.0</version>
-	</dependency>
+            <groupId>com.intel.mtwilson.core.services</groupId>
+            <artifactId>webservice-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.0</version>
+        </dependency>
+         <dependency>
+            <groupId>om.intel.mtwilson.core.common</groupId>
+            <artifactId>oat-io</artifactId>
+            <version>2.2</version>
+        </dependency>
+        
   	
   </dependencies>  
 </project>

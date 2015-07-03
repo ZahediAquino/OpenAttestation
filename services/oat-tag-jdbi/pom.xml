@@ -390,11 +390,33 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
             <artifactId>mtwilson-my</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+             <!--dependency>
+            <groupId>com.intel.mtwilson.integration</groupId>
+            <artifactId>oat-jpa</artifactId>
+        </dependency-->
+        <dependency>
+            <groupId>com.intel.mtwilson.core.common</groupId>
+            <artifactId>oat-jpa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+       
 
 <!--        <dependency>
             <groupId>com.intel.mtwilson.util</groupId>
             <artifactId>mtwilson-util-dbcp</artifactId>
         </dependency>-->
+        
+        <dependency>
+	    <groupId>com.intel.mtwilson.core.services</groupId>
+	    <artifactId>webservice-util</artifactId>
+	    <version>${project.version}</version>
+  	</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ASCommon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 
     </dependencies>  

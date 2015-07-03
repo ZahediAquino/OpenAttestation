@@ -4,7 +4,10 @@
  */
 package com.intel.mtwilson.tag.dao;
 
-import com.intel.dcsg.cpg.jpa.PersistenceManager;
+import com.intel.mountwilson.as.common.ASConfig;
+import org.apache.commons.configuration.Configuration;
+//import com.intel.dcsg.cpg.jpa.PersistenceManager;
+import com.intel.mtwilson.jpa.PersistenceManager;
 import com.intel.mtwilson.tag.dao.jdbi.CertificateRequestDAO;
 import com.intel.mtwilson.tag.dao.jdbi.CertificateDAO;
 //import com.intel.mtwilson.tag.dao.jdbi.TpmPasswordDAO;
@@ -12,9 +15,9 @@ import com.intel.mtwilson.tag.dao.jdbi.CertificateDAO;
 import com.intel.mtwilson.tag.dao.jdbi.SelectionDAO;
 //import com.intel.mtwilson.tag.dao.jdbi.SelectionKvAttributeDAO;
 import com.intel.mtwilson.tag.dao.jdbi.ConfigurationDAO;
-import com.intel.mtwilson.My;
+//import com.intel.mtwilson.My;
 import com.intel.mtwilson.tag.dao.jdbi.FileDAO;
-import com.intel.mtwilson.MyPersistenceManager;
+//import com.intel.mtwilson.MyPersistenceManager;
 import com.intel.mtwilson.jooq.util.JooqContainer;
 import java.io.IOException;
 import java.sql.Connection;
@@ -36,7 +39,8 @@ public class TagJdbi {
 
     synchronized public static void createDataSource() throws IOException {
         if (ds == null) {
-            ds = PersistenceManager.createDataSource(MyPersistenceManager.getASDataJpaProperties(My.configuration()));
+            //ds = PersistenceManager.createDataSource( MyPersistenceManager.getASDataJpaProperties(My.configuration()));
+            ds = PersistenceManager.createDataSource(ASConfig.getASDataJpaProperties());
         }
     }
 
@@ -120,7 +124,8 @@ public class TagJdbi {
     }
 
     public static SQLDialect getSqlDialect() throws IOException {
-        String protocol = My.configuration().getDatabaseProtocol();
+        //String protocol = My.configuration().getDatabaseProtocol();
+        String protocol = ASConfig.getDatabaseProtocol();
         if ("mysql".equalsIgnoreCase(protocol)) {
             return SQLDialect.MYSQL;
         }

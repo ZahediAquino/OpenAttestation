@@ -4,10 +4,11 @@
  */
 package com.intel.mtwilson.tag;
 
+import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.util.validation.Fault;
 //import com.intel.mountwilson.as.common.ASException;
-import com.intel.mtwilson.My;
+//import com.intel.mtwilson.My;
 import com.intel.mtwilson.datatypes.ApiException;
 import com.intel.mtwilson.datatypes.AssetTagCertCreateRequest;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
@@ -268,7 +269,8 @@ public class TagCertificateAuthority {
         try {
             log.debug("Tag certificate auto-import enabled: {}", configuration.isTagProvisionAutoImport());
             if (configuration.isTagProvisionAutoImport()) {
-                String url = My.configuration().getAssetTagMtWilsonBaseUrl();
+                //String url = My.configuration().getAssetTagMtWilsonBaseUrl();
+                String url = ASConfig.getAssetTagMtWilsonBaseUrl();
                 log.debug("Mt Wilson URL: {}", url);
                 if (url != null && !url.isEmpty()) {
                     AssetTagCertCreateRequest request = new AssetTagCertCreateRequest();

@@ -4,10 +4,11 @@
  */
 package com.intel.mtwilson.tag.common;
 
+import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mtwilson.crypto.RsaUtil;
 import com.intel.mtwilson.crypto.X509Util;
 import com.intel.mtwilson.ApiClientFactory;
-import com.intel.mtwilson.My;
+//import com.intel.mtwilson.My;
 import com.intel.mtwilson.api.MtWilson;
 import com.intel.mtwilson.tag.dao.jdbi.*;
 import com.intel.mtwilson.tag.model.*;
@@ -145,13 +146,19 @@ public class Global {
             }
             
             try {
-            String keystoreUsername = My.configuration().getTagKeystoreUsername(); //configuration().getMtWilsonClientKeystoreUsername();
-            String keystorePassword = My.configuration().getTagKeystorePassword(); //configuration().getMtWilsonClientKeystorePassword();
+            //String keystoreUsername = My.configuration().getTagKeystoreUsername(); //configuration().getMtWilsonClientKeystoreUsername();
+            //String keystorePassword = My.configuration().getTagKeystorePassword(); //configuration().getMtWilsonClientKeystorePassword();
+                
+            String keystoreUsername = ASConfig.getTagKeystoreUsername(); //configuration().getMtWilsonClientKeystoreUsername();
+            String keystorePassword = ASConfig.getTagKeystorePassword(); //configuration().getMtWilsonClientKeystorePassword();
             
-            URL url = My.configuration().getMtWilsonURL();  //configuration().getMtWilsonURL();
+            //URL url = My.configuration().getMtWilsonURL();  //configuration().getMtWilsonURL();
+            URL url = ASConfig.getMtWilsonURL();  //configuration().getMtWilsonURL();
+            
             ApiClientFactory factory = new ApiClientFactory();
             //TlsPolicy tlsPolicy = V1TlsPolicyFactory.getInstance().getTlsPolicyWithKeystore(keystore);
-            TlsPolicy tlsPolicy = PropertiesTlsPolicyFactory.createTlsPolicy(My.configuration().getClientProperties());
+            //TlsPolicy tlsPolicy = PropertiesTlsPolicyFactory.createTlsPolicy(My.configuration().getClientProperties());
+            TlsPolicy tlsPolicy = PropertiesTlsPolicyFactory.createTlsPolicy(ASConfig.getClientProperties());
             mtwilson = factory.clientForUserInResource(keystoreResource, keystoreUsername, keystorePassword, url, tlsPolicy);
             }
             catch(Exception e) {

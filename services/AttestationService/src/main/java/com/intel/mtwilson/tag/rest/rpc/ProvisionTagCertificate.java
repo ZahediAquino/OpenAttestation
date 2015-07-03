@@ -5,6 +5,7 @@
 package com.intel.mtwilson.tag.rest.rpc;
 
 //import com.intel.dcsg.cpg.io.ByteArrayResource;
+import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mtwilson.util.io.UUID;
 //import com.intel.mtwilson.My;
 //import com.intel.mtwilson.MyFilesystem;
@@ -149,6 +150,9 @@ public class ProvisionTagCertificate  {
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException {        
 //        TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
 //        TagCertificateAuthority ca = new TagCertificateAuthority(configuration);
+          TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
+          TagCertificateAuthority ca = new TagCertificateAuthority(configuration);
+        
         // if the subject is an ip address or hostname, resolve it to a hardware uuid with mtwilson - if the host isn't registered in mtwilson we can't get the hardware uuid so we have to reject the request
         if( !UUID.isValid(subject)) {
             String subjectUuid = findSubjectHardwareUuid(subject);
@@ -354,7 +358,8 @@ public class ProvisionTagCertificate  {
 //    @RequiresPermissions("tag_certificates:create")         
     public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException  {
-         TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
+         //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
+        TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
         SelectionsType selections = null;
         if( xml != null ) {
             selections = Util.fromXml(xml);
