@@ -4,7 +4,6 @@
  */
 package com.intel.mtwilson.datatypes;
 
-import com.intel.mtwilson.api.ClientFactorySpi;
 import com.intel.mtwilson.api.MtWilson;
 import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import com.intel.mtwilson.util.io.Resource;

@@ -9,7 +9,8 @@ package com.intel.mtwilson.datatypes;
 //import java.util.ArrayList;
 //import java.util.HashMap;
 import java.util.Map;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+//import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 //import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**

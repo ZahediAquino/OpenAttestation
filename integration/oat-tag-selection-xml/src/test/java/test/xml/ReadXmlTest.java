@@ -4,7 +4,8 @@
  */
 package test.xml;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+//import com.fasterxml.jackson.annotation.JsonInclude;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -16,7 +17,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.junit.Test;
 import com.intel.mtwilson.tag.selection.xml.*;
 import org.apache.commons.io.IOUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.codehaus.jackson.map.ObjectMapper;
 import com.intel.dcsg.cpg.xml.JAXB;
 import com.intel.mtwilson.tag.selection.SelectionBuilder;
 
@@ -85,7 +86,9 @@ public class ReadXmlTest {
             String xml = IOUtils.toString(in);
             SelectionsType selections = jaxb.read(xml, SelectionsType.class);
             ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY); // omit empty attributes, for example {"selection":[{"subject":[],"attribute":[],"id":"8ed9140b-e6a1-41b2-a8d4-258948633153","name":null,"notBefore":null,"notAfter":null}]}  becomes   {"selection":[{"id":"8ed9140b-e6a1-41b2-a8d4-258948633153"}]}
+            
+            //mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY); // omit empty attributes, for example {"selection":[{"subject":[],"attribute":[],"id":"8ed9140b-e6a1-41b2-a8d4-258948633153","name":null,"notBefore":null,"notAfter":null}]}  becomes   {"selection":[{"id":"8ed9140b-e6a1-41b2-a8d4-258948633153"}]}
+            mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_EMPTY); // omit empty attributes, for example {"selection":[{"subject":[],"attribute":[],"id":"8ed9140b-e6a1-41b2-a8d4-258948633153","name":null,"notBefore":null,"notAfter":null}]}  becomes   {"selection":[{"id":"8ed9140b-e6a1-41b2-a8d4-258948633153"}]}
             log.debug("{}: {}",xmlfile, mapper.writeValueAsString(selections));
         }
         catch(Exception e){

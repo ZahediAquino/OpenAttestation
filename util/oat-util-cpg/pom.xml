@@ -66,6 +66,9 @@
             <artifactId>jooq-meta</artifactId>
             <version>3.1.0</version>
         </dependency>
-    
+        <dependency>
+            <groupId>com.intel.mtwilson.core.common</groupId>
+            <artifactId>oat-validation</artifactId>
+        </dependency>
   </dependencies>
 </project>

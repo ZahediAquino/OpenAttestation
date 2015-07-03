@@ -13,56 +13,52 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.intel.mtwilson.tls;
+package com.intel.mtwilson.util.net;
 
-import com.intel.mtwilson.crypto.NopX509TrustManager;
-import com.intel.mtwilson.util.net.InternetAddress;
-import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.List;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.X509TrustManager;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.intel.mtwilson.validation.ObjectModel;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * This trust policy must be initialized with the server that is being checked
- * and its associated server-specific keystore. 
+ * Supports standard decimal notation for IPv4 such as 192.168.0.1
  * 
- * The keystore must already have a trusted certificate for this server. 
- * This policy never adds new certificates to the keystore.
+ * This class represents the address for a single host. 
+ * Intentionally does not support subnet/CIDR notation. That belongs in a NetworkAddress class.
  * 
  * @author jbuhacoff
  */
-public class InsecureTlsPolicy implements TlsPolicy, ApacheTlsPolicy {
-    private Logger log = LoggerFactory.getLogger(getClass());
-//    private final InternetAddress server;
-    private final static NopX509TrustManager nop = new NopX509TrustManager();
-    private final static ArrayCertificateRepository emptyRepository = new ArrayCertificateRepository(new X509Certificate[0]);
-    public InsecureTlsPolicy() { }
+public class IPv4Address extends ObjectModel {
+    private static final String rDecimalByte = "(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])";
+    private static final String rIPv4 = "(?:"+rDecimalByte+"\\.){3}"+rDecimalByte;
+    private static final Pattern pIPv4 = Pattern.compile(rIPv4);
     
-    public InsecureTlsPolicy(InternetAddress server) {
-//        this.server = server;
-    }
+    private String input;
     
-    @Override
-    public X509TrustManager getTrustManager() { return nop; }
-
-    @Override
-    public HostnameVerifier getHostnameVerifier() {
-        return SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-    }
-
-    @Override
-    public X509HostnameVerifier getApacheHostnameVerifier() {
-        return SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-    }
-
-    @Override
-    public CertificateRepository getCertificateRepository() {
-        return emptyRepository;
+    public IPv4Address(String text) {
+        input = text.trim();
     }
     
+    @Override
+    protected void validate() {
+        Matcher mIPv4 = pIPv4.matcher(input);
+        if( mIPv4.matches() ) {
+            return;
+        }
+        fault("Unrecognized IPv4 format: %s", input);
+    }
+    
+    @Override
+    public String toString() { return input; }
+    
+    public byte[] toByteArray() { 
+        if( !isValid() ) { return null; }
+        try {
+            return Inet4Address.getByName(input).getAddress(); // XXX is this ok or is there another way?
+        }
+        catch(UnknownHostException e) {
+            return null;
+        }
+    }
 }
