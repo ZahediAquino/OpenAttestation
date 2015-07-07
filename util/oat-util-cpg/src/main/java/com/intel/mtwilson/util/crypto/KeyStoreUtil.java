@@ -51,4 +51,20 @@ public class KeyStoreUtil {
         return ks;
     }
     
+ 
+    /*
+    public static ApiClient clientForUserInResource(Resource resource, String username, String password, URL server, TlsPolicy tlsPolicy) throws ClientException, FileNotFoundException, FileNotFoundException, KeyStoreException, KeyStoreException, NoSuchAlgorithmException, NoSuchAlgorithmException, UnrecoverableEntryException, UnrecoverableEntryException, CertificateEncodingException, KeyManagementException, CryptographyException  {
+        SimpleKeystore keystore = new SimpleKeystore(resource, password);
+        RsaCredentialX509 rsaCredential = keystore.getRsaCredentialX509(username, password);
+        //ApiClient c = new ApiClient(server, rsaCredential, keystore, tlsPolicy);
+        Configuration conf = ASConfig.getConfiguration();
+        ApiClient c = new ApiClient(server, keystore, conf);
+        return c;        
+    }
+    
+    public static ApiClient clientForUserInResource(Resource resource, String username, String password, URL server) throws ClientException, FileNotFoundException, FileNotFoundException, KeyStoreException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableEntryException, CertificateEncodingException, KeyManagementException, CryptographyException {
+        return clientForUserInResource(resource, username, password, server, new InsecureTlsPolicy());
+    }*/
+    
+    
 }

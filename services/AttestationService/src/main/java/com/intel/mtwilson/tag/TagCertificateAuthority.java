@@ -5,22 +5,26 @@
 package com.intel.mtwilson.tag;
 
 import com.intel.mountwilson.as.common.ASConfig;
+import com.intel.mtwilson.ApiClient;
 import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.util.validation.Fault;
 //import com.intel.mountwilson.as.common.ASException;
 //import com.intel.mtwilson.My;
-import com.intel.mtwilson.datatypes.ApiException;
+import com.intel.mtwilson.ApiException;
 import com.intel.mtwilson.datatypes.AssetTagCertCreateRequest;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
 import com.intel.mtwilson.tag.common.Global;
-import com.intel.mtwilson.datatypes.X509AttrBuilder;
+import com.intel.mtwilson.tag.common.X509AttrBuilder;
 import com.intel.mtwilson.tag.dao.TagJdbi;
-//import com.intel.mtwilson.tag.dao.jdbi.*;
+import com.intel.mtwilson.tag.dao.jdbi.*;
+import com.intel.mtwilson.datatypes.Selection;
+import com.intel.mtwilson.tag.dao.jdbi.SelectionKvAttribute;
 //import com.intel.mtwilson.tag.model.*;
 import com.intel.mtwilson.datatypes.UTF8NameValueMicroformat;
 import com.intel.mtwilson.tag.selection.SelectionBuilder;
 import com.intel.mtwilson.tag.selection.SelectionUtil;
 import com.intel.mtwilson.tag.selection.xml.*;
+import com.intel.mtwilson.util.net.Hostname;
 import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
@@ -62,7 +66,7 @@ public class TagCertificateAuthority {
      * @param ip address or hostname
      * @return
      */
-    public String findSubjectHardwareUuid(String ip) throws IOException, ApiException, SignatureException {
+    public String findSubjectHardwareUuid(String ip) throws IOException, ApiException, SignatureException, com.intel.mtwilson.ApiException {
         log.debug("Querying host {} in Mt Wilson", ip);
         List<TxtHostRecord> hostList = Global.mtwilson().queryForHosts(ip, true);
         if (hostList == null || hostList.isEmpty()) {
@@ -75,7 +79,7 @@ public class TagCertificateAuthority {
         return hostList.get(0).Hardware_Uuid;
 
     }
-
+    
     /**
      * Looks up kv attributes by selection name and prepares a SelectionType
      * object corresponding to <selection name="name"/> in the selection xml
@@ -84,6 +88,7 @@ public class TagCertificateAuthority {
      * NOTE: currently this only populates kv attributes.
      *
      */
+    
     protected SelectionType findSelectionByName(String name) throws SQLException {
         try (SelectionDAO selectionDao = TagJdbi.selectionDao()) {
             Selection selection = selectionDao.findByName(name);
@@ -100,23 +105,23 @@ public class TagCertificateAuthority {
         }
         return null;
     }
-
-//    protected SelectionType findSelectionById(String id) throws SQLException {
-//        try (SelectionDAO selectionDao = TagJdbi.selectionDao()) {
-//            Selection selection = selectionDao.findById(UUID.valueOf(id));
-//            if (selection != null) {
-//                try (SelectionKvAttributeDAO selectionKvAttributeDAO = TagJdbi.selectionKvAttributeDao()) {
-//                    SelectionBuilder builder = SelectionBuilder.factory().selection();
-//                    List<SelectionKvAttribute> kvAttributes = selectionKvAttributeDAO.findBySelectionIdWithValues(selection.getId());
-//                    for (SelectionKvAttribute kvAttribute : kvAttributes) {
-//                        builder.textAttributeKV(kvAttribute.getKvAttributeName(), kvAttribute.getKvAttributeValue());
-//                    }
-//                    return builder.build().getSelection().get(0);
-//                }
-//            }
-//        }
-//        return null;
-//    }
+    
+    protected SelectionType findSelectionById(String id) throws SQLException {
+        try (SelectionDAO selectionDao = TagJdbi.selectionDao()) {
+            Selection selection = selectionDao.findById(UUID.valueOf(id));
+            if (selection != null) {
+                try (SelectionKvAttributeDAO selectionKvAttributeDAO = TagJdbi.selectionKvAttributeDao()) {
+                    SelectionBuilder builder = SelectionBuilder.factory().selection();
+                    List<SelectionKvAttribute> kvAttributes = selectionKvAttributeDAO.findBySelectionIdWithValues(selection.getId());
+                    for (SelectionKvAttribute kvAttribute : kvAttributes) {
+                        builder.textAttributeKV(kvAttribute.getKvAttributeName(), kvAttribute.getKvAttributeValue());
+                    }
+                    return builder.build().getSelection().get(0);
+                }
+            }
+        }
+        return null;
+    }
 
     protected SelectionType getInlineOrLookupSelection(SelectionType selection) throws SQLException {
         if (selection.getAttribute().isEmpty()) {
@@ -156,7 +161,7 @@ public class TagCertificateAuthority {
      *
      */
     public SelectionType findCurrentSelectionForSubject(UUID targetSubject, SelectionsType selections) 
-            throws SQLException, IOException, ApiException, SignatureException {
+            throws SQLException, IOException, ApiException, SignatureException, com.intel.mtwilson.ApiException {
         log.debug("findSelectionForSubject {}", targetSubject.toString());
         SelectionsType currentSelections = SelectionUtil.copySelectionsValidOn(selections, new Date());
         // first search by host uuid
@@ -216,7 +221,7 @@ public class TagCertificateAuthority {
      * @return
      * @throws Exception
      */
-    public byte[] createTagCertificate(UUID subject, SelectionsType selections) throws SQLException, IOException, ApiException, SignatureException {
+    public byte[] createTagCertificate(UUID subject, SelectionsType selections) throws SQLException, IOException, ApiException, SignatureException, com.intel.mtwilson.ApiException {
         SelectionType selection = findCurrentSelectionForSubject(subject, selections);
         if( selection == null ) {
             throw new IllegalArgumentException("No matching selection");
@@ -238,7 +243,7 @@ public class TagCertificateAuthority {
      * @return
      * @throws Exception
      */
-    public byte[] createTagCertificate(UUID subject, SelectionType selection) throws IOException {
+    public byte[] createTagCertificate(UUID subject, SelectionType selection) throws IOException, com.intel.mtwilson.ApiException {
         // check if we have a private key to use for signing
         PrivateKey cakey = Global.cakey();
         X509Certificate cakeyCert = Global.cakeyCert();
@@ -280,9 +285,6 @@ public class TagCertificateAuthority {
                 }
             }
         } catch(IOException e) {
-            log.error("Failed to auto-import tag certificate to Mt Wilson", e);
-        }
-        catch(ApiException e){
             log.error("Failed to auto-import tag certificate to Mt Wilson", e);
         }
         catch(SignatureException e){

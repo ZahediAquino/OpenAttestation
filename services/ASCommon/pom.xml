@@ -112,7 +112,7 @@
             <version>3.0</version>
         </dependency>
          <dependency>
-            <groupId>om.intel.mtwilson.core.common</groupId>
+            <groupId>com.intel.mtwilson.core.common</groupId>
             <artifactId>oat-io</artifactId>
             <version>2.2</version>
         </dependency>

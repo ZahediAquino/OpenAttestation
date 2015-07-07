@@ -22,7 +22,7 @@ import com.intel.mountwilson.common.WLMPConfig;
 import com.intel.mountwilson.common.WLMPPersistenceManager;
 import com.intel.mtwilson.ApiClient;
 import com.intel.mtwilson.as.controller.MwKeystoreJpaController;
-import com.intel.mtwilson.crypto.SimpleKeystore;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import java.io.File;
 import java.net.URL;
 import java.util.Properties;

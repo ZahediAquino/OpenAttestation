@@ -14,7 +14,7 @@
  */
 
 package com.intel.mtwilson;
-import com.intel.mtwilson.crypto.SimpleKeystore;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import com.intel.mtwilson.tls.ApacheTlsPolicy;
 import com.intel.mtwilson.tls.KeystoreCertificateRepository;
 import com.intel.mtwilson.tls.InsecureTlsPolicy;

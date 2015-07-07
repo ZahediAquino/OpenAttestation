@@ -12,7 +12,7 @@ import com.intel.mtwilson.util.validation.Fault;
 import com.intel.mtwilson.util.validation.Faults;
 import com.intel.mtwilson.util.validation.ValidationUtil;
 import java.io.IOException;
-//import com.intel.mtwilson.datatypes.AbstractDocument;
+//import com.intel.mtwilson.tag.repository.AbstractDocument;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

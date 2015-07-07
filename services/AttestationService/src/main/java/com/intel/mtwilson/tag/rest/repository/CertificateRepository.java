@@ -9,7 +9,7 @@ import com.intel.mtwilson.util.crypto.Sha256Digest;
 import com.intel.mtwilson.util.io.UUID;
 import static com.intel.mtwilson.tag.dao.jooq.generated.Tables.MW_TAG_CERTIFICATE;
 import com.intel.mtwilson.tag.dao.jdbi.CertificateDAO;
-import com.intel.mtwilson.jaxrs2.server.resource.DocumentRepository;
+import com.intel.mtwilson.datatypes.DocumentRepository;
 import com.intel.mtwilson.jooq.util.JooqContainer;
 import com.intel.mtwilson.tag.repository.RepositoryCreateConflictException;
 import com.intel.mtwilson.tag.repository.RepositoryCreateException;

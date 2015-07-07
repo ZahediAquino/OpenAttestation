@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mtwilson.as.business.HostBO;
 import com.intel.mtwilson.as.business.trust.HostTrustBO;
 import com.intel.mountwilson.as.common.ASException;

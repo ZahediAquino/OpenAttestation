@@ -85,6 +85,10 @@
             <version>4.2</version>
             <scope>provided</scope>
         </dependency>
+         <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-cpg</artifactId>
+        </dependency>
 
     </dependencies>  
 </project>

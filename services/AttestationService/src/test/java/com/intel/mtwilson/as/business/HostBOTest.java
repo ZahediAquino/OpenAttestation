@@ -44,7 +44,7 @@ import com.intel.mtwilson.as.data.TblTaLog;
 import com.intel.mtwilson.crypto.CryptographyException;
 import com.intel.mtwilson.crypto.RsaUtil;
 import com.intel.mtwilson.datatypes.HostTrustStatus;
-import com.intel.mtwilson.datatypes.Hostname;
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mtwilson.datatypes.TxtHost;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
 

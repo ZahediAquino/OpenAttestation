@@ -14,9 +14,13 @@
  */
 
 package com.intel.mtwilson;
+
+import com.intel.mtwilson.util.net.Hostname;
+import com.intel.mtwilson.util.crypto.RsaCredential;
+import com.intel.mtwilson.tls.TlsPolicy;
 import com.intel.mountwilson.as.hostmanifestreport.data.HostManifestReportType;
 import com.intel.mountwilson.as.hosttrustreport.data.HostsTrustReportType;
-import com.intel.mtwilson.crypto.SimpleKeystore;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import com.intel.mtwilson.datatypes.*;
 import com.intel.mtwilson.io.ConfigurationUtil;
 import java.io.File;
@@ -61,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.5.2
  * @author jbuhacoff
  */
-public class ApiClient implements AttestationService, WhitelistService {
+public class ApiClient implements AttestationService, WhitelistService, AssetTagService {
     private static Logger log = LoggerFactory.getLogger(ApiClient.class);
 //    private JerseyHttpClient httpClient;
     private ApacheHttpClient httpClient;
@@ -158,7 +162,6 @@ public class ApiClient implements AttestationService, WhitelistService {
             throw new ClientException("Cannot initialize client", e);
         }
     }
-    
     
     private void setBaseURL(URL url) {
         if( url == null ) {
@@ -556,10 +559,21 @@ public class ApiClient implements AttestationService, WhitelistService {
     @Override
     public List<TxtHostRecord> queryForHosts(String searchCriteria) throws IOException, ApiException, SignatureException {
         MultivaluedMap<String,String> query = new MultivaluedMapImpl();
-        query.add("searchCriteria", searchCriteria);        
+        query.add("searchCriteria", searchCriteria); 
         ListHostData results = fromJSON(httpGet(asurl("/hosts", query)), ListHostData.class);
         return results;                
     }
+    
+    @Override
+    public List<TxtHostRecord> queryForHosts(String searchCriteria, boolean includeHardware) throws IOException, ApiException, SignatureException {
+        log.debug("queryForHosts includeHardwareUuid["+includeHardware+"]");
+        MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+        query.add("searchCriteria", searchCriteria);        
+        query.add("includeHardwareUuid",String.valueOf(includeHardware));
+        query.add("includeTlsPolicy",String.valueOf(false));
+        ListHostData results = fromJSON(httpGet(asurl("/hosts", query)), ListHostData.class);
+        return results;
+    }    
 
     /**
      * javax.ws.rs.core.MediaType.APPLICATION_XML   application/xml
@@ -822,6 +836,12 @@ public class ApiClient implements AttestationService, WhitelistService {
         query.add("oemName", mleDataObj.getOemName());        
         String result = text(httpGet(wlmurl("/mles/source", query)));
         return result;                        
+    }
+    
+    @Override
+    public boolean importAssetTagCertificate(AssetTagCertCreateRequest aTagObj) throws IOException, ApiException, SignatureException {
+        String result = text(httpPost(asurl("/assetTagCert"), toJSON(aTagObj)));
+        return "true".equals(result);
     }
 
 }

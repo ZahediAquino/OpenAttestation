@@ -19,8 +19,8 @@
  */
 package com.intel.mtwilson.as.data;
 
-import com.intel.mtwilson.io.ByteArrayResource;
-import com.intel.mtwilson.io.Resource;
+import com.intel.mtwilson.util.io.ByteArrayResource;
+import com.intel.mtwilson.util.io.Resource;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;

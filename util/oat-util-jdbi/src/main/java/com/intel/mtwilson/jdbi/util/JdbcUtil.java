@@ -4,7 +4,8 @@
  */
 package com.intel.mtwilson.jdbi.util;
 
-import com.intel.mtwilson.My;
+//import com.intel.mtwilson.My;
+import com.intel.mountwilson.as.common.ASConfig;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,13 +28,18 @@ public class JdbcUtil {
     public static DataSource getDataSource() {        
         try {
             if (ds == null) {
-                String driver = My.jdbc().driver();
-                String dbUrl = My.jdbc().url();
+                //String driver = My.jdbc().driver();
+                //String dbUrl = My.jdbc().url();
+                String driver = ASConfig.getASDataJpaProperties().getProperty("javax.persistence.jdbc.driver");
+                String dbUrl = ASConfig.getASDataJpaProperties().getProperty("javax.persistence.jdbc.url");
                 BasicDataSource dataSource = new BasicDataSource();
                 dataSource.setDriverClassName(driver); // or com.mysql.jdbc.Driver  for mysql
                 dataSource.setUrl(dbUrl);
-                dataSource.setUsername(My.configuration().getDatabaseUsername());
-                dataSource.setPassword(My.configuration().getDatabasePassword());
+                //dataSource.setUsername(My.configuration().getDatabaseUsername());
+                //dataSource.setPassword(My.configuration().getDatabasePassword());
+                dataSource.setUsername(ASConfig.getDatabaseUsername());
+                dataSource.setPassword(ASConfig.getDatabasePassword());
+                
                 ds = dataSource;
             }
         } catch (Exception ex) {

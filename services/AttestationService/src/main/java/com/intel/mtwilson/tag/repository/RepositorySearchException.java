@@ -4,7 +4,7 @@
  */
 package com.intel.mtwilson.tag.repository;
 
-import com.intel.mtwilson.repository.FilterCriteria;
+import com.intel.mtwilson.datatypes.FilterCriteria;
 
 /**
  *

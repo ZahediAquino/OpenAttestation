@@ -99,5 +99,9 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-cpg</artifactId>
+        </dependency>
   </dependencies>
 </project>

@@ -21,6 +21,9 @@ import java.net.URL;
 import java.io.File;
 import java.util.prefs.Preferences;
 import com.intel.mtwilson.util.ConfigBase;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
@@ -238,6 +241,20 @@ public class ASConfig extends ConfigBase{
 
     public static String getDatabaseSchema() {
         return getConfiguration().getString("mtwilson.db.schema", "mw_as");
+    }
+    
+    /**
+     * Caller must close() the connection.
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException 
+     */
+    public static Connection getConnection() throws ClassNotFoundException, SQLException {
+        String driver = getDatabaseDriver();
+        //log.debug("JDBC Driver: {}", driver);
+        Class.forName(driver);
+        Connection c = DriverManager.getConnection(getJpaProperties().getProperty("javax.persistence.jdbc.url"), getDatabaseUsername(), getDatabasePassword());
+        return c;
     }
     
     public static String getAssetTagMtWilsonBaseUrl() {

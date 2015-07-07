@@ -9,16 +9,16 @@ import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mtwilson.util.io.UUID;
 //import com.intel.mtwilson.My;
 //import com.intel.mtwilson.MyFilesystem;
-//import com.intel.mtwilson.api.ApiException;
+import com.intel.mtwilson.ApiException;
 //import com.intel.mtwilson.datatypes.TxtHostRecord;
 //import com.intel.mtwilson.jaxrs2.mediatype.CryptoMediaType;
 //import com.intel.mtwilson.launcher.ws.ext.V2;
 //import com.intel.mtwilson.tag.PlaintextFilenameFilter;
-import com.intel.mtwilson.datatypes.TagCertificateAuthority;
+import com.intel.mtwilson.tag.TagCertificateAuthority;
 //import com.intel.mtwilson.tag.TagConfiguration;
-//import com.intel.mtwilson.tag.Util;
+import com.intel.mtwilson.tag.Util;
 //import com.intel.mtwilson.tag.common.Global;
-//import com.intel.mtwilson.tag.common.X509AttrBuilder;
+import com.intel.mtwilson.tag.common.X509AttrBuilder;
 //import com.intel.mtwilson.tag.model.Certificate;
 import com.intel.mtwilson.datatypes.CertificateCollection;
 import com.intel.mtwilson.datatypes.CertificateFilterCriteria;
@@ -28,16 +28,17 @@ import com.intel.mtwilson.datatypes.X509AttributeCertificate;
 //import com.intel.mtwilson.tag.rest.v2.repository.CertificateRepository;
 //import com.intel.mtwilson.tag.rest.v2.repository.CertificateRequestRepository;
 //import com.intel.mtwilson.tag.selection.SelectionBuilder;
-//import com.intel.mtwilson.tag.selection.xml.AttributeType;
+import com.intel.mtwilson.tag.selection.xml.AttributeType;
 import com.intel.mtwilson.tag.selection.xml.SelectionType;
 //import com.intel.mtwilson.tag.selection.xml.SelectionsType;
-import com.intel.mtwilson.datatypes.ApiException;
-import com.intel.mtwilson.datatypes.TagConfiguration;
+//import import com.intel.mtwilson.ApiException;
+import com.intel.mtwilson.tag.TagConfiguration;
 import com.intel.mtwilson.tag.selection.xml.SelectionsType;
 import com.intel.mtwilson.datatypes.CertificateRequestLocator;
 import com.intel.mtwilson.datatypes.Certificate;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
-import com.intel.mtwilson.datatypes.Util;
+//import com.intel.mtwilson.datatypes.Util;
+import com.intel.mtwilson.tag.common.Global;
 import com.intel.mtwilson.tag.rest.repository.CertificateRepository;
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,7 +68,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.bouncycastle.asn1.x509.Attribute;
-//import org.bouncycastle.cert.X509AttributeCertificateHolder;
+import org.bouncycastle.cert.X509AttributeCertificateHolder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,20 +174,20 @@ public class ProvisionTagCertificate  {
 //            return null;
 //        }
         // if always-generate/no-cache (cache mode off) is enabled then generate it right now and return it - no need to check database for existing certs etc. 
-//        String cacheMode = "on";
-//        if( selections.getOptions() != null && selections.getOptions().getCache() != null && selections.getOptions().getCache().getMode() != null ) {
-//            cacheMode = selections.getOptions().getCache().getMode().value();
-//        }
+        String cacheMode = "on";
+        if( selections.getOptions() != null && selections.getOptions().getCache() != null && selections.getOptions().getCache().getMode() != null ) {
+            cacheMode = selections.getOptions().getCache().getMode().value();
+        }
         
-//        // first figure out which selection will be used for the given subject - also filters selections to ones that are currently valid or not marked with validity period
-//        SelectionType targetSelection = ca.findCurrentSelectionForSubject(UUID.valueOf(subject), selections); // throws exception if there is no matching selection and no matching default selection
-//        
-//        log.debug("Cache mode {}", cacheMode);
-//        if( "off".equals(cacheMode) && targetSelection != null ) {
-//            byte[] certificateBytes = ca.createTagCertificate(UUID.valueOf(subject), targetSelection);
-//            Certificate certificate = storeTagCertificate(subject, certificateBytes);
-//            return certificate;
-//        }
+        // first figure out which selection will be used for the given subject - also filters selections to ones that are currently valid or not marked with validity period
+        SelectionType targetSelection = ca.findCurrentSelectionForSubject(UUID.valueOf(subject), selections); // throws exception if there is no matching selection and no matching default selection
+        
+        log.debug("Cache mode {}", cacheMode);
+        if( "off".equals(cacheMode) && targetSelection != null ) {
+            byte[] certificateBytes = ca.createTagCertificate(UUID.valueOf(subject), targetSelection);
+            Certificate certificate = storeTagCertificate(subject, certificateBytes);
+            return certificate;
+        }
         
         // if there is an existing currently valid certificate we return it
         CertificateFilterCriteria criteria = new CertificateFilterCriteria();
@@ -241,36 +242,36 @@ public class ProvisionTagCertificate  {
 //     * 
 //     * @return true if the attribute certificate has exactly the same attributes as in the given selection
 //     */
-//    protected boolean certificateAttributesEqual(X509AttributeCertificate certificate, SelectionType selection) throws IOException {
-//        List<Attribute> certAttributes = certificate.getAttribute();
-//        boolean certAttrMatch[] = new boolean[certAttributes.size()]; // initialized with all false, later we mark individual elements true if they are found within the given selection, so that if any are left false at the end we know that there are attributes in the cert that were not in the selection
-//        // for every attribute in the selection, check if it's present in the certificate 
-//        for (AttributeType xmlAttribute:  selection.getAttribute()) {
-//            X509AttrBuilder.Attribute oidAndValue = Util.toAttributeOidValue(xmlAttribute);
-//            // look through the certificate for same oid and value
-//            boolean found = false;
-//            for(int i=0; i<certAttrMatch.length; i++) {
-//                if( Arrays.equals(certAttributes.get(i).getAttrType().getDEREncoded(), oidAndValue.oid.getDEREncoded()) ) {
-//                    if( Arrays.equals(certAttributes.get(i).getAttributeValues()[0].getDEREncoded(), oidAndValue.value.getDEREncoded()) ) {
-//                        certAttrMatch[i] = true;
-//                        found = true;
-//                    }
-//                }
-//            }
-//            if( !found ) {
-//                log.debug("Certificate does not have attribute oid {} and value {}", Hex.encodeHexString(oidAndValue.oid.getDEREncoded()), Hex.encodeHexString(oidAndValue.value.getDEREncoded()));
-//                return false;
-//            }
-//        }
-//        // check if the certificate has any attributes that are not in the selection 
-//        for(int i=0; i<certAttrMatch.length; i++) {
-//            if( !certAttrMatch[i] ) {
-//                log.debug("Selection does not have attribute oid {} and value {}", Hex.encodeHexString(certAttributes.get(i).getAttrType().getDEREncoded()), Hex.encodeHexString(certAttributes.get(i).getAttributeValues()[0].getDEREncoded()));
-//                return false;
-//            }
-//        }
-//        return true; // certificate and selection have same set of attribute (oid,value) pairs
-//    }
+    protected boolean certificateAttributesEqual(X509AttributeCertificate certificate, SelectionType selection) throws IOException {
+        List<Attribute> certAttributes = certificate.getAttribute();
+        boolean certAttrMatch[] = new boolean[certAttributes.size()]; // initialized with all false, later we mark individual elements true if they are found within the given selection, so that if any are left false at the end we know that there are attributes in the cert that were not in the selection
+        // for every attribute in the selection, check if it's present in the certificate 
+        for (AttributeType xmlAttribute:  selection.getAttribute()) {
+            X509AttrBuilder.Attribute oidAndValue = Util.toAttributeOidValue(xmlAttribute);
+            // look through the certificate for same oid and value
+            boolean found = false;
+            for(int i=0; i<certAttrMatch.length; i++) {
+                if( Arrays.equals(certAttributes.get(i).getAttrType().getDEREncoded(), oidAndValue.oid.getDEREncoded()) ) {
+                    if( Arrays.equals(certAttributes.get(i).getAttributeValues()[0].getDEREncoded(), oidAndValue.value.getDEREncoded()) ) {
+                        certAttrMatch[i] = true;
+                        found = true;
+                    }
+                }
+            }
+            if( !found ) {
+                log.debug("Certificate does not have attribute oid {} and value {}", Hex.encodeHexString(oidAndValue.oid.getDEREncoded()), Hex.encodeHexString(oidAndValue.value.getDEREncoded()));
+                return false;
+            }
+        }
+        // check if the certificate has any attributes that are not in the selection 
+        for(int i=0; i<certAttrMatch.length; i++) {
+            if( !certAttrMatch[i] ) {
+                log.debug("Selection does not have attribute oid {} and value {}", Hex.encodeHexString(certAttributes.get(i).getAttrType().getDEREncoded()), Hex.encodeHexString(certAttributes.get(i).getAttributeValues()[0].getDEREncoded()));
+                return false;
+            }
+        }
+        return true; // certificate and selection have same set of attribute (oid,value) pairs
+    }
     
 //    /**
 //     * Because the selection xml format does not
@@ -313,7 +314,7 @@ public class ProvisionTagCertificate  {
     @Produces(MediaType.APPLICATION_JSON)
 //    @RequiresPermissions("tag_certificates:create")         
     public Certificate createOneJson(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-            throws IOException, ApiException, SignatureException, SQLException {        
+            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException {        
         SelectionsType selections = null;
         if( json != null ) {
             selections = Util.fromJson(json);
@@ -357,7 +358,7 @@ public class ProvisionTagCertificate  {
     @Produces(MediaType.APPLICATION_XML)
 //    @RequiresPermissions("tag_certificates:create")         
     public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-            throws IOException, ApiException, SignatureException, SQLException  {
+            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
          //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
         TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
         SelectionsType selections = null;
@@ -387,7 +388,7 @@ public class ProvisionTagCertificate  {
      * @param ip address or hostname
      * @return
      */
-    public String findSubjectHardwareUuid(String ip) throws IOException, ApiException, SignatureException {
+    public String findSubjectHardwareUuid(String ip) throws IOException, ApiException, SignatureException, com.intel.mtwilson.ApiException {
         log.debug("Querying host {} in Mt Wilson", ip);
         List<TxtHostRecord> hostList = Global.mtwilson().queryForHosts(ip, true);
         if (hostList == null || hostList.isEmpty()) {

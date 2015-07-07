@@ -21,7 +21,7 @@ import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mountwilson.manifest.helper.TAHelper;
 import com.intel.mtwilson.agent.HostAgent;
 import com.intel.mtwilson.crypto.X509Util;
-import com.intel.mtwilson.datatypes.InternetAddress;
+import com.intel.mtwilson.util.net.InternetAddress;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;

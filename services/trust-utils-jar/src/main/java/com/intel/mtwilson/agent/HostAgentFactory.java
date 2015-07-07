@@ -22,11 +22,11 @@ import com.intel.mtwilson.agent.citrix.CitrixHostAgentFactory;
 //[ifdef] */
 import com.intel.mtwilson.agent.intel.IntelHostAgentFactory;
 import com.intel.mtwilson.as.data.TblHosts;
-import com.intel.mtwilson.crypto.SimpleKeystore;
-import com.intel.mtwilson.datatypes.InternetAddress;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
+import com.intel.mtwilson.util.net.InternetAddress;
 import com.intel.mtwilson.datatypes.TxtHost;
-import com.intel.mtwilson.io.ByteArrayResource;
-import com.intel.mtwilson.io.Resource;
+import com.intel.mtwilson.util.io.ByteArrayResource;
+import com.intel.mtwilson.util.io.Resource;
 import com.intel.mtwilson.tls.InsecureTlsPolicy;
 import com.intel.mtwilson.tls.KeystoreCertificateRepository;
 import com.intel.mtwilson.tls.TlsConnection;

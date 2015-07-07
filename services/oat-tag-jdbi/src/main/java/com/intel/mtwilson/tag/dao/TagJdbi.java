@@ -19,6 +19,7 @@ import com.intel.mtwilson.tag.dao.jdbi.ConfigurationDAO;
 import com.intel.mtwilson.tag.dao.jdbi.FileDAO;
 //import com.intel.mtwilson.MyPersistenceManager;
 import com.intel.mtwilson.jooq.util.JooqContainer;
+import com.intel.mtwilson.tag.dao.jdbi.SelectionKvAttributeDAO;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -73,6 +74,11 @@ public class TagJdbi {
     public static SelectionDAO selectionDao() throws SQLException {
         DBI dbi = new DBI(getDataSource());
         return dbi.open(SelectionDAO.class);
+    }
+    
+    public static SelectionKvAttributeDAO selectionKvAttributeDao() throws SQLException {
+        DBI dbi = new DBI(getDataSource());
+        return dbi.open(SelectionKvAttributeDAO.class);
     }
 //
 //    public static SelectionKvAttributeDAO selectionKvAttributeDao() throws SQLException {

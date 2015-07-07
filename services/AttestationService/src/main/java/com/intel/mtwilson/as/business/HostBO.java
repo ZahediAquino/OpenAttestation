@@ -15,6 +15,7 @@
 
 package com.intel.mtwilson.as.business;
 
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mountwilson.as.common.ASException;
 import com.intel.mountwilson.manifest.data.IManifest;
 import com.intel.mountwilson.manifest.data.PcrManifest;

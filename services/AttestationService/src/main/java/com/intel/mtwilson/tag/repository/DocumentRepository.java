@@ -5,11 +5,11 @@
 package com.intel.mtwilson.tag.repository;
 
 import com.intel.mtwilson.tag.repository.AbstractDocument;
-import com.intel.mtwilson.repository.SearchableRepository;
+import com.intel.mtwilson.datatypes.SearchableRepository;
 import com.intel.mtwilson.tag.repository.DocumentCollection;
-import com.intel.mtwilson.repository.FilterCriteria;
+import com.intel.mtwilson.datatypes.FilterCriteria;
 import com.intel.mtwilson.datatypes.Locator;
-import com.intel.mtwilson.repository.SearchableRepository;
+import com.intel.mtwilson.datatypes.SearchableRepository;
 
 /**
  * 

@@ -15,6 +15,8 @@
 
 package com.intel.mtwilson.crypto;
 
+import com.intel.mtwilson.util.io.pem.Pem;
+import com.intel.mtwilson.util.io.pem.PemLikeParser;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
@@ -23,6 +25,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -211,6 +214,56 @@ public class RsaUtil {
             throw new CryptographyException("Cannot sign certificate", e);
         } catch (SignatureException e) {
             throw new CryptographyException("Cannot sign certificate", e);
+        }
+    }
+    
+    /**
+     * XXX TODO maybe this method should always require a password to use for encrypting the private key.
+     * 
+     * XXX TODO create other helper methods for p12 format, or creating a java keystore file for just one private key, etc. 
+     * 
+     * @param privateKey
+     * @return 
+     * @since 0.1.3
+     */
+    public static String encodePemPrivateKey(PrivateKey privateKey)  {
+        Pem pem = new Pem("PRIVATE KEY", privateKey.getEncoded());
+        return pem.toString();
+    }
+    
+    /**
+     * Given some text, this method extracts the first PRIVATE KEY block (PEM-like format) and deserializes the 
+     * private key, returning a PrivateKey object.
+     * This means you can have one file containing both PRIVATE KEY and PUBLIC KEY blocks and extract each
+     * key using the corresponding decode method.
+     * 
+     * XXX TODO maybe this method should allow providing a password for decrypting a password-encrypted private key
+     * @param text
+     * @return
+     * @throws CryptographyException 
+     * @since 0.1.3
+     */
+    public static PrivateKey decodePemPrivateKey(String text) throws CryptographyException {
+        List<Pem> list = PemLikeParser.parse(text);
+        for(Pem pem : list) {
+            if( "PRIVATE KEY".equals(pem.getBanner()) ) {
+                byte[] der = pem.getContent();
+                return decodeDerPrivateKey(der);
+            }
+        }
+        return null;
+//        Pem pem = Pem.valueOf(text);
+//        return decodeDerPrivateKey(pem.getContent());
+    }
+    
+    public static PrivateKey decodeDerPrivateKey(byte[] privateKeyBytes) throws CryptographyException {
+        try {
+            KeyFactory factory = KeyFactory.getInstance("RSA"); // throws NoSuchAlgorithmException
+            PrivateKey privateKey  = factory.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes)); // throws InvalidKeySpecException
+            return privateKey;
+        }
+        catch(Exception e) {
+            throw new CryptographyException(e);
         }
     }
 }

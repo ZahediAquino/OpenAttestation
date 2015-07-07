@@ -116,9 +116,9 @@
             </dependency>
             <dependency>
                 <groupId>com.intel.mtwilson.core.integration</groupId>
-			<artifactId>api-datatypes</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+                <artifactId>api-datatypes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 		<!--dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jackson-provider</artifactId>
@@ -156,7 +156,7 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>com.intel.mtwilson.core.services</groupId>
 			<artifactId>ASCommon</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -355,6 +355,21 @@
                     <groupId>com.intel.mtwilson.core.services</groupId>
                     <artifactId>oat-tag-jdbi</artifactId>
                     <version>2.2</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.intel.mtwilson.core.integration</groupId>
+                    <artifactId>oat-tag-selection-xml</artifactId>
+                    <version>2.2</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.intel.mtwilson.core.services</groupId>
+                    <artifactId>oat-tag-dao-jooq</artifactId>
+                    <version>2.2</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shiro</groupId>
+                    <artifactId>shiro-core</artifactId>
+                    <version>1.2.2</version>
                 </dependency>
 	</dependencies>
 	<properties />

@@ -99,6 +99,10 @@
 			<artifactId>javax.servlet.jsp.jstl-api</artifactId>
 			<version>1.2.1</version>
 		</dependency>
+                <dependency>
+                    <groupId>com.intel.mtwilson.core.util</groupId>
+                    <artifactId>oat-util-cpg</artifactId>
+                </dependency>
 	</dependencies>
 	<properties />
 	<build>

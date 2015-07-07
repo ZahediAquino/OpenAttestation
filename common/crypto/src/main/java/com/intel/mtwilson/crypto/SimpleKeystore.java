@@ -15,8 +15,8 @@
 
 package com.intel.mtwilson.crypto;
 
-import com.intel.mtwilson.io.FileResource;
-import com.intel.mtwilson.io.Resource;
+import com.intel.mtwilson.util.io.FileResource;
+import com.intel.mtwilson.util.io.Resource;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.security.*;

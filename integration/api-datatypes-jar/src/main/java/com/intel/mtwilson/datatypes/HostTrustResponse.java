@@ -15,6 +15,7 @@
 
 package com.intel.mtwilson.datatypes;
 
+import com.intel.mtwilson.util.net.Hostname;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**

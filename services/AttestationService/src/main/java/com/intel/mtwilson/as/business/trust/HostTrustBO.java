@@ -15,6 +15,7 @@
 
 package com.intel.mtwilson.as.business.trust;
 
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mountwilson.as.common.ASException;
 import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mountwilson.manifest.IManifestStrategy;

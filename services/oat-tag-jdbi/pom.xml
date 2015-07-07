@@ -91,27 +91,22 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
             <artifactId>api-datatypes</artifactId>
             <version>2.2</version>
         </dependency>
-        <dependency>
-            <groupId>com.intel.mtwilson.util</groupId>
-            <artifactId>oat-util-jdbi</artifactId>
-            <version>${project.version}</version>        
-        </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.intel.mtwilson.util</groupId>
             <artifactId>mtwilson-util-jooq</artifactId>
             <version>${project.version}</version>        
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-<dependency>  
+<!--dependency>  
    <groupId>org.restlet.jse</groupId>  
    <artifactId>org.restlet</artifactId>  
    <version>2.2-M4</version>  
-</dependency>
+</dependency-->
 <!--        
 <dependency>  
    <groupId>org.restlet.jse</groupId>  
@@ -130,11 +125,11 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
 	<version>2.5</version>
     </dependency>
 -->
-    <dependency>
+    <!--dependency>
             <groupId>com.intel.mtwilson.services</groupId>
             <artifactId>mtwilson-tag-model</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>com.intel.mtwilson.core.util</groupId>
             <artifactId>oat-util-cpg</artifactId>
@@ -385,11 +380,11 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
               <type>jar</type>
             </dependency>
         -->
-        <dependency>
+        <!--dependency>
             <groupId>com.intel.mtwilson.integration</groupId>
             <artifactId>mtwilson-my</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
         
              <!--dependency>
             <groupId>com.intel.mtwilson.integration</groupId>
@@ -417,8 +412,12 @@ Then you'll be able to run junit tests for search APIs etc that use JOOQ in thei
             <artifactId>ASCommon</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.restlet.jse</groupId>
+            <artifactId>org.restlet</artifactId>
+            <version>2.2-M4</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>  
     
 </project>

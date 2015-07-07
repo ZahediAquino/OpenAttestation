@@ -36,6 +36,7 @@
     <module>AttestationService</module>
     <module>WLMService</module>
     <module>oat-tag-jdbi</module>
+    <module>oat-tag-dao-jooq</module>
   </modules>
 
 </project>

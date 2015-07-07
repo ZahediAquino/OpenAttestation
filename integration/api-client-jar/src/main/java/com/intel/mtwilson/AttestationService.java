@@ -15,6 +15,7 @@
 
 package com.intel.mtwilson;
 
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mountwilson.as.hostmanifestreport.data.HostManifestReportType;
 import com.intel.mountwilson.as.hosttrustreport.data.HostsTrustReportType;
 import com.intel.mtwilson.datatypes.*;

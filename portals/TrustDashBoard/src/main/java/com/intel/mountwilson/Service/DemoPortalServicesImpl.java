@@ -33,7 +33,7 @@ import com.intel.mtwilson.AttestationService;
 import com.intel.mtwilson.WhitelistService;
 import com.intel.mtwilson.datatypes.AttestationReport;
 import com.intel.mtwilson.datatypes.HostTrustResponse;
-import com.intel.mtwilson.datatypes.Hostname;
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mtwilson.datatypes.PcrLogReport;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
 import java.security.cert.X509Certificate;

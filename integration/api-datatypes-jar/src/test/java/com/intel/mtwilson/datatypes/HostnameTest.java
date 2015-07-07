@@ -3,6 +3,7 @@ package com.intel.mtwilson.datatypes;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import com.intel.mtwilson.util.net.Hostname;
 
 import org.junit.Assert;
 import org.junit.Test;  
