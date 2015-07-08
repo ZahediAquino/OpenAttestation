@@ -17,3 +17,5 @@
 /services/trust-utils-jar/target/
 /services/AttestationService/target/
 /util/oat-util-jdbi/target/
+/services/aikqverify/target/
+/services/oat-tag-dao-jooq/target/
