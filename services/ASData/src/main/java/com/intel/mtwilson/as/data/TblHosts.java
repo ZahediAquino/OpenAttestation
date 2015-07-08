@@ -49,7 +49,9 @@ import org.slf4j.LoggerFactory;
     @NamedQuery(name = "TblHosts.findByEmail", query = "SELECT t FROM TblHosts t WHERE t.email = :email"),
     @NamedQuery(name = "TblHosts.findByErrorCode", query = "SELECT t FROM TblHosts t WHERE t.errorCode = :errorCode"),
     @NamedQuery(name = "TblHosts.findByErrorDescription", query = "SELECT t FROM TblHosts t WHERE t.errorDescription = :errorDescription"),
-    @NamedQuery(name = "TblHosts.findByNameSearchCriteria", query = "SELECT t FROM TblHosts t WHERE t.name like :search")})
+    @NamedQuery(name = "TblHosts.findByNameSearchCriteria", query = "SELECT t FROM TblHosts t WHERE t.name like :search"),
+    @NamedQuery(name = "TblHosts.findByHwUUID", query = "SELECT t FROM TblHosts t WHERE t.hardware_uuid = :hardware_uuid"),
+    @NamedQuery(name = "TblHosts.findByUuidHex", query = "SELECT t FROM TblHosts t WHERE t.uuid_hex = :uuid_hex")})
 public class TblHosts implements Serializable {
     @Transient
     private transient Logger log = LoggerFactory.getLogger(getClass());
@@ -101,6 +103,10 @@ public class TblHosts implements Serializable {
     @JoinColumn(name = "BIOS_MLE_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false)
     private TblMle biosMleId;
+    @Column(name = "hardware_uuid")
+    private String hardware_uuid;
+    @Column(name = "uuid_hex")
+    private String uuid_hex;
 
     public TblHosts() {
     }
@@ -273,6 +279,22 @@ public class TblHosts implements Serializable {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+    
+    public String getHardwareUuid() {
+        return hardware_uuid;
+    }
+
+    public void setHardwareUuid(String uuid) {
+        this.hardware_uuid = uuid;
+    }
+    
+     public String getUuid_hex() {
+        return uuid_hex;
+    }
+
+    public void setUuid_hex(String uuid_hex) {
+        this.uuid_hex = uuid_hex;
     }
  
     

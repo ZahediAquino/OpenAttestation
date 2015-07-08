@@ -15,6 +15,7 @@
 
 package com.intel.mtwilson.as.business;
 
+import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mountwilson.as.common.ASException;
 import com.intel.mountwilson.manifest.data.IManifest;
@@ -494,6 +495,58 @@ public class HostBO extends BaseBO {
 		}
 
 	}
+        
+        /**
+         * Author: Sudhir
+         *
+         * Searches for the hosts using the criteria specified.
+         *
+         * @param searchCriteria: If in case the user has not provided any
+         * search criteria, then all the hosts would be returned back to the
+         * caller
+         * @param includeHardwareUuid: if this is set to true, it causes the resulting 
+         * TxtHostRecord to include the hardware_uuid field from the tblHost
+         * @return
+         */
+        public List<TxtHostRecord> queryForHosts(String searchCriteria,boolean includeHardwareUuid) {
+                log.debug("queryForHost " + searchCriteria + " includeHardwareUuid[" + includeHardwareUuid +"]");
+                try {
+                        //TblHostsJpaController tblHostsJpaController = My.jpa().mwHosts(); //new TblHostsJpaController(getEntityManagerFactory());
+                        TblHostsJpaController tblHostsJpaController = new TblHostsJpaController(getEntityManagerFactory());
+                      
+                        List<TxtHostRecord> txtHostList = new ArrayList<TxtHostRecord>();
+                        List<TblHosts> tblHostList;
+
+
+                        if (searchCriteria != null && !searchCriteria.isEmpty()) {
+                                tblHostList = tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria);
+                        } else {
+                                tblHostList = tblHostsJpaController.findTblHostsEntities();
+                        }
+
+                        if (tblHostList != null) {
+
+                                log.debug(String.format("Found [%d] host results for search criteria [%s]", tblHostList.size(), searchCriteria));
+
+                                for (TblHosts tblHosts : tblHostList) {
+                                        TxtHostRecord hostObj = createTxtHostFromDatabaseRecord(tblHosts,includeHardwareUuid);
+                                        txtHostList.add(hostObj);
+                                }
+                        } else {
+                                log.debug(String.format("Found no hosts for search criteria [%s]", searchCriteria));
+                        }
+
+                        return txtHostList;
+                } catch (ASException e) {
+                        throw e;
+                } catch (Exception e) {
+                        // throw new ASException(e);
+                        // Bug: 1038 - prevent leaks in error messages to client
+                        log.error("Error during querying for registered hosts.", e);
+                        throw new ASException(ErrorCode.AS_QUERY_HOST_ERROR, e.getClass().getSimpleName());
+                }
+
+        }
 
 	public TxtHostRecord createTxtHostFromDatabaseRecord(TblHosts tblHost) {
 		TxtHostRecord hostObj = new TxtHostRecord();
@@ -514,6 +567,66 @@ public class HostBO extends BaseBO {
 
 		return hostObj;
 	}
+	
+	public TxtHostRecord createTxtHostFromDatabaseRecord(TblHosts tblHost,boolean includeHardwareUuid) {
+                TxtHostRecord hostObj = new TxtHostRecord();
+                hostObj.HostName = tblHost.getName();
+                hostObj.IPAddress = tblHost.getName();
+                hostObj.Port = tblHost.getPort();
+                hostObj.AddOn_Connection_String = tblHost.getAddOnConnectionInfo();
+                hostObj.Description = tblHost.getDescription();
+                hostObj.Email = tblHost.getEmail();
+                hostObj.Location = tblHost.getLocation();
+                hostObj.BIOS_Name = tblHost.getBiosMleId().getName();
+                hostObj.BIOS_Oem = tblHost.getBiosMleId().getOemId().getName();
+                hostObj.BIOS_Version = tblHost.getBiosMleId().getVersion();
+                hostObj.VMM_Name = tblHost.getVmmMleId().getName();
+                hostObj.VMM_Version = tblHost.getVmmMleId().getVersion();
+                hostObj.VMM_OSName = tblHost.getVmmMleId().getOsId().getName();
+                hostObj.VMM_OSVersion = tblHost.getVmmMleId().getOsId().getVersion();
+                if(includeHardwareUuid){
+                    //log.debug("adding in hardware uuid field["+tblHost.getHardwareUuid()+"]");
+                    hostObj.Hardware_Uuid = tblHost.getHardwareUuid();
+                }else{
+                    log.debug("not adding in hardware uuid");
+                    hostObj.Hardware_Uuid = null;
+                }
+                
+                /*
+                // if the host already has a mtwilson 1.x tls keystore, automatically convert it to the new tls policy descriptor
+                if( tblHost.getTlsPolicyName() != null || tblHost.getTlsKeystore() != null ) {
+                    TblHostsTlsPolicyFactory.TblHostsObjectTlsPolicy tlsPolicyFactory = new TblHostsTlsPolicyFactory.TblHostsObjectTlsPolicy(tblHost);
+                    hostObj.tlsPolicyChoice = tlsPolicyFactory.getTlsPolicyChoice();
+                }
+                else if( tblHost.getTlsPolicyId() != null ) {
+                    // there is a policy id, but for the UI edit host page we need to provide the id for a shared policy, or the descriptor for a private policy
+                    try(TlsPolicyDAO tlsPolicyDao = TlsPolicyJdbiFactory.tlsPolicyDAO()) {
+                        TlsPolicyRecord tlsPolicyRecord = tlsPolicyDao.findPrivateTlsPolicyByHostId(tblHost.getUuid_hex());
+                        if( tlsPolicyRecord != null && tblHost.getTlsPolicyId().equalsIgnoreCase(tlsPolicyRecord.getId().toString()) ) {
+                            // found the private policy for this host, so set the descriptor on the host record
+                            JsonTlsPolicyReader reader = new JsonTlsPolicyReader();
+                            hostObj.tlsPolicyChoice = new TlsPolicyChoice();
+                            hostObj.tlsPolicyChoice.setTlsPolicyDescriptor(reader.read(tlsPolicyRecord.getContent()));
+                        }
+                        else {
+                            // either didn't find a private policy OR we found one but the host actually links to a shared policy - so keep the tls policy id
+                            hostObj.tlsPolicyChoice = new TlsPolicyChoice();
+                            hostObj.tlsPolicyChoice.setTlsPolicyId(tblHost.getTlsPolicyId());
+                        }
+                    }
+                    catch(IOException e) {
+                        log.debug("Cannot lookup tlsPolicyId {}", tblHost.getTlsPolicyId(), e);
+                    }
+                }
+                else if( tblHost.getTlsPolicyDescriptor() != null ) {
+                    hostObj.tlsPolicyChoice = new TlsPolicyChoice();
+                    hostObj.tlsPolicyChoice.setTlsPolicyDescriptor(tblHost.getTlsPolicyDescriptor());
+                } */
+                
+                return hostObj;
+        }
+        
+        
 
 	public TblHostsJpaController getHostsJpaController () throws CryptographyException {
 		return new TblHostsJpaController(getEntityManagerFactory());

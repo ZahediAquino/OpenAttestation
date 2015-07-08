@@ -570,7 +570,7 @@ public class ApiClient implements AttestationService, WhitelistService, AssetTag
         MultivaluedMap<String,String> query = new MultivaluedMapImpl();
         query.add("searchCriteria", searchCriteria);        
         query.add("includeHardwareUuid",String.valueOf(includeHardware));
-        query.add("includeTlsPolicy",String.valueOf(false));
+        //query.add("includeTlsPolicy",String.valueOf(false));
         ListHostData results = fromJSON(httpGet(asurl("/hosts", query)), ListHostData.class);
         return results;
     }    
@@ -843,5 +843,13 @@ public class ApiClient implements AttestationService, WhitelistService, AssetTag
         String result = text(httpPost(asurl("/assetTagCert"), toJSON(aTagObj)));
         return "true".equals(result);
     }
+    
+    @Override
+    public boolean revokeAssetTagCertificate(AssetTagCertRevokeRequest aTagObj) throws IOException, ApiException, SignatureException {
+        String result = text(httpPut(asurl("/assetTagCert"), toJSON(aTagObj)));
+        return "true".equals(result);
+    }
+    
+    
 
 }

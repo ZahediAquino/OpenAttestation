@@ -7,6 +7,7 @@
 package com.intel.mtwilson;
 
 import com.intel.mtwilson.datatypes.AssetTagCertCreateRequest;
+import com.intel.mtwilson.datatypes.AssetTagCertRevokeRequest;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
 import java.io.IOException;
 import java.security.SignatureException;
@@ -56,5 +57,15 @@ public interface AssetTagService {
      * @since MTW 1.0 Enterprise/1.2 Opensource
      */
     List<TxtHostRecord> queryForHosts(String searchCriteria,boolean includeHardwareUuid) throws IOException, ApiException, SignatureException;
+    
+    /**
+     * 
+     * @param aTagObj
+     * @return
+     * @throws IOException
+     * @throws ApiException
+     * @throws SignatureException 
+     */
+    boolean revokeAssetTagCertificate(AssetTagCertRevokeRequest aTagObj) throws IOException, ApiException, SignatureException;
     
 }

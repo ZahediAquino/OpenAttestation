@@ -34,7 +34,10 @@ import com.intel.mountwilson.as.common.ASException;
 import com.intel.mtwilson.as.helper.ASComponentFactory;
 import com.intel.mtwilson.datatypes.ErrorCode;
 import com.intel.mtwilson.datatypes.*;
+import com.intel.mtwilson.util.validation.ValidationUtil;
 //import javax.annotation.security.RolesAllowed;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import javax.ws.rs.DefaultValue;
 import java.util.List;
 //import org.codehaus.enunciate.jaxrs.TypeHint;
 
@@ -203,6 +206,39 @@ public class Host {
     public List<TxtHostRecord> queryForHosts(@QueryParam("searchCriteria")String searchCriteria) {
             return hostBO.queryForHosts(searchCriteria);
     }
+    
+     /**
+         * 
+         * @param searchCriteria optional, a string that would be contained in the host name;  if not specified you will get a list of all the hosts
+         * @return list of hosts whose hostname contains the value specified by searchCriteria;  in SQL terms, WHERE hostname LIKE '%searchCriteria%'
+         */
+        //@RolesAllowed({"Attestation", "Report", "Security"})
+        @RequiresPermissions("hosts:search") 
+        @GET
+        @Produces({MediaType.APPLICATION_JSON})
+        public List<TxtHostRecord> queryForHosts(
+                    @QueryParam("searchCriteria") String searchCriteria,
+                    @QueryParam("includeHardwareUuid")  @DefaultValue("false") boolean includeHardwareUuid) {
+                    //@QueryParam("includeTlsPolicy")  @DefaultValue("false") boolean includeTlsPolicy) {
+            //log.debug("queryForHosts api searchCriteria["+searchCriteria+"] ");
+            ValidationUtil.validate(searchCriteria);
+                //if( searchCriteria == null || searchCriteria.isEmpty() ) { throw new ValidationException("Missing hostNames parameter"); }
+                //else 
+            List<TxtHostRecord> resultset;
+            if(includeHardwareUuid) {
+                resultset = hostBO.queryForHosts(searchCriteria,includeHardwareUuid);
+            }else{
+                resultset = hostBO.queryForHosts(searchCriteria);
+            }
+            
+            /*
+            if( !includeTlsPolicy ) {
+                for(TxtHostRecord record : resultset) {
+                    record.tlsPolicyChoice = null;
+                }
+            }*/
+            return resultset;
+        }
     
     
 }
