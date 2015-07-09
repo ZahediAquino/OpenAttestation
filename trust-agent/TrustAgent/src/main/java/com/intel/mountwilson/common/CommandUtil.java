@@ -39,8 +39,13 @@ import org.slf4j.LoggerFactory;
 public class CommandUtil {
 
     private static final Logger log = LoggerFactory.getLogger(CommandUtil.class.getName());
-
+    
+    
     public static List<String> runCommand(String commandLine) throws TAException, IOException {
+	     return runCommand(commandLine, null);
+    }
+    
+    public static List<String> runCommand(String commandLine, String[] envp) throws TAException, IOException {
 
 
         if(StringUtils.isBlank(commandLine))
@@ -59,7 +64,13 @@ public class CommandUtil {
             log.info( "commandLine: " + commandLine);
         }
 
-        Process p = Runtime.getRuntime().exec(commandLine);
+        Process p;
+        if( envp == null ) {
+           p = Runtime.getRuntime().exec(commandLine);
+        }
+        else {
+           p = Runtime.getRuntime().exec(commandLine, envp);
+        }
 
         List<String> result = new ArrayList<String>();
 

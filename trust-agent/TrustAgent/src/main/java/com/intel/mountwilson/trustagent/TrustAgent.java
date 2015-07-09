@@ -89,9 +89,11 @@ public class TrustAgent {
             validateCertFile();
 
             new CreateNonceFileCmd(context).execute();
+            new GenerateModulesCmd(context).execute(); 
             new ReadIdentityCmd(context).execute();
             new GenerateQuoteCmd(context).execute();
             new BuildQuoteXMLCmd(context).execute();
+            log.info("getResponseXML: " + context.getResponseXML());
 
             return context.getResponseXML();
 

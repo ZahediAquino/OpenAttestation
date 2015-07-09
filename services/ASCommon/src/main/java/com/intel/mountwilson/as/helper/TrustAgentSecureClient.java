@@ -58,6 +58,7 @@ import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import org.apache.commons.codec.binary.Base64;
 
 public class TrustAgentSecureClient {
     public static final int DEFAULT_TRUST_AGENT_PORT = 9999;
@@ -285,6 +286,8 @@ public class TrustAgentSecureClient {
         this.data = getXml(quoteRequest).getBytes();
         ClientRequestType clientRequestType = sendQuoteRequest();
         log.info("Got quote from server");
+        log.info("+++++++++++++++++++++++++++clientRequestType.getQuote(): " + clientRequestType.getQuote());
+        log.info("+++++++++++++++++++++++++++clientRequestType.getEventLog(): " + new String(Base64.decodeBase64(clientRequestType.getEventLog())));
         return clientRequestType;
     }
 

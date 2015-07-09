@@ -43,6 +43,7 @@ public class TADataContext {
     private String biosVersion;
     private String vmmName;
     private String vmmVersion;
+    private String modulesStr;
 
     public String getBiosOem() {
         return biosOem;
@@ -171,6 +172,24 @@ public class TADataContext {
 
     public String getOsVersion() {
         return osVersion;
+    }
+    
+    public File getMeasureLogLaunchScript() {
+        return new File(Config.getInstance().getProperty("modulesScript.filename"));
+        //return new File(Folders.application() + File.separator + "bin" + File.separator + "module_analysis.sh"); // Config.getInstance().getProperty("modulesScript.filename"));
+    }
+    
+    public File getMeasureLogXmlFile() {
+        return new File (Config.getInstance().getProperty("modulesXml.filename"));
+        //return new File(Folders.repository() + File.separator + "measureLog.xml"); // Config.getInstance().getProperty("modulesXml.filename"));
+    }
+    
+    public void setModules(String allModules) {
+        this.modulesStr = allModules;
+    }
+
+    public String getModules() {
+        return modulesStr;
     }
 
 }
