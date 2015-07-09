@@ -371,12 +371,12 @@
                     <artifactId>shiro-core</artifactId>
                     <version>1.2.2</version>
                 </dependency>
-                <dependency>
+                <!--dependency>
                         <groupId>com.intel.mtwilson.core.services</groupId>
                         <artifactId>oat-tag-model</artifactId>
                         <version>0.1-SNAPSHOT</version>
                         <type>jar</type>
-                </dependency>
+                </dependency-->
         </dependencies>
 	<properties />
 </project>

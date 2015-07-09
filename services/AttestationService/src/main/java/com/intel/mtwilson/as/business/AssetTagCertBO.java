@@ -4,7 +4,7 @@
  */
 package com.intel.mtwilson.as.business;
 
-import com.intel.mtwilson.tag.model.X509AttributeCertificate;
+import com.intel.mtwilson.datatypes.X509AttributeCertificate;
 import com.intel.mtwilson.datatypes.TagDataType;
 import com.intel.mtwilson.util.crypto.Sha1Digest;
 import com.intel.mtwilson.util.io.UUID;
