@@ -129,3 +129,107 @@ INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (201209200
 INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (20121226120200,NOW(),'core - patch for RC3 to remove created_by, updated_by, created_on & updated_on fields');
 INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (20130106235900,NOW(),'core - patch for 1.1 adding tls policy enforcement');
 INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (20130407075500,NOW(),'core - Mt Wilson 1.2 adds AIK_SHA1 field to mw_hosts');
+
+
+
+
+
+
+-- ASSET TAGGING DB Changes
+-- created 2013-08-14
+
+-- This script creates the table to store the asset tag certificates. This would be initially populated
+-- by the Tag Provisioning service. During host registration if an entry exists for the host (based on UUID),
+-- then the mapping would be added. 
+
+
+CREATE TABLE `mw_asset_tag_certificate` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Host_ID` INT(11) DEFAULT NULL,
+  `UUID` VARCHAR(255) DEFAULT NULL,
+  `Certificate` BLOB NOT NULL,
+  `SHA1_Hash` BINARY(20) DEFAULT NULL,
+  `PCREvent` BINARY(20) DEFAULT NULL,
+  `Revoked` BOOLEAN DEFAULT NULL,
+  `NotBefore` DATETIME DEFAULT NULL,
+  `NotAfter` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `Host_ID` (`Host_ID`),
+  CONSTRAINT `Host_ID` FOREIGN KEY (`Host_ID`) REFERENCES `mw_hosts` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION); 
+
+INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (20130814154300,NOW(),'Patch for creating the Asset Tag certificate table.');
+
+
+-- created 2014-03-04
+-- ssbangal
+-- Adds the create_time column to the asset tag certificate table
+
+ALTER TABLE `mw_asset_tag_certificate` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_asset_tag_certificate SET uuid_hex = (SELECT uuid());
+ALTER TABLE `mw_asset_tag_certificate` ADD COLUMN `create_time` BIGINT  DEFAULT NULL AFTER `uuid_hex` ;
+
+
+
+-- created 2014-03-05
+
+-- This script creates the tables required for integrating asset tag with mt wilson
+  
+CREATE  TABLE `mw_host_tpm_password` (
+  `id` CHAR(36) NOT NULL ,
+  `password` TEXT NOT NULL ,
+  `modifiedOn` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) );
+  
+CREATE  TABLE `mw_tag_kvattribute` (
+  `id` CHAR(36) NOT NULL ,
+  `name` VARCHAR(255) NOT NULL ,
+  `value` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`id`), 
+  UNIQUE KEY (`name`, `value`));
+ 
+CREATE  TABLE `mw_tag_selection` (
+  `id` CHAR(36) NOT NULL ,
+  `name` VARCHAR(255) NOT NULL ,
+  `description` TEXT NULL,
+  PRIMARY KEY (`id`) );
+  
+CREATE  TABLE `mw_tag_selection_kvattribute` (
+  `id` CHAR(36) NOT NULL ,
+  `selectionId` CHAR(36) NOT NULL ,
+  `kvAttributeId` CHAR(36) NOT NULL ,
+  PRIMARY KEY (`id`) );
+  
+CREATE  TABLE `mw_tag_certificate` (
+  `id` CHAR(36) NOT NULL ,
+  `certificate` BLOB NOT NULL ,
+  `sha1` CHAR(40) NOT NULL ,
+  `sha256` CHAR(64) NOT NULL ,
+  `subject` VARCHAR(255) NOT NULL ,
+  `issuer` VARCHAR(255) NOT NULL ,
+  `notBefore` DATETIME NOT NULL ,
+  `notAfter` DATETIME NOT NULL ,
+  `revoked` BOOLEAN NOT NULL DEFAULT FALSE ,
+  PRIMARY KEY (`id`) );
+  
+  CREATE  TABLE `mw_tag_certificate_request` (
+  `id` CHAR(36) NOT NULL ,
+  `subject` VARCHAR(255) NOT NULL ,
+  `status` VARCHAR(255) NULL , 
+  `content` BLOB NOT NULL,
+  `contentType` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`) );
+  
+  -- need to drop earlier version of table mw_configuration from 20120920085200
+  DROP TABLE mw_configuration;
+  CREATE  TABLE `mw_configuration` (
+  `id` CHAR(36) NOT NULL ,
+  `name` VARCHAR(255) NOT NULL ,
+  `content` TEXT NULL ,
+  PRIMARY KEY (`id`) );
+  
+INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (20140305150000,NOW(),'Patch for creating the tables for migrating asset tag to oat database.');
+-- --------------------------------------------------------------------------------
+
+
+
+
