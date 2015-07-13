@@ -201,11 +201,11 @@ public class Host {
      }
     
     
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public List<TxtHostRecord> queryForHosts(@QueryParam("searchCriteria")String searchCriteria) {
-            return hostBO.queryForHosts(searchCriteria);
-    }
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON})
+//    public List<TxtHostRecord> queryForHosts(@QueryParam("searchCriteria")String searchCriteria) {
+//            return hostBO.queryForHosts(searchCriteria);
+//    }
     
      /**
          * 

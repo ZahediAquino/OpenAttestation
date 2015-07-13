@@ -25,6 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
 
 /**
  *
@@ -72,12 +73,12 @@ public abstract class AbstractJsonapiResource<T extends AbstractDocument, C exte
      * collection only contains a single item.
      *
      *
-     * @param hosts
+     * @param collection
      * @return
      */
     @POST
-    @Consumes({DataMediaType.APPLICATION_VND_API_JSON})
-    @Produces({DataMediaType.APPLICATION_VND_API_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public C createJsonapiCollection(C collection) {
         log.debug("createCollection");
         ValidationUtil.validate(collection);
@@ -121,30 +122,30 @@ public abstract class AbstractJsonapiResource<T extends AbstractDocument, C exte
      * The input item must be wrapped in a collection. The output item is always
      * wrapped in a collection.
      *
-     * @param id
-     * @param hostCollection
+     * @param locator
+     * @param collection
      * @return
      */
-    @Path("/{id}")
-    @PUT
-    @Consumes(DataMediaType.APPLICATION_VND_API_JSON)
-    @Produces(DataMediaType.APPLICATION_VND_API_JSON)
-    public C storeJsonapiCollection(@BeanParam L locator, C collection) {// misnomer, what we really mean is "store one but wrapped ina  collection for jsonapi"
-        log.debug("storeCollection");
-        ValidationUtil.validate(collection);
-        List<T> list = collection.getDocuments();
-        if (list == null || list.isEmpty()) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST); 
-        }
-        T item = list.get(0);
-        locator.copyTo(item);
-        if (item == null) {
-            getRepository().create(item);
-        } else {
-            getRepository().store(item);
-        }
-        return collection;
-    }
+//    @Path("/{id}")
+//    @PUT
+//    @Consumes(DataMediaType.APPLICATION_VND_API_JSON)
+//    @Produces(DataMediaType.APPLICATION_VND_API_JSON)
+//    public C storeJsonapiCollection(@BeanParam L locator, C collection) {// misnomer, what we really mean is "store one but wrapped ina  collection for jsonapi"
+//        log.debug("storeCollection");
+//        ValidationUtil.validate(collection);
+//        List<T> list = collection.getDocuments();
+//        if (list == null || list.isEmpty()) {
+//            throw new WebApplicationException(Response.Status.BAD_REQUEST); 
+//        }
+//        T item = list.get(0);
+//        locator.copyTo(item);
+//        if (item == null) {
+//            getRepository().create(item);
+//        } else {
+//            getRepository().store(item);
+//        }
+//        return collection;
+//    }
 
     /**
      * Update an item in the collection. Input Content-Type is

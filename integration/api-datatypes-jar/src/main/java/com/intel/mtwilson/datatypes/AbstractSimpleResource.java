@@ -123,29 +123,30 @@ public abstract class AbstractSimpleResource<T extends AbstractDocument, C exten
         return getRepository().search(selector);
     }
 
-    /**
-     * Add an item to the collection. Input Content-Type is any of
-     * application/json, application/xml, application/yaml, or text/yaml Output
-     * Content-Type is any of application/json, application/xml,
-     * application/yaml, or text/yaml
-     *
-     * The input must represent a single item NOT wrapped in a collection.
-     *
-     * @param item
-     * @return
-     */
-    @POST
-    public T createOne(@BeanParam L locator, T item, @Context HttpServletRequest httpServletRequest, @Context HttpServletResponse httpServletResponse) throws IOException {
-        try { log.debug("createOne: {}", mapper.writeValueAsString(locator)); } catch(JsonProcessingException e) { log.debug("createOne: cannot serialize locator: {}", e.getMessage()); }
-        locator.copyTo(item);
-        ValidationUtil.validate(item); // throw new MWException(e, ErrorCode.AS_INPUT_VALIDATION_ERROR, input, method.getName());
-        if (item.getId() == null) {
-            item.setId(new UUID());
-        }
-        getRepository().create(item);
-        httpServletResponse.setStatus(Status.CREATED.getStatusCode());
-        return item;
-    }
+//    /**
+//     * Add an item to the collection. Input Content-Type is any of
+//     * application/json, application/xml, application/yaml, or text/yaml Output
+//     * Content-Type is any of application/json, application/xml,
+//     * application/yaml, or text/yaml
+//     *
+//     * The input must represent a single item NOT wrapped in a collection.
+//     *
+//     * @param item
+//     * @return
+//     */
+//    @POST
+//    public T createOne(@BeanParam L locator, T item, @Context HttpServletRequest httpServletRequest, @Context HttpServletResponse httpServletResponse){
+//        //try { log.debug("createOne: {}", mapper.writeValueAsString(locator)); } catch(JsonProcessingException e) { log.debug("createOne: cannot serialize locator: {}", e.getMessage()); }
+//        try { log.debug("createOne: {}", mapper.writeValueAsString(locator)); } catch(Exception e) { log.debug("createOne: cannot serialize locator: {}", e.getMessage()); }
+//        locator.copyTo(item);
+//        ValidationUtil.validate(item); // throw new MWException(e, ErrorCode.AS_INPUT_VALIDATION_ERROR, input, method.getName());
+//        if (item.getId() == null) {
+//            item.setId(new UUID());
+//        }
+//        getRepository().create(item);
+//        httpServletResponse.setStatus(Status.CREATED.getStatusCode());
+//        return item;
+//    }
 
     // the delete method is on a specific resource id and because we don't return any content it's the same whether its simple object or json api 
     // jersey automatically returns status code 204 No Content (successful) to the client because
@@ -240,57 +241,57 @@ public abstract class AbstractSimpleResource<T extends AbstractDocument, C exten
      * @param item
      * @return
      */
-    @Path("/{id}")
-    @PUT
-    public T storeOne(@BeanParam L locator, T item) throws IOException {
-        try { log.debug("storeOne: {}", mapper.writeValueAsString(locator)); } catch(JsonProcessingException e) { log.debug("storeOne: cannot serialize locator: {}", e.getMessage()); }
-        ValidationUtil.validate(item);
-//        item.setId(UUID.valueOf(id));
-        locator.copyTo(item);
-        T existing = getRepository().retrieve(locator); // subclass is responsible for validating id
-        if (existing == null) {
-            getRepository().create(item);
-        } else {
-            getRepository().store(item);
-        }
+//    @Path("/{id}")
+//    @PUT
+//    public T storeOne(@BeanParam L locator, T item) throws IOException {
+//        try { log.debug("storeOne: {}", mapper.writeValueAsString(locator)); } catch(JsonProcessingException e) { log.debug("storeOne: cannot serialize locator: {}", e.getMessage()); }
+//        ValidationUtil.validate(item);
+////        item.setId(UUID.valueOf(id));
+//        locator.copyTo(item);
+//        T existing = getRepository().retrieve(locator); // subclass is responsible for validating id
+//        if (existing == null) {
+//            getRepository().create(item);
+//        } else {
+//            getRepository().store(item);
+//        }
+//
+//        return item;
+//    }
 
-        return item;
-    }
-
-    // the patch method only accepts the patch content type 
-    /**
-     * Update an item in the collection. Input Content-Type is a special patch
-     * document format. Output Content-Type is any of application/json,
-     * application/xml, application/yaml, or text/yaml.
-     *
-     * The input is a patch format for a single item. The output is a single
-     * item after applying the patch, NOT wrapped in a collection.
-     *
-     * @param id
-     * @return
-     */
-    @Path("/{id}")
-    @PATCH
-    @Consumes({DataMediaType.APPLICATION_RELATIONAL_PATCH_JSON})
-    public T patchOne(@BeanParam L locator, Patch<T, F, P>[] patchArray) throws IOException {
-        try { log.debug("patchOne: {}", mapper.writeValueAsString(locator)); } catch(JsonProcessingException e) { log.debug("patchOne: cannot serialize locator: {}", e.getMessage()); }
-        T item = getRepository().retrieve(locator); // subclass is responsible for validating id
-        if (item == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND); 
-        }
-        locator.copyTo(item);
-        ValidationUtil.validate(patchArray);
-        for (int i = 0; i < patchArray.length; i++) {
-            log.debug("Processing patch #{} of {}", i + 1, patchArray.length);
-            if (false /* error during processing */) {
-                // 400 bad request or 500 internal server error
-                return null;
-            }
-
-        }
-        //return new Host();
-//        return patch(null);
-        return null;
-    }
+//    // the patch method only accepts the patch content type 
+//    /**
+//     * Update an item in the collection. Input Content-Type is a special patch
+//     * document format. Output Content-Type is any of application/json,
+//     * application/xml, application/yaml, or text/yaml.
+//     *
+//     * The input is a patch format for a single item. The output is a single
+//     * item after applying the patch, NOT wrapped in a collection.
+//     *
+//     * @param id
+//     * @return
+//     */
+//    @Path("/{id}")
+//    @PATCH
+//    @Consumes({DataMediaType.APPLICATION_RELATIONAL_PATCH_JSON})
+//    public T patchOne(@BeanParam L locator, Patch<T, F, P>[] patchArray) throws IOException {
+//        try { log.debug("patchOne: {}", mapper.writeValueAsString(locator)); } catch(JsonProcessingException e) { log.debug("patchOne: cannot serialize locator: {}", e.getMessage()); }
+//        T item = getRepository().retrieve(locator); // subclass is responsible for validating id
+//        if (item == null) {
+//            throw new WebApplicationException(Response.Status.NOT_FOUND); 
+//        }
+//        locator.copyTo(item);
+//        ValidationUtil.validate(patchArray);
+//        for (int i = 0; i < patchArray.length; i++) {
+//            log.debug("Processing patch #{} of {}", i + 1, patchArray.length);
+//            if (false /* error during processing */) {
+//                // 400 bad request or 500 internal server error
+//                return null;
+//            }
+//
+//        }
+//        //return new Host();
+////        return patch(null);
+//        return null;
+//    }
 
 }

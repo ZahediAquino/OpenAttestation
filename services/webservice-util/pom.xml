@@ -98,7 +98,7 @@
     <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-server</artifactId>
-        <version>1.9-ea04</version>
+        <version>${jersey-version}</version>
     </dependency>
 		<dependency>
 			<groupId>com.intel.mtwilson.core.common</groupId>

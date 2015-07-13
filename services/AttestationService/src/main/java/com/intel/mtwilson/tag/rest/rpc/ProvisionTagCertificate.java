@@ -309,18 +309,18 @@ public class ProvisionTagCertificate  {
 //        }
 //    }
 //    
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-//    @RequiresPermissions("tag_certificates:create")         
-    public Certificate createOneJson(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException {        
-        SelectionsType selections = null;
-        if( json != null ) {
-            selections = Util.fromJson(json);
-        }
-        return createOne(getSubject(request, locator), selections, request, response);
-    }
+//    @POST
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+////    @RequiresPermissions("tag_certificates:create")         
+//    public Certificate createOneJson(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+//            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException {        
+//        SelectionsType selections = null;
+//        if( json != null ) {
+//            selections = Util.fromJson(json);
+//        }
+//        return createOne(getSubject(request, locator), selections, request, response);
+//    }
 //    
 //    /**
 //     * Because the selection xml format does not
@@ -353,20 +353,20 @@ public class ProvisionTagCertificate  {
 //        }
 //    }
 //    
-    @POST
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_XML)
-//    @RequiresPermissions("tag_certificates:create")         
-    public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
-         //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
-        TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
-        SelectionsType selections = null;
-        if( xml != null ) {
-            selections = Util.fromXml(xml);
-        }
-        return createOne(getSubject(request, locator), selections, request, response);
-    }
+//    @POST
+//    @Consumes(MediaType.APPLICATION_XML)
+//    @Produces(MediaType.APPLICATION_XML)
+////    @RequiresPermissions("tag_certificates:create")         
+//    public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+//            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
+//         //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
+//        TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
+//        SelectionsType selections = null;
+//        if( xml != null ) {
+//            selections = Util.fromXml(xml);
+//        }
+//        return createOne(getSubject(request, locator), selections, request, response);
+//    }
     
     
     private String getSubject(HttpServletRequest request, CertificateRequestLocator locator) {
