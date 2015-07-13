@@ -30,10 +30,10 @@
 			<scope>test</scope>
         </dependency>        
 
-        <dependency>
+<!--        <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-        </dependency>
+        </dependency>-->
 		
         <dependency>
             <groupId>com.intel.mtwilson.services</groupId>

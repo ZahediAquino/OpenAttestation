@@ -131,3 +131,174 @@ INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (201301062
 INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (20130407075500,NOW(),'core - Mt Wilson 1.2 adds AIK_SHA1 field to mw_hosts');
 
 
+
+
+
+
+-- ASSET TAGGING DB Changes
+-- created 2013-08-14
+
+-- This script creates the table to store the asset tag certificates. This would be initially populated
+-- by the Tag Provisioning service. During host registration if an entry exists for the host (based on UUID),
+-- then the mapping would be added. 
+
+
+CREATE TABLE `mw_asset_tag_certificate` (
+  `ID` INT(11) NOT NULL AUTO_INCREMENT,
+  `Host_ID` INT(11) DEFAULT NULL,
+  `UUID` VARCHAR(255) DEFAULT NULL,
+  `Certificate` BLOB NOT NULL,
+  `SHA1_Hash` BINARY(20) DEFAULT NULL,
+  `PCREvent` BINARY(20) DEFAULT NULL,
+  `Revoked` BOOLEAN DEFAULT NULL,
+  `NotBefore` DATETIME DEFAULT NULL,
+  `NotAfter` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `Host_ID` (`Host_ID`),
+  CONSTRAINT `Host_ID` FOREIGN KEY (`Host_ID`) REFERENCES `mw_hosts` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION); 
+
+INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (20130814154300,NOW(),'Patch for creating the Asset Tag certificate table.');
+
+
+-- created 2014-03-04
+-- ssbangal
+-- Adds the create_time column to the asset tag certificate table
+
+ALTER TABLE `mw_asset_tag_certificate` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_asset_tag_certificate SET uuid_hex = (SELECT uuid());
+ALTER TABLE `mw_asset_tag_certificate` ADD COLUMN `create_time` BIGINT  DEFAULT NULL AFTER `uuid_hex` ;
+
+
+
+-- created 2014-03-05
+
+-- This script creates the tables required for integrating asset tag with mt wilson
+  
+CREATE  TABLE `mw_host_tpm_password` (
+  `id` CHAR(36) NOT NULL ,
+  `password` TEXT NOT NULL ,
+  `modifiedOn` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) );
+  
+CREATE  TABLE `mw_tag_kvattribute` (
+  `id` CHAR(36) NOT NULL ,
+  `name` VARCHAR(255) NOT NULL ,
+  `value` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`id`), 
+  UNIQUE KEY (`name`, `value`));
+ 
+CREATE  TABLE `mw_tag_selection` (
+  `id` CHAR(36) NOT NULL ,
+  `name` VARCHAR(255) NOT NULL ,
+  `description` TEXT NULL,
+  PRIMARY KEY (`id`) );
+  
+CREATE  TABLE `mw_tag_selection_kvattribute` (
+  `id` CHAR(36) NOT NULL ,
+  `selectionId` CHAR(36) NOT NULL ,
+  `kvAttributeId` CHAR(36) NOT NULL ,
+  PRIMARY KEY (`id`) );
+  
+CREATE  TABLE `mw_tag_certificate` (
+  `id` CHAR(36) NOT NULL ,
+  `certificate` BLOB NOT NULL ,
+  `sha1` CHAR(40) NOT NULL ,
+  `sha256` CHAR(64) NOT NULL ,
+  `subject` VARCHAR(255) NOT NULL ,
+  `issuer` VARCHAR(255) NOT NULL ,
+  `notBefore` DATETIME NOT NULL ,
+  `notAfter` DATETIME NOT NULL ,
+  `revoked` BOOLEAN NOT NULL DEFAULT FALSE ,
+  PRIMARY KEY (`id`) );
+  
+  CREATE  TABLE `mw_tag_certificate_request` (
+  `id` CHAR(36) NOT NULL ,
+  `subject` VARCHAR(255) NOT NULL ,
+  `status` VARCHAR(255) NULL , 
+  `content` BLOB NOT NULL,
+  `contentType` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`) );
+  
+  -- need to drop earlier version of table mw_configuration from 20120920085200
+  CREATE  TABLE `mw_configuration` (
+  `id` CHAR(36) NOT NULL ,
+  `name` VARCHAR(255) NOT NULL ,
+  `content` TEXT NULL ,
+  PRIMARY KEY (`id`) );
+
+-- created 2013-12-18
+-- This script adds the UUID field to the mw_hosts so that it can be tracked during host registration
+
+ALTER TABLE `mw_hosts` ADD `hardware_uuid` VARCHAR(254);
+
+-- created 2014-01-17
+-- ssbangal
+-- Adds the uuid column to all the tables and updates the same with a unique uuid value
+
+
+
+
+
+-- Updates for the OEM table
+ALTER TABLE `mw_oem` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_oem SET uuid_hex = (SELECT uuid());
+
+
+-- Updates for the OS table
+ALTER TABLE `mw_os` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_os SET uuid_hex = (SELECT uuid());
+
+
+-- Updates for the MLE table
+ALTER TABLE `mw_mle` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_mle SET uuid_hex = (SELECT uuid());
+-- Adds the reference to the OEM UUID column in the MLE table
+ALTER TABLE `mw_mle` ADD COLUMN `oem_uuid_hex` CHAR(36) NULL;
+UPDATE mw_mle mm SET oem_uuid_hex = (SELECT moem.uuid_hex FROM mw_oem moem WHERE moem.ID = mm.OEM_ID);
+-- Adds the reference to the OS UUID column in the MLE table
+ALTER TABLE `mw_mle` ADD COLUMN `os_uuid_hex` CHAR(36) NULL;
+UPDATE mw_mle mm SET os_uuid_hex = (SELECT mos.uuid_hex FROM mw_os mos WHERE mos.ID = mm.OS_ID);
+
+
+-- Updates for the MLE Source table
+ALTER TABLE `mw_mle_source` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_mle_source SET uuid_hex = (SELECT uuid());
+-- Adds the reference to the MLE UUID column in the MW_MLE_Source table
+ALTER TABLE `mw_mle_source` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
+UPDATE mw_mle_source ms SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = ms.MLE_ID);
+
+
+-- Updates for the PCR Manifest table
+ALTER TABLE `mw_pcr_manifest` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_pcr_manifest SET uuid_hex = (SELECT uuid());
+-- Adds the reference to the MLE UUID column in the MW_PCR_Manifest table
+ALTER TABLE `mw_pcr_manifest` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
+UPDATE mw_pcr_manifest mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
+
+
+-- Updates for the Asset Tag Certificate table
+-- ALTER TABLE `mw_asset_tag_certificate` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+-- UPDATE mw_asset_tag_certificate SET uuid_hex = (SELECT uuid());
+
+
+-- Updates for the Host table
+ALTER TABLE `mw_hosts` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_hosts SET uuid_hex = (SELECT uuid());
+-- Adds the reference to the BIOS MLE UUID column in the Hosts table
+ALTER TABLE `mw_hosts` ADD COLUMN `bios_mle_uuid_hex` CHAR(36) NULL;
+UPDATE mw_hosts mh SET bios_mle_uuid_hex = (SELECT mm.uuid_hex FROM mw_mle mm WHERE mm.ID = mh.BIOS_MLE_ID);
+-- Adds the reference to the VMM MLE UUID column in the Hosts table
+ALTER TABLE `mw_hosts` ADD COLUMN `vmm_mle_uuid_hex` CHAR(36) NULL;
+UPDATE mw_hosts mh SET vmm_mle_uuid_hex = (SELECT mm.uuid_hex FROM mw_mle mm WHERE mm.ID = mh.VMM_MLE_ID);
+
+
+-- Updates for the MW_TA_Log table
+ALTER TABLE `mw_ta_log` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_ta_log SET uuid_hex = (SELECT uuid());
+-- Adds the reference to the HOST UUID column in the Hosts table
+ALTER TABLE `mw_ta_log` ADD COLUMN `host_uuid_hex` CHAR(36) NULL;
+UPDATE mw_ta_log mtl SET host_uuid_hex = (SELECT mh.uuid_hex FROM mw_hosts mh WHERE mh.ID = mtl.Host_ID);
+
+
+
+

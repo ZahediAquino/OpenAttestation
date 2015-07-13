@@ -79,9 +79,21 @@
     	<artifactId>jackson-jaxrs</artifactId>
     	<version>1.9.11</version> <!-- in 1.0-RC2 we used 1.5.5 -->
     </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>7.0</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.intel.mtwilson.core.integration</groupId>

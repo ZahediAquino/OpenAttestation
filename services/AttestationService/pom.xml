@@ -110,10 +110,10 @@
 	</build>
 	
         <dependencies>
-            <dependency>
+<!--            <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>com.intel.mtwilson.core.integration</groupId>
                 <artifactId>api-datatypes</artifactId>
