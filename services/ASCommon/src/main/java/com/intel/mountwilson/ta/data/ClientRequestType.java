@@ -60,7 +60,8 @@ import javax.xml.bind.annotation.XmlType;
     "errorCode",
     "errorMessage",
     "aikcert",
-    "quote"
+    "quote",
+    "event_log"
 })
 public class ClientRequestType {
 
