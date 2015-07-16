@@ -66,7 +66,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
-//import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.bouncycastle.asn1.x509.Attribute;
 import org.bouncycastle.cert.X509AttributeCertificateHolder;
 
@@ -356,7 +356,7 @@ public class ProvisionTagCertificate  {
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-//    @RequiresPermissions("tag_certificates:create")         
+    @RequiresPermissions("tag_certificates:create")         
     public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
          //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
