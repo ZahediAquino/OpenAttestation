@@ -10,11 +10,13 @@ import org.codehaus.jackson.annotate.JsonValue;
 //import com.fasterxml.jackson.annotation.JsonInclude;
 //import com.fasterxml.jackson.annotation.JsonValue;
 import com.intel.mtwilson.tag.selection.xml.CacheModeAttribute;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  *
  * @author jbuhacoff
  */
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 //@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public abstract class CacheModeAttributeMixIn {
     @JsonValue

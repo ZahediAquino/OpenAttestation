@@ -75,10 +75,10 @@
       </dependency>
       
     <dependency>
-    	<groupId>org.codehaus.jackson</groupId>
-    	<artifactId>jackson-jaxrs</artifactId>
-    	<version>1.9.11</version> <!-- in 1.0-RC2 we used 1.5.5 -->
-    </dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.11</version> <!-- in 1.0-RC2 we used 1.5.5 -->
+        </dependency>
 <!--        <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>

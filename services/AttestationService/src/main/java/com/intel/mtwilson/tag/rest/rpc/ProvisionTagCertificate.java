@@ -352,21 +352,21 @@ public class ProvisionTagCertificate  {
 //            throw new CertificateException("Error creating the certificate.");
 //        }
 //    }
-//    
-//    @POST
-//    @Consumes(MediaType.APPLICATION_XML)
-//    @Produces(MediaType.APPLICATION_XML)
-////    @RequiresPermissions("tag_certificates:create")         
-//    public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-//            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
-//         //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
-//        TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
-//        SelectionsType selections = null;
-//        if( xml != null ) {
-//            selections = Util.fromXml(xml);
-//        }
-//        return createOne(getSubject(request, locator), selections, request, response);
-//    }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(MediaType.APPLICATION_XML)
+//    @RequiresPermissions("tag_certificates:create")         
+    public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
+         //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
+        TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
+        SelectionsType selections = null;
+        if( xml != null ) {
+            selections = Util.fromXml(xml);
+        }
+        return createOne(getSubject(request, locator), selections, request, response);
+    }
     
     
     private String getSubject(HttpServletRequest request, CertificateRequestLocator locator) {

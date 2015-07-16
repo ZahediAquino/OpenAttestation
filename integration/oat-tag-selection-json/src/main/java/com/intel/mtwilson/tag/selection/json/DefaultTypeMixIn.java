@@ -9,6 +9,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 //import com.fasterxml.jackson.annotation.JsonProperty;
 import com.intel.mtwilson.tag.selection.xml.SelectionType;
 import java.util.List;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * The commented out block applies only to xml serialization; currently
@@ -19,6 +20,7 @@ import java.util.List;
 public abstract class DefaultTypeMixIn {
 
     @JsonProperty("selections")
+    @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
     //@JsonInclude(JsonInclude.Include.NON_EMPTY)
     /*
     @JacksonXmlElementWrapper(localName="selections")

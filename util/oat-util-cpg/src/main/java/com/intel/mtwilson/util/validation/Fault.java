@@ -8,6 +8,7 @@ package com.intel.mtwilson.util.validation;
 //import com.fasterxml.jackson.annotation.JsonInclude;
 //import com.fasterxml.jackson.annotation.JsonTypeInfo;
 //import com.fasterxml.jackson.annotation.JsonValue;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import com.intel.mtwilson.util.validation.faults.Thrown;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import java.util.List;
 //@JsonInclude(JsonInclude.Include.NON_EMPTY)
 //@JsonIgnoreProperties(ignoreUnknown=true)
 //@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, property="type")
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class Fault implements Faults {
     private final String description;
 //    private final Throwable cause;
