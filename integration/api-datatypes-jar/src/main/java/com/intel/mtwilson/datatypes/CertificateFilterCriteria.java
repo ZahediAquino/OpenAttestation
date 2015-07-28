@@ -7,7 +7,7 @@ package com.intel.mtwilson.datatypes;
 import com.intel.mtwilson.util.crypto.Sha1Digest;
 import com.intel.mtwilson.util.crypto.Sha256Digest;
 import com.intel.mtwilson.util.io.UUID;
-//import com.intel.mtwilson.repository.FilterCriteria;
+//import com.intel.mtwilson.datatypes.FilterCriteria;
 //import com.intel.mtwilson.datatypes.DefaultFilterCriteria;
 import java.util.Date;
 import javax.ws.rs.QueryParam;

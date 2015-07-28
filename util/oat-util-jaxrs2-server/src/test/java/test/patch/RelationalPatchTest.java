@@ -4,20 +4,29 @@
  */
 package test.patch;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.intel.mtwilson.repository.FilterCriteria;
-import com.intel.mtwilson.jaxrs2.NoLinks;
-import com.intel.mtwilson.jaxrs2.Patch;
-import com.intel.mtwilson.patch.PatchException;
-import com.intel.mtwilson.jaxrs2.PatchLink;
+//import com.fasterxml.jackson.annotation.JsonInclude;
+//import com.fasterxml.jackson.core.JsonProcessingException;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+
+
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.PropertyNamingStrategy;
+import com.intel.mtwilson.util.x509.X509Util;
+
+import com.intel.mtwilson.datatypes.FilterCriteria;
+import com.intel.mtwilson.datatypes.NoLinks;
+import com.intel.mtwilson.datatypes.Patch;
+import com.intel.mtwilson.datatypes.PatchException;
+import com.intel.mtwilson.datatypes.PatchLink;
 import java.util.List;
 import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.intel.mtwilson.patch.PatchUtil;
+import com.intel.mtwilson.datatypes.PatchUtil;
+import java.io.IOException;
 import static org.junit.Assert.*;
 
 /**
@@ -34,7 +43,8 @@ public class RelationalPatchTest {
         mapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
     }
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY) // jackson 2.0
+    //@JsonInclude(JsonInclude.Include.NON_EMPTY) // jackson 2.0
+    @JsonSerialize(include=JsonSerialize.Inclusion.NON_EMPTY)
     public static class Fruit {
         public String id;
         public String fruitName;
@@ -83,7 +93,8 @@ public class RelationalPatchTest {
         }
         
     }
-    @JsonInclude(JsonInclude.Include.NON_EMPTY) // jackson 2.0
+    //@JsonInclude(JsonInclude.Include.NON_EMPTY) // jackson 2.0
+    @JsonSerialize(include=JsonSerialize.Inclusion.NON_EMPTY)
     public static class FruitFilterCriteria implements FilterCriteria<Fruit> {
         public String id;
         public String fruitNameEquals;
@@ -120,7 +131,7 @@ public class RelationalPatchTest {
      * @throws JsonProcessingException 
      */
     @Test
-    public void testBeanPatch() throws JsonProcessingException, PatchException {
+    public void testBeanPatch() throws JsonProcessingException, PatchException, IOException {
         // the initial record
         Fruit apple = new Fruit();
         apple.id = "1234";

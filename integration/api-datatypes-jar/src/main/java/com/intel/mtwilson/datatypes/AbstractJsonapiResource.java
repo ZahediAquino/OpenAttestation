@@ -126,26 +126,26 @@ public abstract class AbstractJsonapiResource<T extends AbstractDocument, C exte
      * @param collection
      * @return
      */
-//    @Path("/{id}")
-//    @PUT
-//    @Consumes(DataMediaType.APPLICATION_VND_API_JSON)
-//    @Produces(DataMediaType.APPLICATION_VND_API_JSON)
-//    public C storeJsonapiCollection(@BeanParam L locator, C collection) {// misnomer, what we really mean is "store one but wrapped ina  collection for jsonapi"
-//        log.debug("storeCollection");
-//        ValidationUtil.validate(collection);
-//        List<T> list = collection.getDocuments();
-//        if (list == null || list.isEmpty()) {
-//            throw new WebApplicationException(Response.Status.BAD_REQUEST); 
-//        }
-//        T item = list.get(0);
-//        locator.copyTo(item);
-//        if (item == null) {
-//            getRepository().create(item);
-//        } else {
-//            getRepository().store(item);
-//        }
-//        return collection;
-//    }
+    @Path("/{id}")
+    @PUT
+    @Consumes(DataMediaType.APPLICATION_VND_API_JSON)
+    @Produces(DataMediaType.APPLICATION_VND_API_JSON)
+    public C storeJsonapiCollection(@BeanParam L locator, C collection) {// misnomer, what we really mean is "store one but wrapped ina  collection for jsonapi"
+        log.debug("storeCollection");
+        ValidationUtil.validate(collection);
+        List<T> list = collection.getDocuments();
+        if (list == null || list.isEmpty()) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST); 
+        }
+        T item = list.get(0);
+        locator.copyTo(item);
+        if (item == null) {
+            getRepository().create(item);
+        } else {
+            getRepository().store(item);
+        }
+        return collection;
+    }
 
     /**
      * Update an item in the collection. Input Content-Type is

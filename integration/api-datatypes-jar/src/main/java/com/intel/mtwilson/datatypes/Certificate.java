@@ -9,6 +9,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 //import com.fasterxml.jackson.annotation.JsonCreator;
 //import com.fasterxml.jackson.annotation.JsonIgnore;
 //import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import com.intel.mtwilson.util.crypto.Sha1Digest;
 import com.intel.mtwilson.util.crypto.Sha256Digest;
 import com.intel.mtwilson.util.validation.Regex;
@@ -29,6 +30,7 @@ import org.apache.commons.codec.binary.Base64;
  * @author ssbangal
  */
 //@JacksonXmlRootElement(localName="certificate")
+@XmlRootElement(name = "certificate")
 public class Certificate extends CertificateDocument{
     
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Certificate.class);
@@ -132,6 +134,7 @@ public class Certificate extends CertificateDocument{
         certificate.setNotAfter(attrcert.getNotAfter());
         // assuming revoked = false (default value)
         log.debug("valueOf ok");
+        log.info("valueOf ok");
         return certificate;
     }
     
@@ -141,6 +144,7 @@ public class Certificate extends CertificateDocument{
         if( certificate == null ) { return null; }
         try {
             log.debug("Certificate bytes length {}", certificate.length);
+            log.info("Certificate bytes length {}", certificate.length);
             return X509Util.decodeDerCertificate(certificate);
         }
         catch(CertificateException e) {
@@ -153,6 +157,7 @@ public class Certificate extends CertificateDocument{
     @JsonIgnore
     @Override
     public void setX509Certificate(X509Certificate certificate) {
+        log.info("setX509Certificate");
         if( certificate == null ) {
             this.certificate = null;
             return;
