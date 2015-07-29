@@ -7,6 +7,7 @@ package com.intel.mtwilson.datatypes;
 import com.intel.mtwilson.util.jaxrs2.server.PATCH;
 import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.util.validation.ValidationUtil;
+import com.sun.jersey.api.core.InjectParam;
 //import com.intel.mtwilson.jaxrs2.AbstractDocument;
 //import com.intel.mtwilson.tag.repository. AbstractDocument;
 import javax.ws.rs.Consumes;
@@ -59,7 +60,7 @@ public abstract class AbstractJsonapiResource<T extends AbstractDocument, C exte
 
     @GET
     @Produces(DataMediaType.APPLICATION_VND_API_JSON)
-    public C searchJsonapiCollection(@BeanParam F criteria) {
+    public C searchJsonapiCollection(@InjectParam F criteria) {
         log.debug("searchJsonapiCollection");
         ValidationUtil.validate(criteria); // throw new MWException(e, ErrorCode.AS_INPUT_VALIDATION_ERROR, input, method.getName());
         return getRepository().search(criteria);
@@ -104,7 +105,7 @@ public abstract class AbstractJsonapiResource<T extends AbstractDocument, C exte
     @Path("/{id}")
     @GET
     @Produces({DataMediaType.APPLICATION_VND_API_JSON})
-    public C retrieveJsonapiCollection(@BeanParam L locator) { // misnomer, what we really mean is "retrieve one but wrapped ina  collection for jsonapi"
+    public C retrieveJsonapiCollection(@InjectParam L locator) { // misnomer, what we really mean is "retrieve one but wrapped ina  collection for jsonapi"
         log.debug("retrieveCollection");
         T item = getRepository().retrieve(locator); // subclass is responsible for validating id
         if (item == null) {

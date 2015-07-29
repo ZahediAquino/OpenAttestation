@@ -5,6 +5,7 @@
 package com.intel.mtwilson.datatypes;
 
 import com.intel.mtwilson.util.validation.ValidationUtil;
+import com.sun.jersey.api.core.InjectParam;
 //import com.intel.mtwilson.datatypes.CertificateDocument;
 //import com.intel.mtwilson.datatypes.DocumentCollection;
 //import com.intel.mtwilson.repository.FilterCriteria;
@@ -34,7 +35,7 @@ public abstract class AbstractCertificateJsonapiResource<T extends CertificateDo
     */
     @GET
     @Produces({ CryptoMediaType.APPLICATION_X_PEM_FILE, MediaType.TEXT_PLAIN})
-    public X509Certificate[] searchX509CertificateCollection(@BeanParam F criteria) {
+    public X509Certificate[] searchX509CertificateCollection(@InjectParam F criteria) {
         log.debug("searchX509CertificateCollection");
         ValidationUtil.validate(criteria); // throw new MWException(e, ErrorCode.AS_INPUT_VALIDATION_ERROR, input, method.getName());
         C collection = getRepository().search(criteria);
@@ -49,7 +50,7 @@ public abstract class AbstractCertificateJsonapiResource<T extends CertificateDo
     @Path("/{id}")
     @GET
     @Produces({MediaType.APPLICATION_OCTET_STREAM, CryptoMediaType.APPLICATION_PKIX_CERT, CryptoMediaType.APPLICATION_X_PEM_FILE, MediaType.TEXT_PLAIN})
-    public X509Certificate retrieveOneX509Certificate(@BeanParam L locator) {
+    public X509Certificate retrieveOneX509Certificate(@InjectParam L locator) {
         log.debug("retrieveOneX509Certificate");
         T item = getRepository().retrieve(locator);
         if (item == null) {

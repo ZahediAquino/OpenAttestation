@@ -11,6 +11,7 @@ import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.util.validation.Fault;
 import com.intel.mtwilson.util.validation.Faults;
 import com.intel.mtwilson.util.validation.ValidationUtil;
+import com.sun.jersey.api.core.InjectParam;
 import java.io.IOException;
 //import com.intel.mtwilson.tag.repository.AbstractDocument;
 import javax.ws.rs.Consumes;
@@ -117,7 +118,7 @@ public abstract class AbstractSimpleResource<T extends AbstractDocument, C exten
     protected abstract DocumentRepository<T,C,F,L> getRepository();
     
     @GET
-    public C searchCollection(@BeanParam F selector) throws IOException {
+    public C searchCollection(@InjectParam F selector) throws IOException {
         try { log.debug("searchCollection: {}", mapper.writeValueAsString(selector)); } catch(JsonProcessingException e) { log.debug("searchCollection: cannot serialize selector: {}", e.getMessage()); }
         ValidationUtil.validate(selector); // throw new MWException(e, ErrorCode.AS_INPUT_VALIDATION_ERROR, input, method.getName());
         return getRepository().search(selector);
@@ -205,7 +206,7 @@ public abstract class AbstractSimpleResource<T extends AbstractDocument, C exten
      */
     @Path("/{id}")
     @GET
-    public T retrieveOne(@BeanParam L locator, @Context HttpServletRequest httpServletRequest, @Context HttpServletResponse httpServletResponse) throws IOException {
+    public T retrieveOne(@InjectParam L locator, @Context HttpServletRequest httpServletRequest, @Context HttpServletResponse httpServletResponse) throws IOException {
         try { log.debug("retrieveOne: {}", mapper.writeValueAsString(locator)); } catch(JsonProcessingException e) { log.debug("retrieveOne: cannot serialize locator: {}", e.getMessage()); }
         /*
         T item = getRepository().retrieve(id); // subclass is responsible for validating the id in whatever manner it needs to;  most will return null if !UUID.isValid(id)  but we don't do it here because a resource might want to allow using something other than uuid as the url key, for example uuid OR hostname for hosts
