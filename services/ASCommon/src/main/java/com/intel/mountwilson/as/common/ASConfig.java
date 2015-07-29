@@ -192,7 +192,7 @@ public class ASConfig extends ConfigBase{
                 return "com.mysql.jdbc.Driver";
             }
         }
-        return "org.postgresql.Driver"; // either "org.postgresql.Driver" or "com.mysql.jdbc.Driver"
+        return "com.mysql.jdbc.Driver"; // either "org.postgresql.Driver" or "com.mysql.jdbc.Driver" // Used to be postgresql, oat mainly supports mysql so changed it
     }
 
     public static String getDatabasePort() {
