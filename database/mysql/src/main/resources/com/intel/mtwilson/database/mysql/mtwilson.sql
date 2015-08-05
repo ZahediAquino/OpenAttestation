@@ -300,5 +300,13 @@ ALTER TABLE `mw_ta_log` ADD COLUMN `host_uuid_hex` CHAR(36) NULL;
 UPDATE mw_ta_log mtl SET host_uuid_hex = (SELECT mh.uuid_hex FROM mw_hosts mh WHERE mh.ID = mtl.Host_ID);
 
 
+-- This script creates the file table
+
+CREATE  TABLE `mw_file` (
+  `id` CHAR(36) NOT NULL ,
+  `name` VARCHAR(255) NULL ,
+  `contentType` VARCHAR(255) NULL ,
+  `content` BLOB NULL ,
+  PRIMARY KEY (`id`) );
 
 

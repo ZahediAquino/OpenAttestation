@@ -42,6 +42,7 @@ import com.intel.mtwilson.launcher.ws.ext.RPC;
 //import com.intel.mtwilson.datatypes.Util;
 import com.intel.mtwilson.tag.common.Global;
 import com.intel.mtwilson.tag.rest.repository.CertificateRepository;
+import com.sun.jersey.api.core.InjectParam;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -57,7 +58,7 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.BeanParam;
+//import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -302,7 +303,7 @@ public class ProvisionTagCertificate  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(CryptoMediaType.APPLICATION_PKIX_CERT)
     //@RequiresPermissions("tag_certificates:create")         
-    public byte[] createOneFromJsonToBytes(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+    public byte[] createOneFromJsonToBytes(@InjectParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, CertificateException  { 
         log.debug("Got request to create atag certificate json -> cert");
         Certificate certificate = createOneJson(locator, json, request, response);
@@ -318,9 +319,10 @@ public class ProvisionTagCertificate  {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 //    @RequiresPermissions("tag_certificates:create")         
-    public Certificate createOneJson(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+    public Certificate createOneJson(@InjectParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException {        
         SelectionsType selections = null;
+        log.debug("Got request to create atag certificate json -> json");
         if( json != null ) {
             selections = Util.fromJson(json);
         }
@@ -347,7 +349,7 @@ public class ProvisionTagCertificate  {
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(CryptoMediaType.APPLICATION_PKIX_CERT)
     //@RequiresPermissions("tag_certificates:create")         
-    public byte[] createOneFromXmlToBytes(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+    public byte[] createOneFromXmlToBytes(@InjectParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, CertificateException {
         log.debug("Got request to create atag certificate xml -> cert");
         Certificate certificate = createOneXml(locator, xml, request, response);
@@ -363,7 +365,7 @@ public class ProvisionTagCertificate  {
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
     //@RequiresPermissions("tag_certificates:create")         
-    public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+    public Certificate createOneXml(@InjectParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
         log.debug("Got request to create atag certificate");
          //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
@@ -408,5 +410,8 @@ public class ProvisionTagCertificate  {
         return hostList.get(0).Hardware_Uuid;
 
     }
+    
+    
+    
         
 }
