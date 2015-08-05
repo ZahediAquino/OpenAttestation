@@ -5,6 +5,7 @@
 package com.intel.mtwilson.tag.rest.rpc;
 
 //import com.intel.dcsg.cpg.io.ByteArrayResource;
+import com.intel.mtwilson.datatypes.CryptoMediaType;
 import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mtwilson.util.io.UUID;
 //import com.intel.mtwilson.My;
@@ -37,6 +38,7 @@ import com.intel.mtwilson.tag.selection.xml.SelectionsType;
 import com.intel.mtwilson.datatypes.CertificateRequestLocator;
 import com.intel.mtwilson.datatypes.Certificate;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
+import com.intel.mtwilson.launcher.ws.ext.RPC;
 //import com.intel.mtwilson.datatypes.Util;
 import com.intel.mtwilson.tag.common.Global;
 import com.intel.mtwilson.tag.rest.repository.CertificateRepository;
@@ -64,6 +66,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -87,8 +90,9 @@ import org.slf4j.LoggerFactory;
  */
 //@V2
 @Path("/tag-certificate-requests-rpc/provision")
-//@RPC("provision_tag_certificate")
+@RPC("provision_tag_certificate")
 //@JacksonXmlRootElement(localName="provision_tag_certificate")
+@XmlRootElement(name="provision_tag_certificate")
 public class ProvisionTagCertificate  {    
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProvisionTagCertificate.class);
 
@@ -273,92 +277,95 @@ public class ProvisionTagCertificate  {
         return true; // certificate and selection have same set of attribute (oid,value) pairs
     }
     
-//    /**
-//     * Because the selection xml format does not
-//     * include the target host's subject uuid, the client must specify
-//     * the target host subject uuid either with an HTTP header "Subject" whose
-//     * value is the uuid, or with a query parameter "subject" whose value is
-//     * the uuid.  If both are present only the HTTP header is used. If neither
-//     * is present the server will return a bad request error.
-//     * 
-//     * Unlike the JSON API, this method does not return the original request
-//     * as the response because the clients that send XML or encrypted XML
-//     * don't need it echoed back to them. If there is a response then it is
-//     * the generated tag certificate. If there is no response and the 
-//     * Asynchronous header is set to "true" in the response it means the
-//     * certificate will be generated later; Link headers in the same response
-//     * will indicate where the generated certificate can be obtained once
-//     * it is available.
-//     * 
-//     * @param locator
-//     * @param message
-//     * @param request 
-//     */
-//    @POST
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(CryptoMediaType.APPLICATION_PKIX_CERT)
+    /**
+     * Because the selection xml format does not
+     * include the target host's subject uuid, the client must specify
+     * the target host subject uuid either with an HTTP header "Subject" whose
+     * value is the uuid, or with a query parameter "subject" whose value is
+     * the uuid.  If both are present only the HTTP header is used. If neither
+     * is present the server will return a bad request error.
+     * 
+     * Unlike the JSON API, this method does not return the original request
+     * as the response because the clients that send XML or encrypted XML
+     * don't need it echoed back to them. If there is a response then it is
+     * the generated tag certificate. If there is no response and the 
+     * Asynchronous header is set to "true" in the response it means the
+     * certificate will be generated later; Link headers in the same response
+     * will indicate where the generated certificate can be obtained once
+     * it is available.
+     * 
+     * @param locator
+     * @param message
+     * @param request 
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(CryptoMediaType.APPLICATION_PKIX_CERT)
+    //@RequiresPermissions("tag_certificates:create")         
+    public byte[] createOneFromJsonToBytes(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+            throws IOException, ApiException, SignatureException, SQLException, CertificateException  { 
+        log.debug("Got request to create atag certificate json -> cert");
+        Certificate certificate = createOneJson(locator, json, request, response);
+        if (certificate != null)
+            return certificate.getCertificate();
+        else {
+            log.error("Error creating the certificate.");
+            throw new CertificateException("Error creating the certificate.");
+        }
+    }
+    
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
 //    @RequiresPermissions("tag_certificates:create")         
-//    public byte[] createOneFromJsonToBytes(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-//            throws IOException, ApiException, SignatureException, SQLException, CertificateException  {        
-//        Certificate certificate = createOneJson(locator, json, request, response);
-//        if (certificate != null)
-//            return certificate.getCertificate();
-//        else {
-//            log.error("Error creating the certificate.");
-//            throw new CertificateException("Error creating the certificate.");
-//        }
-//    }
+    public Certificate createOneJson(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException {        
+        SelectionsType selections = null;
+        if( json != null ) {
+            selections = Util.fromJson(json);
+        }
+        return createOne(getSubject(request, locator), selections, request, response);
+    }
 //    
-//    @POST
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-////    @RequiresPermissions("tag_certificates:create")         
-//    public Certificate createOneJson(@BeanParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-//            throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException {        
-//        SelectionsType selections = null;
-//        if( json != null ) {
-//            selections = Util.fromJson(json);
-//        }
-//        return createOne(getSubject(request, locator), selections, request, response);
-//    }
-//    
-//    /**
-//     * Because the selection xml format does not
-//     * include the target host's subject uuid, the client must specify
-//     * the target host subject uuid either with an HTTP header "Subject" whose
-//     * value is the uuid, or with a query parameter "subject" whose value is
-//     * the uuid.  If both are present only the HTTP header is used. If neither
-//     * is present the server will return a bad request error.
-//     * 
-//     * Unlike the JSON API, this method does not return the original request
-//     * as the response because the clients that send XML or encrypted XML
-//     * don't need it echoed back to them.
-//     * 
-//     * @param locator
-//     * @param message
-//     * @param request 
-//     */
-//    @POST
-//    @Consumes(MediaType.APPLICATION_XML)
-//    @Produces(CryptoMediaType.APPLICATION_PKIX_CERT)
-//    @RequiresPermissions("tag_certificates:create")         
-//    public byte[] createOneFromXmlToBytes(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-//            throws IOException, ApiException, SignatureException, SQLException, CertificateException {
-//        Certificate certificate = createOneXml(locator, xml, request, response);
-//        if (certificate != null)
-//            return certificate.getCertificate();
-//        else {
-//            log.error("Error creating the certificate.");
-//            throw new CertificateException("Error creating the certificate.");
-//        }
-//    }
+    /**
+     * Because the selection xml format does not
+     * include the target host's subject uuid, the client must specify
+     * the target host subject uuid either with an HTTP header "Subject" whose
+     * value is the uuid, or with a query parameter "subject" whose value is
+     * the uuid.  If both are present only the HTTP header is used. If neither
+     * is present the server will return a bad request error.
+     * 
+     * Unlike the JSON API, this method does not return the original request
+     * as the response because the clients that send XML or encrypted XML
+     * don't need it echoed back to them.
+     * 
+     * @param locator
+     * @param message
+     * @param request 
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces(CryptoMediaType.APPLICATION_PKIX_CERT)
+    //@RequiresPermissions("tag_certificates:create")         
+    public byte[] createOneFromXmlToBytes(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
+            throws IOException, ApiException, SignatureException, SQLException, CertificateException {
+        log.debug("Got request to create atag certificate xml -> cert");
+        Certificate certificate = createOneXml(locator, xml, request, response);
+        if (certificate != null)
+            return certificate.getCertificate();
+        else {
+            log.error("Error creating the certificate.");
+            throw new CertificateException("Error creating the certificate.");
+        }
+    }
     
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML)
-    @RequiresPermissions("tag_certificates:create")         
+    //@RequiresPermissions("tag_certificates:create")         
     public Certificate createOneXml(@BeanParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
+        log.debug("Got request to create atag certificate");
          //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
         TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
         SelectionsType selections = null;
