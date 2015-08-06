@@ -375,7 +375,7 @@ public class ASConfig extends ConfigBase{
         if (f.isAbsolute()) {
             return f;
         } else {
-            return new File(getMtWilsonConf() + File.separator + path);
+            return new File(ConfigurationUtil.getConfigurationFolderPath() + File.separator + path);
         }
     }
 

@@ -4,6 +4,7 @@
  */
 package com.intel.mtwilson.tag.setup.cmd;
 
+import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mtwilson.util.validation.Fault;
 import com.intel.mtwilson.tag.setup.TagCommand;
 import com.intel.mtwilson.datatypes.File;

@@ -44,6 +44,19 @@ function getShowReportPage() {
 	sendHTMLAjaxRequest(false, 'getView/showReportsPage.html', null, fnDisplayContent, null,'showReportsPage');
 }
 
+function getAssetCertificatePage() {
+	$('#mainContainer').html('<div id="AssetCertificatePage"></div>');
+        $('#AssetCertificatePage').html('<iframe scrolling="no" frameborder="0" src="' + assetTagUrl + "/certificates.html" + '" width="100%" height="2000" > </iframe>');
+        //$('#AssetCertificatePage').html('<iframe scrolling="no" frameborder="0" src="' + assetTagUrl + "/#certificates" + '" width="900" height="850" > </iframe>');
+}
+
+
+function getAssetCertificatePage1() {
+		$('#mainContainer').html('<div id="DashBoardPage"></div>');
+	setLoadImage('DashBoardPage', '40px', '500px');
+	sendHTMLAjaxRequest(false, 'getView/certificates.html', null, fnDisplayContent, null,"DashBoardPage");
+}
+
 
 /*
  * Method for Edit Host Page .... !!

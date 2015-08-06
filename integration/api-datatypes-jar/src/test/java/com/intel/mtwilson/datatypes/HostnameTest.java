@@ -8,7 +8,7 @@ import com.intel.mtwilson.util.net.Hostname;
 import org.junit.Assert;
 import org.junit.Test;  
 
-import com.intel.mtwilson.validation.Fault;
+import com.intel.mtwilson.util.validation.Fault;
 
 import static org.junit.Assert.assertEquals;
 

@@ -19,3 +19,5 @@
 /util/oat-util-jdbi/target/
 /services/aikqverify/target/
 /services/oat-tag-dao-jooq/target/
+/services/WLMService/target/
+/portals/TrustDashBoard/target/

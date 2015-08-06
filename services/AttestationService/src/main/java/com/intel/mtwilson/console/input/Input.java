@@ -6,8 +6,8 @@ package com.intel.mtwilson.console.input;
 
 import com.intel.mtwilson.util.net.InternetAddress;
 import com.intel.mtwilson.util.validation.Fault;
-import com.intel.mtwilson.validation.InputModel;
-import com.intel.mtwilson.validation.Model;
+import com.intel.mtwilson.util.validation.InputModel;
+import com.intel.mtwilson.util.validation.Model;
 import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;

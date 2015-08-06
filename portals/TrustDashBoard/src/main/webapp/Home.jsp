@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Welcome to Demo Portal</title>
+<title>Trust DashBoard</title>
 	<link rel="stylesheet" type="text/css" href="CSS/home.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/jquery.ui.menubar.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/style.css" />
@@ -23,10 +23,11 @@
 	
     <script type="text/javascript" src="Scripts/commonUtils.js"></script>
 	<script type="text/javascript" src="Scripts/home.js"></script>
+        <script> var assetTagUrl = "tag/index.html5?tab=tags"; </script>
 </head>
 <body>
 	<div class="header">
-            <div class="title"><h1>Reference Cloud Portal</h1></div>
+            <div class="title"><h1>OAT Reference Cloud Portal</h1></div>
             <!-- remove auth tdb/wlp stdalex 2/26
             <div class="loginDisplay">
                 <span id="loginStatusValue" style="margin-right:40px">Welcome <%=session.getAttribute("username") %></span>
@@ -43,6 +44,14 @@
 								<li><a href="javascript:;" onclick="getAddHostPage()">Add Host</a></li>
 								<li><a href="javascript:;" onclick="getEditHostPage()">Edit Host</a></li>
 								<li><a href="javascript:;" onclick="getViewHostPage()">View Host</a></li>
+							</ul>
+						</li>
+                                                <li>
+							<a>Asset Tag Management_home.jsp</a>
+							<ul>
+                                                            <!-- li><a href="javascript:getAssetCertificatePage()" data-i18n="link.certificate_management">Certificate Management</a></li -->
+                                                            <li><a href="javascript:;" onclick="getAssetCertificatePage1()" data-i18n="link.certificate_management">Certificate Management</a></li>
+                                                            <li><a href="javascript:getAssetCertificatePage()" data-i18n="link.certificate_management">Certificate Management</a></li>
 							</ul>
 						</li>
 						<li><a href="javascript:;" onclick="getShowReportPage()">Reports</a><ul></ul></li>

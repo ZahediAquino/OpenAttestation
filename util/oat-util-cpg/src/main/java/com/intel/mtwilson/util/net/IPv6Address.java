@@ -15,7 +15,7 @@
 
 package com.intel.mtwilson.util.net;
 
-import com.intel.mtwilson.validation.ObjectModel;
+import com.intel.mtwilson.util.validation.ObjectModel;
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.util.regex.Matcher;

@@ -100,6 +100,24 @@ public class Fault implements Faults {
         fault(related);
     }
     
+    
+    /**
+     * Faults from the given model are copied to as "more faults" for this one.
+     * It is safe to reset or continue using the given model.
+     * @param m
+     * @param format
+     * @param args 
+     */
+    public Fault(Model m, String format, Object... args) {
+       // this.cause = null;
+        this.description = String.format(format, args);
+        int size = m.getFaults().size();
+//        this.more = new ArrayList<Fault>();
+        for(int i=0; i<size; i++) {
+            this.more.add( m.getFaults().get(i) );
+        }
+    }
+    
     /**
      * 
      * @return 

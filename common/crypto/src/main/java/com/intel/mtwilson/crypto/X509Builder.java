@@ -15,7 +15,7 @@
 
 package com.intel.mtwilson.crypto;
 
-import com.intel.mtwilson.validation.BuilderModel;
+import com.intel.mtwilson.util.validation.BuilderModel;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.security.KeyPair;

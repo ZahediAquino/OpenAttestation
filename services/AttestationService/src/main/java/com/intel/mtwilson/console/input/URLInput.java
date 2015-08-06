@@ -4,7 +4,7 @@
  */
 package com.intel.mtwilson.console.input;
 
-import com.intel.mtwilson.validation.InputModel;
+import com.intel.mtwilson.util.validation.InputModel;
 import java.net.MalformedURLException;
 import java.net.URL;
 

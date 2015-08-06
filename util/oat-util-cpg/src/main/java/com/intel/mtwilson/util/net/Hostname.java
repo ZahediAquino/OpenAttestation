@@ -15,8 +15,8 @@
 
 package com.intel.mtwilson.util.net;
 
-import com.intel.mtwilson.validation.Fault;
-import com.intel.mtwilson.validation.Model;
+import com.intel.mtwilson.util.validation.Fault;
+import com.intel.mtwilson.util.validation.Model;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
