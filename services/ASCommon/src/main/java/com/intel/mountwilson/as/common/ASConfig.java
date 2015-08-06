@@ -364,5 +364,19 @@ public class ASConfig extends ConfigBase{
     public static ASConfig getInstance(){
         return ASConfig.global;
     }
+    
+    public static File getAssetTagCaCertificateFile() {
+        Configuration conf = getConfiguration();
+        return findConfigurationFile(conf.getString("mtwilson.tag.cacerts.file", "tag-cacerts.pem"));
+    }
+    
+    private static File findConfigurationFile(String path) {
+        File f = new File(path);
+        if (f.isAbsolute()) {
+            return f;
+        } else {
+            return new File(getMtWilsonConf() + File.separator + path);
+        }
+    }
 
 }

@@ -78,7 +78,7 @@ public abstract class BuilderModel implements Model {
     }
         
     /**
-     * While the object is being built, always returns false. After the
+     * While the object is being built, always returns false. After thclass ase
      * object has been built, eg called the build() method, returns true if
      * there are no faults, and false if there are faults. 
      */
