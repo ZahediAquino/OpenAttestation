@@ -117,8 +117,9 @@ public class X509Util {
      * @throws CertificateException 
      */
     public static X509Certificate decodePemCertificate(String text) throws CertificateException {
-        String content = text.replace(BEGIN_CERTIFICATE, "").replace(END_CERTIFICATE, "");
-        byte[] der = Base64.decodeBase64(content);
+        //String content = text.replace(BEGIN_CERTIFICATE, "").replace(END_CERTIFICATE, "");
+        //byte[] der = Base64.decodeBase64(content);
+         byte[] der = Base64.decodeBase64(text);
         return decodeDerCertificate(der);
     }
     
@@ -152,6 +153,7 @@ public class X509Util {
      */
     public static X509Certificate decodeDerCertificate(byte[] certificateBytes) throws CertificateException {
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
+     
         X509Certificate cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificateBytes));
         return cert;
     }
