@@ -109,7 +109,9 @@ public class TagCreateCaKey extends TagCommand {
     public static void main(String args[]) throws Exception {
         TagCreateCaKey cmd = new TagCreateCaKey();
         cmd.setOptions(new MapConfiguration(new Properties()));
-        cmd.execute(new String[] { "CN=Asset CA,OU=Datacenter,C=US" });
+        //Removing to facilitate args passing
+        //cmd.execute(new String[] { "CN=Asset CA,OU=Datacenter,C=US" });
+        cmd.execute(args);
         
     }    
     
