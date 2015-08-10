@@ -34,7 +34,7 @@ import com.intel.mtwilson.as.data.TblMle;
 import com.intel.mtwilson.as.data.TblTaLog;
 import com.intel.mtwilson.as.helper.BaseBO;
 import com.intel.mtwilson.crypto.CryptographyException;
-import com.intel.mtwilson.crypto.X509Util;
+import com.intel.mtwilson.util.x509.X509Util;
 import com.intel.mtwilson.datatypes.*;
 import com.intel.mtwilson.util.ResourceFinder;
 
