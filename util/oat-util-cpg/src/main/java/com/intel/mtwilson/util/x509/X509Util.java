@@ -140,6 +140,34 @@ public class X509Util {
         return null;        
     }
     
+    /**
+     * This function converts a PEM-format certificate to an X509Certificate
+     * object. 
+     * This is the 0.1.2 implementation - expects exaclty one CERTIFICATE block in PEM-Like format,
+     *
+     * Example PEM format:
+     *
+     * -----BEGIN CERTIFICATE----- (base64 data here) -----END CERTIFICATE-----
+     *
+     * You can also pass just the base64 certificate data without the header and
+     * footer.
+     * 
+     * @param text
+     * @return
+     * @throws CertificateException 
+     */
+    public static X509Certificate decodePemCertificate_OnlyOne(String text) throws CertificateException {
+//        List<Pem> list = PemLikeParser.parse(text);
+//        for(Pem pem : list) {
+//            if( "CERTIFICATE".equals(pem.getBanner()) ) {
+//                return decodeDerCertificate(pem.getContent());
+//            }
+//        }
+        String content = text.replace(BEGIN_CERTIFICATE, "").replace(END_CERTIFICATE, "");
+        byte[] der = Base64.decodeBase64(content);
+        return decodeDerCertificate(der);     
+    }
+    
     
 //    public static 
     public static List<X509Certificate> decodePemCertificates(String text) throws CertificateException {

@@ -20,6 +20,7 @@ import com.intel.mountwilson.manifest.data.IManifest;
 import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mountwilson.manifest.helper.TAHelper;
 import com.intel.mtwilson.agent.HostAgent;
+//import com.intel.mtwilson.crypto.X509Util;
 import com.intel.mtwilson.util.x509.X509Util;
 import com.intel.mtwilson.util.net.InternetAddress;
 import java.io.IOException;
@@ -92,7 +93,7 @@ public class IntelHostAgent implements HostAgent {
     public X509Certificate getAikCertificate() {
         String pem = trustAgentClient.getAIKCertificate();
         try {
-            X509Certificate aikCert = X509Util.decodePemCertificate(pem);
+            X509Certificate aikCert = X509Util.decodePemCertificate_OnlyOne(pem);
             isTpmAvailable = true;
             return aikCert;
         }
