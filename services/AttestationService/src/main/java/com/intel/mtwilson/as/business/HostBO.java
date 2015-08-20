@@ -469,10 +469,16 @@ public class HostBO extends BaseBO {
 			List<TxtHostRecord> txtHostList = new ArrayList<TxtHostRecord>();
 			List<TblHosts> tblHostList;
 
-			if (searchCriteria != null && !searchCriteria.isEmpty())
+			if (searchCriteria != null && !searchCriteria.isEmpty()) {
+                                log.info("searchCriteria is not null -- calling tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria)");
 				tblHostList = tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria);
-			else
+                                log.info(new Integer(tblHostList.size()).toString());
+                        }
+                        else {
+                                log.info("calling tblHostsJpaController.findTblHostsEntities()");
 				tblHostList = tblHostsJpaController.findTblHostsEntities();
+                                log.info(new Integer(tblHostList.size()).toString());
+                        }
 
 			if (tblHostList != null) {
 

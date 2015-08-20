@@ -49,7 +49,6 @@ public class TrustAgentStrategy extends TAHelper implements IManifestStrategy {
 	}
         
         // BUG #497 the Map<String,? extends IManifest> needs to be replaced with the new PcrManifest model object.  (do not confuse:  there is an implementation of IManifest called PcrManiest - NOT the same one)
-	@Override
 	public HashMap<String, ? extends IManifest> getManifest(TblHosts tblHosts) {
 		
 		

@@ -69,6 +69,10 @@ public class TblPcrManifest implements Serializable {
     private String value;
     @Column(name = "PCR_Description")
     private String pCRDescription;
+    @Column(name = "uuid_hex")
+    private String uuid_hex;
+    @Column(name = "mle_uuid_hex")
+    private String mle_uuid_hex;
     
     @JoinColumn(name = "MLE_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false)
@@ -123,6 +127,22 @@ public class TblPcrManifest implements Serializable {
 
     public void setPCRDescription(String pCRDescription) {
         this.pCRDescription = pCRDescription;
+    }
+    
+    public String getUuid_hex() {
+        return uuid_hex;
+    }
+
+    public void setUuid_hex(String uuid_hex) {
+        this.uuid_hex = uuid_hex;
+    }
+
+    public String getMle_uuid_hex() {
+        return mle_uuid_hex;
+    }
+
+    public void setMle_uuid_hex(String mle_uuid_hex) {
+        this.mle_uuid_hex = mle_uuid_hex;
     }
 
 

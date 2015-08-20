@@ -67,7 +67,9 @@ public class TblOs implements Serializable {
     @Column(name = "VERSION")
     private String version;
     @Column(name = "DESCRIPTION")
-    private String description;
+    private String description;    
+    @Column(name = "uuid_hex")
+    private String uuid_hex;
 
     public TblOs() {
     }
@@ -112,6 +114,14 @@ public class TblOs implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public String getUuid_hex() {
+        return uuid_hex;
+    }
+
+    public void setUuid_hex(String uuid_hex) {
+        this.uuid_hex = uuid_hex;
     }
 
     @Override

@@ -310,3 +310,94 @@ CREATE  TABLE `mw_file` (
   PRIMARY KEY (`id`) );
 
 
+-- mw_package_namespace
+
+CREATE TABLE `mw_package_namespace` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(45) NOT NULL,
+  `VendorName` varchar(45) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+-- mw_event_type table
+
+CREATE TABLE `mw_event_type` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(75) NOT NULL,
+  `FieldName` varchar(45) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+-- mw_module_manifest table
+
+CREATE TABLE `mw_module_manifest` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `MLE_ID` int(11) NOT NULL,
+  `Event_ID` int(11) NOT NULL,
+  `NameSpace_ID` int(11) NOT NULL,
+  `ComponentName` varchar(150) NOT NULL,
+  `DigestValue` varchar(100) DEFAULT NULL,
+  `ExtendedToPCR` varchar(5) DEFAULT NULL,
+  `PackageName` varchar(45) DEFAULT NULL,
+  `PackageVendor` varchar(45) DEFAULT NULL,
+  `PackageVersion` varchar(45) DEFAULT NULL,
+  `UseHostSpecificDigestValue` tinyint(1) DEFAULT NULL,
+  `Description` varchar(100) DEFAULT NULL,
+
+  PRIMARY KEY (`ID`),
+  KEY `Module_MLE_ID` (`MLE_ID`),
+
+  KEY `Module_NameSpace_ID` (`NameSpace_ID`),
+  KEY `Module_Event_ID` (`Event_ID`),
+  CONSTRAINT `Module_MLE_ID` FOREIGN KEY (`MLE_ID`) REFERENCES `mw_mle` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `Module_NameSpace_ID` FOREIGN KEY (`NameSpace_ID`) REFERENCES `mw_package_namespace` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `Module_Event_ID` FOREIGN KEY (`Event_ID`) REFERENCES `mw_event_type` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=latin1;
+
+-- Creates the host specific manifest table
+
+CREATE TABLE `mw_host_specific_manifest` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Module_Manifest_ID` int(11) NOT NULL,
+  `Host_ID` int(11) NOT NULL,
+  `DigestValue` varchar(100) NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `Module_Manifest_ID` (`Module_Manifest_ID`),
+  CONSTRAINT `Module_Manifest_ID` FOREIGN KEY (`Module_Manifest_ID`) REFERENCES `mw_module_manifest` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+-- Module manifest log supports the failure report feature
+CREATE TABLE `mw_module_manifest_log` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `ta_log_id` int(11) NOT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `value` varchar(100) DEFAULT NULL,
+  `whitelist_value` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `TA_LOG_FK` (`ta_log_id`),
+  CONSTRAINT `TA_LOG_FK` FOREIGN KEY (`ta_log_id`) REFERENCES `mw_ta_log` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `mw_location_pcr` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `location` varchar(200) NOT NULL,
+  `pcr_value` varchar(100) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 COMMENT='Mapping between the pcr values and location';
+
+
+ALTER TABLE `mw_module_manifest` ADD COLUMN `uuid_hex` CHAR(36) NULL;
+UPDATE mw_module_manifest SET uuid_hex = (SELECT uuid());
+
+ALTER TABLE `mw_module_manifest` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
+UPDATE mw_module_manifest mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
+
+ALTER TABLE `mw_module_manifest` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
+UPDATE mw_module_manifest mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
+
+ALTER TABLE `mw_ta_log` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
+UPDATE mw_ta_log mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
+
+
+

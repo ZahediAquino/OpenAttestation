@@ -39,6 +39,8 @@ import com.intel.mtwilson.util.validation.ValidationUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import javax.ws.rs.DefaultValue;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 //import org.codehaus.enunciate.jaxrs.TypeHint;
 
 /**
@@ -51,7 +53,8 @@ import java.util.List;
 public class Host {
     private HostBO hostBO = new ASComponentFactory().getHostBO(); 
     
-    
+    // variable declaration used for Logging.  
+        Logger log = LoggerFactory.getLogger(getClass().getName());
     
 
     /**
@@ -226,8 +229,10 @@ public class Host {
                 //else 
             List<TxtHostRecord> resultset;
             if(includeHardwareUuid) {
+                log.info("include hardware_uuid=true, call queryForHosts(searchCriteria,includeHardwareUuid)");
                 resultset = hostBO.queryForHosts(searchCriteria,includeHardwareUuid);
             }else{
+                log.info("include hardware_uuid=false, call queryForHosts(searchCriteria)");
                 resultset = hostBO.queryForHosts(searchCriteria);
             }
             

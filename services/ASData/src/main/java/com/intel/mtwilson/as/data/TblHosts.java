@@ -107,6 +107,10 @@ public class TblHosts implements Serializable {
     private String hardware_uuid;
     @Column(name = "uuid_hex")
     private String uuid_hex;
+    @Column(name = "bios_mle_uuid_hex")
+    private String bios_mle_uuid_hex;
+    @Column(name = "vmm_mle_uuid_hex")
+    private String vmm_mle_uuid_hex;
 
     public TblHosts() {
     }
@@ -289,12 +293,28 @@ public class TblHosts implements Serializable {
         this.hardware_uuid = uuid;
     }
     
-     public String getUuid_hex() {
+    public String getUuid_hex() {
         return uuid_hex;
     }
 
     public void setUuid_hex(String uuid_hex) {
         this.uuid_hex = uuid_hex;
+    }
+    
+    public String getBios_mle_uuid_hex() {
+        return bios_mle_uuid_hex;
+    }
+
+    public void setBios_mle_uuid_hex(String bios_mle_uuid_hex) {
+        this.bios_mle_uuid_hex = bios_mle_uuid_hex;
+    }
+    
+    public String getVmm_mle_uuid_hex() {
+        return vmm_mle_uuid_hex;
+    }
+
+    public void setVmm_mle_uuid_hex(String vmm_mle_uuid_hex) {
+        this.vmm_mle_uuid_hex = vmm_mle_uuid_hex;
     }
  
     

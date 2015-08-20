@@ -36,6 +36,7 @@ import com.intel.mtwilson.as.data.TblPcrManifest;
 import com.intel.mtwilson.as.data.TblTaLog;
 import com.intel.mtwilson.datatypes.AttestationReport;
 import com.intel.mtwilson.util.net.Hostname;
+import java.io.IOException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReportsBOTest {
@@ -118,7 +119,7 @@ public class ReportsBOTest {
 	}
 
 	@Test
-	public void testGetAttestationReport() {
+	public void testGetAttestationReport() throws NumberFormatException, IOException {
 		when(tblHostsJpaController.findByName(anyString())).thenReturn(mockFindByName());
 		when(tblTaLogJpaController.findLastStatusTs(any(Integer.class))).thenReturn(new Date());
 		List<TblTaLog> taLogs = new ArrayList<TblTaLog>();
