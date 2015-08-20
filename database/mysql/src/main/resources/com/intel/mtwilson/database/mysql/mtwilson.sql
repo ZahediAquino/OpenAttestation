@@ -393,9 +393,6 @@ UPDATE mw_module_manifest SET uuid_hex = (SELECT uuid());
 ALTER TABLE `mw_module_manifest` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
 UPDATE mw_module_manifest mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
 
-ALTER TABLE `mw_module_manifest` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
-UPDATE mw_module_manifest mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
-
 ALTER TABLE `mw_ta_log` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
 UPDATE mw_ta_log mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
 
