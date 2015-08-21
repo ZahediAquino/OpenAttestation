@@ -25,7 +25,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
  */
 //@V1
 //@Stateless
-@Path("/AttestationService/resources/assetTagCert")
+@Path("/assetTagCert")
 public class AssetTagCert {
  private Logger log = LoggerFactory.getLogger(getClass());
     public AssetTagCert() {
