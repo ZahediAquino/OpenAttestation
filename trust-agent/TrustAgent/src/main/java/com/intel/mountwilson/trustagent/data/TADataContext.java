@@ -44,6 +44,8 @@ public class TADataContext {
     private String vmmName;
     private String vmmVersion;
     private String modulesStr;
+    private String hostUUID;
+    private String assetTagHash;
 
     public String getBiosOem() {
         return biosOem;
@@ -190,6 +192,21 @@ public class TADataContext {
 
     public String getModules() {
         return modulesStr;
+    }
+    
+     public String getHostUUID() {
+     return hostUUID;
+    }
+    public void setHostUUID(String hostUUID) {
+        this.hostUUID = hostUUID;
+    }
+    
+    public String getAssetTagHash() {
+        return assetTagHash;
+    }
+    
+    public void setAssetTagHash(String assetTagHash) {
+        this.assetTagHash = assetTagHash;
     }
 
 }

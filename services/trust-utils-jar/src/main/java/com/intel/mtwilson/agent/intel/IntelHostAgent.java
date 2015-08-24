@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,6 +120,20 @@ public class IntelHostAgent implements HostAgent {
         catch(Exception e) {
             throw new IOException(e);
         }
+    }
+    
+     @Override
+    public Map<String, String> getHostAttributes() throws IOException {
+       HashMap<String,String> hm = new HashMap<String, String>();
+        // Retrieve the data from the host and add it into the hashmap
+       log.debug("This is where I supposedly call the TAgent for HWUUID info [IHA]...");
+       hm.put("Host_UUID", trustAgentClient.getHostAttributes().trim());
+//        HostInfo hostInfo = client.getHostInfo();
+//        // Currently we are just adding the UUID of th host. Going ahead we can add additional details
+//        if (hostInfo != null)
+//            hm.put("Host_UUID", hostInfo.getHardwareUuid().trim());
+        
+        return hm;
     }
 
     @Override

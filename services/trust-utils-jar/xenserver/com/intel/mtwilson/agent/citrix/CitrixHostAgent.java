@@ -12,8 +12,7 @@ import com.intel.mountwilson.manifest.data.PcrManifest;
 
 import com.intel.mtwilson.agent.HostAgent;
 import com.intel.mtwilson.crypto.CryptographyException;
-//import com.intel.mtwilson.crypto.X509Util;
-import com.intel.mtwilson.util.x509.X509Util;
+import com.intel.mtwilson.crypto.X509Util;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
 import com.xensource.xenapi.Types.BadServerResponse;
 import com.xensource.xenapi.Types.XenAPIException;

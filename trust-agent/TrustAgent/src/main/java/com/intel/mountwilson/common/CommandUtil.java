@@ -113,6 +113,66 @@ public class CommandUtil {
 
         return result;
     }
+    
+     public static CommandResult runCommand2(String commandLine) throws TAException, IOException {
+        return runCommand2(commandLine, null);
+    }
+    
+    public static CommandResult runCommand2(String commandLine, String[] envp) throws TAException, IOException {
+        
+        if(StringUtils.isBlank(commandLine))
+            throw new TAException(ErrorCode.ERROR,"Command cannot be empty.");
+        
+        String[] command = commandLine.split(" ");
+        
+        if(new File(Config.getBinPath() + File.separator + command[0]).exists())
+            commandLine = Config.getBinPath() + File.separator + commandLine;
+
+        if(new File(Config.getBinPath() + File.separator + commandLine).exists())
+            commandLine = Config.getBinPath() + File.separator + commandLine;
+        
+        log.debug("Command to be executed is :" + commandLine);
+
+        Process p;
+        if( envp == null ) {
+            p = Runtime.getRuntime().exec(commandLine);
+        }
+        else {
+            p = Runtime.getRuntime().exec(commandLine, envp);
+        }
+        // read stdout
+        InputReader stdout = new InputReader(p.getInputStream());
+        Thread stdoutThread = new Thread(stdout);
+        stdoutThread.start();
+        // read stderr
+        InputReader stderr = new InputReader(p.getErrorStream());
+        Thread stderrThread = new Thread(stderr);
+        stderrThread.start();
+        CommandResult result = new CommandResult();
+        try {
+        // wait until the process exits
+        result.exitcode = p.waitFor();
+        // after the process exits the stdout and stderr threads will terminate
+        stdoutThread.join(); // throws InterruptedException
+        stderrThread.join(); // throws InterruptedException
+        }
+        catch(InterruptedException e) {
+            log.error("Interrupted", e);
+        }
+        
+        log.debug("stdout:\n{}", stdout.getResult());
+        log.debug("stderr:\n{}", stderr.getResult());
+
+        result.command = commandLine;
+        result.stdout = stdout.getResult();
+        result.stderr = stderr.getResult();
+
+        if( result.exitcode != 0 ) {
+            throw new TAException(ErrorCode.FATAL_ERROR, result.exitcode + ": Error while running command: " + commandLine);            
+        }
+
+        return result;
+    }
 
     private static void checkError(int exitValue, String commandLine) throws TAException {
         log.info( "Return code: " + exitValue);

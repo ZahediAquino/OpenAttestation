@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 
@@ -125,9 +126,18 @@ public class HostBO extends BaseBO {
 				log.info("Getting location for host from VCenter");
 				location = getLocation(pcrMap);
 			}
+                        
+                        
+                        HostAgentFactory factory = new HostAgentFactory();
+                        HostAgent agent = factory.getHostAgent(tblHosts);
 			log.info(
 					"Saving Host in database with TlsPolicyName {} and TlsKeystoreLength {}",
 					tblHosts.getTlsPolicyName(),tblHosts.getTlsKeystore() == null ? "null" : tblHosts.getTlsKeystore().length);
+                        Map<String,String> attributes = agent.getHostAttributes();
+                        String hostUuidAttr = attributes.get("Host_UUID");
+                        if ((attributes != null) && (!attributes.isEmpty()) && (hostUuidAttr != null))
+                            tblHosts.setHardwareUuid(hostUuidAttr.toLowerCase().trim());
+//                        
 			log.debug("Saving the host details in the DB");
 			saveHostInDatabase(tblHosts, host, certificate, location, pcrMap);
 
