@@ -40,6 +40,7 @@ import com.intel.mtwilson.datatypes.*;
 import com.intel.mtwilson.util.ResourceFinder;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.io.InputStream;
@@ -283,10 +284,11 @@ public class HostBO extends BaseBO {
 				throw new ASException(ErrorCode.AS_HOST_NOT_FOUND, hostName);
 			}
 			log.info("Deleting Host from database");
-
+                        deleteHostAssetTagMapping(tblHosts);
 			deleteTALogs(tblHosts.getId());
 
 			getHostsJpaController().destroy(tblHosts.getId());
+                        unmapAssetTagCertFromHost(tblHosts.getId(), tblHosts.getName());
 		} catch (ASException ase) {
 			throw ase;
 		} catch (CryptographyException e) {
@@ -318,6 +320,38 @@ public class HostBO extends BaseBO {
 		}
 
 	}
+        
+        private void deleteHostAssetTagMapping(TblHosts tblHosts) throws NonexistentEntityException, IOException {
+            AssetTagCertAssociateRequest atagRequest = new AssetTagCertAssociateRequest();
+            atagRequest.setHostID(tblHosts.getId());
+            AssetTagCertBO atagBO = new AssetTagCertBO();
+            atagBO.unmapAssetTagCertFromHostById(atagRequest);            
+        }
+        
+            /**
+     * 
+     * @param id
+     * @param name 
+     */
+        private void unmapAssetTagCertFromHost(Integer id, String name) {
+            try {
+                log.debug("Starting the procedure to unmap the asset tag certificate from host {}.", name);
+                        
+                AssetTagCertBO atagCertBO = new AssetTagCertBO();
+                AssetTagCertAssociateRequest atagUnmapRequest = new AssetTagCertAssociateRequest();
+                atagUnmapRequest.setHostID(id);
+                    
+                boolean unmapAssetTagCertFromHost = atagCertBO.unmapAssetTagCertFromHostById(atagUnmapRequest);
+                if (unmapAssetTagCertFromHost)
+                    log.info("Either the asset tag certificate was successfully unmapped from the host {} or there was not asset tag certificate associated.", name);
+                else
+                    log.info("Either there were errors or no asset tag certificate was configured for the host {}.", name);
+            
+            } catch (Exception ex) {
+                // Log the error and return back.
+                log.info("Error during asset tag unmapping for the host {}. Details: {}.", name, ex.getMessage());
+            }
+        }
         
 
 	private String getAIKCertificateForHost(TblHosts tblHosts, TxtHost host) {
