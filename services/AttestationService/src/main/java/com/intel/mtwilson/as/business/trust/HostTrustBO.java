@@ -239,12 +239,12 @@ public class HostTrustBO extends BaseBO {
          return null;
     }
     
-     private boolean verifyAssetTagTrust(TblHosts host, 
-             TblMle mle,
-             HashMap<String, ? extends IManifest> pcrManifestMap,
-             MwAssetTagCertificate atagCert) {
+    private boolean verifyAssetTagTrust(TblHosts host,
+            TblMle mle,
+            HashMap<String, ? extends IManifest> pcrManifestMap,
+            MwAssetTagCertificate atagCert) {
         boolean response = true;
-        
+
         String certSha1 = Sha1Digest.valueOf(atagCert.getPCREvent()).toString();
 //        if (gkvPcrManifestMap.size() <= 0) {
 //            throw new ASException(ErrorCode.AS_MISSING_MANIFEST, mle.getName(),
@@ -254,13 +254,16 @@ public class HostTrustBO extends BaseBO {
         PcrManifest goodKnownValue = (PcrManifest) pcrManifestMap.get("22");
         //log.debug("Checking PCR 22: {} - {}",certSha1, goodKnownValue.getPcrValue());
         String pcr = "22";
-            //log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
-            boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
-            log.info(String.format("PCR %s Host Trust status %s", pcr,
-            String.valueOf(trustStatus)));
-            if (!trustStatus) {
-                 response = false;
-            }
+        //log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
+        if(goodKnownValue != null)
+        {
+            
+        boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
+        log.info(String.format("PCR %s Host Trust status %s", pcr,
+                String.valueOf(trustStatus)));
+        if (!trustStatus) {
+            response = false;
+        }
 //            if (pcrManifestMap.containsKey(pcr)) {
 //                IManifest pcrMf = pcrManifestMap.get(pcr);
 //                boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));
@@ -279,8 +282,11 @@ public class HostTrustBO extends BaseBO {
 //                log.info(String.format("PCR %s not found in manifest.", pcr));
 //                throw new ASException(ErrorCode.AS_PCR_NOT_FOUND,pcr);
 //            }
-            return true;
-        
+        return true;
+
+        } else {
+            return false;
+        }
     }
 
     private boolean verifyTrust(TblHosts host, TblMle mle,
