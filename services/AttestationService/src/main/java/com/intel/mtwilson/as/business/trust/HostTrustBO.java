@@ -24,12 +24,15 @@ import com.intel.mountwilson.manifest.data.IManifest;
 import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mountwilson.manifest.factory.DefaultManifestStrategyFactory;
 import com.intel.mtwilson.agent.*;
+import com.intel.mtwilson.as.business.AssetTagCertBO;
 import com.intel.mtwilson.as.business.HostBO;
+import com.intel.mtwilson.as.business.trust.HostTrustBO;
 import com.intel.mtwilson.as.business.trust.gkv.IGKVStrategy;
 import com.intel.mtwilson.as.business.trust.gkv.factory.DefaultGKVStrategyFactory;
 import com.intel.mtwilson.as.controller.MwKeystoreJpaController;
 import com.intel.mtwilson.as.controller.TblLocationPcrJpaController;
 import com.intel.mtwilson.as.controller.TblTaLogJpaController;
+import com.intel.mtwilson.as.data.MwAssetTagCertificate;
 import com.intel.mtwilson.as.data.TblHosts;
 import com.intel.mtwilson.as.data.TblLocationPcr;
 import com.intel.mtwilson.as.data.TblMle;
@@ -37,6 +40,7 @@ import com.intel.mtwilson.as.data.TblTaLog;
 import com.intel.mtwilson.as.helper.BaseBO;
 import com.intel.mtwilson.crypto.CryptographyException;
 import com.intel.mtwilson.datatypes.*;
+import com.intel.mtwilson.util.crypto.Sha1Digest;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -198,7 +202,11 @@ public class HostTrustBO extends BaseBO {
          * Verify Location trust 
          */
         trust.location = host.getLocation() != null; // if location is available (it comes from PCR 22), it's trusted
-
+        MwAssetTagCertificate atagCert = verifyAssetTagCert(host);
+        if(atagCert != null){
+            trust.asset_tag = verifyAssetTagTrust(host, host.getVmmMleId(), pcrManifestMap, atagCert);
+            log.debug("Asset Tag Status Answer: {}", trust.asset_tag);
+        }
         logOverallTrustStatus(host, toString(trust));
 
         return trust;
@@ -207,6 +215,72 @@ public class HostTrustBO extends BaseBO {
     private String toString(HostTrustStatus trust) {
         return String.format("BIOS:%d,VMM:%d", (trust.bios) ? 1 : 0,
                 (trust.vmm) ? 1 : 0);
+    }
+    
+    private MwAssetTagCertificate verifyAssetTagCert(TblHosts tblHosts){
+         try {
+            log.debug("Checking if there are any asset tag certificates mapped to host with ID : {}", tblHosts.getId());
+            // Load the asset tag certificate only if it is associated and valid.
+            AssetTagCertBO atagCertBO = new AssetTagCertBO();
+            MwAssetTagCertificate atagCertForHost = atagCertBO.findValidAssetTagCertForHost(tblHosts.getId());            
+            if (atagCertForHost != null) {
+                log.debug("Asset tag certificate is associated to host {} with status {}.", tblHosts.getName(), atagCertForHost.getRevoked());
+                return atagCertForHost;
+            }
+            else {
+                log.debug("Asset tag certificate is either not associated or valid for host {}.", tblHosts.getName());
+            }
+        } catch (Exception ex) {
+            log.error("Exception when looking up the asset tag whitelist.", ex);
+            // We cannot do anything ... just log the error and proceed
+            log.info("Error during look up of asset tag certificates for the host {}", tblHosts.getName());
+            return null;
+        }
+         return null;
+    }
+    
+     private boolean verifyAssetTagTrust(TblHosts host, 
+             TblMle mle,
+             HashMap<String, ? extends IManifest> pcrManifestMap,
+             MwAssetTagCertificate atagCert) {
+        boolean response = true;
+        
+        String certSha1 = Sha1Digest.valueOf(atagCert.getPCREvent()).toString();
+//        if (gkvPcrManifestMap.size() <= 0) {
+//            throw new ASException(ErrorCode.AS_MISSING_MANIFEST, mle.getName(),
+//                    mle.getVersion());
+//        }
+        log.debug("Cert Sha1: " + certSha1);
+        PcrManifest goodKnownValue = (PcrManifest) pcrManifestMap.get("22");
+        log.debug("Checking PCR 22: {} - {}",certSha1, goodKnownValue.getPcrValue());
+        String pcr = "22";
+            log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
+             boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
+             log.info(String.format("PCR %s Host Trust status %s", pcr,
+                        String.valueOf(trustStatus)));
+               if (!trustStatus) {
+                    response = false;
+                }
+//            if (pcrManifestMap.containsKey(pcr)) {
+//                IManifest pcrMf = pcrManifestMap.get(pcr);
+//                boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));
+//                log.info(String.format("PCR %s Host Trust status %s", pcr,
+//                        String.valueOf(trustStatus)));
+//                /*
+//                 * Log to database
+//                 */
+//                logTrustStatus(host, mle,  pcrMf);
+//
+//                if (!trustStatus) {
+//                    response = false;
+//                }
+//
+//            } else {
+//                log.info(String.format("PCR %s not found in manifest.", pcr));
+//                throw new ASException(ErrorCode.AS_PCR_NOT_FOUND,pcr);
+//            }
+            return true;
+        
     }
 
     private boolean verifyTrust(TblHosts host, TblMle mle,
@@ -220,6 +294,7 @@ public class HostTrustBO extends BaseBO {
         }
 
         for (String pcr : gkvPcrManifestMap.keySet()) {
+            log.debug("PCR to be checked: {}",pcr);
             if (pcrManifestMap.containsKey(pcr)) {
                 IManifest pcrMf = pcrManifestMap.get(pcr);
                 boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));

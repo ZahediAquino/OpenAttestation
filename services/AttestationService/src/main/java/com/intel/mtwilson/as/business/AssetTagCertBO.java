@@ -10,6 +10,7 @@ import com.intel.mtwilson.util.crypto.Sha1Digest;
 import com.intel.mtwilson.util.io.UUID;
 import com.intel.mountwilson.as.common.ASException;
 import com.intel.mtwilson.ApacheHttpClient;
+import com.intel.mountwilson.as.common.ASConfig;
 //import com.intel.mtwilson.My;
 import com.intel.mtwilson.ApiException;
 import com.intel.mtwilson.ApiResponse;
@@ -39,6 +40,10 @@ import org.apache.commons.io.IOUtils;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jackson.map.ObjectMapper;
 import com.intel.mtwilson.crypto.CryptographyException;
+import com.intel.mtwilson.datatypes.File;
+import com.intel.mtwilson.tag.dao.TagJdbi;
+import com.intel.mtwilson.tag.dao.jdbi.FileDAO;
+import com.intel.mtwilson.util.x509.X509Util;
 
 import java.security.cert.CertificateException;
 import org.apache.commons.codec.binary.Hex;
@@ -366,79 +371,83 @@ public class AssetTagCertBO extends BaseBO {
      * @param uuid
      * @return 
      */
-//    public MwAssetTagCertificate findValidAssetTagCertForHost(String uuid){
-//        uuid = uuid.replace("\n", "");
-//
-//        try {
-//            // Find the asset tag certificates for the specified UUID of the host. Not that this might return back multiple
-//            // values. We need to evaluate each of the certificates to make sure that they are valid
-//            // The below query has been modified to return back the results ordered by the insert date with the latest one first
-//            // So if the host has been provisioned multiple times, we will pick up the latest one.
-//            if (uuid != null && !uuid.isEmpty()) {
-//                List<MwAssetTagCertificate> atagCerts = My.jpa().mwAssetTagCertificate().findAssetTagCertificatesByHostUUID(uuid.toLowerCase());
-//                if (atagCerts.isEmpty()) {
-//                    log.info("Asset tag certificate has not been provisioned for the host with UUID : {}.", uuid);
-//                    return null;
-//                } else {
-//                    // For each of the asset tag certs that are returned back, we need to validate the certificate first.
-//                    for (MwAssetTagCertificate atagTempCert : atagCerts){
-//                        if (validateAssetTagCert(atagTempCert)) {
-//                            log.debug("Valid asset tag certificate found for host with UUID {}.", uuid);
-//                            return atagTempCert;
-//                        }
-//                    }
-//                    log.info("No valid asset tag certificate found for host with UUID {}.", uuid);
-//                    return null;
-//                }
-//            } else {
-//                log.error("UUID specified for the host is not valid.");
-//                throw new ASException(ErrorCode.AS_HOST_NOT_FOUND);
-//            }            
-//        } catch (ASException ase) {
-//            log.error("Error during querying of valid asset tag certificate. Error Details - {}:{}.", ase.getErrorCode(), ase.getErrorMessage());
-//            throw ase;
-//        } catch (Exception ex) {
-//            log.error("Unexpected error during querying of valid asset tag certificate. Error Details - {}.", ex.getMessage());
-//            throw new ASException(ex);
-//        }        
-//    }
+    public MwAssetTagCertificate findValidAssetTagCertForHost(String uuid){
+        uuid = uuid.replace("\n", "");
+
+        try {
+            // Find the asset tag certificates for the specified UUID of the host. Not that this might return back multiple
+            // values. We need to evaluate each of the certificates to make sure that they are valid
+            // The below query has been modified to return back the results ordered by the insert date with the latest one first
+            // So if the host has been provisioned multiple times, we will pick up the latest one.
+            if (uuid != null && !uuid.isEmpty()) {
+                //List<MwAssetTagCertificate> atagCerts = My.jpa().mwAssetTagCertificate().findAssetTagCertificatesByHostUUID(uuid.toLowerCase());
+                MwAssetTagCertificateJpaController assetTagController = new MwAssetTagCertificateJpaController(getEntityManagerFactory());
+                List<MwAssetTagCertificate> atagCerts = assetTagController.findAssetTagCertificatesByHostUUID(uuid.toLowerCase());
+                if (atagCerts.isEmpty()) {
+                    log.info("Asset tag certificate has not been provisioned for the host with UUID : {}.", uuid);
+                    return null;
+                } else {
+                    // For each of the asset tag certs that are returned back, we need to validate the certificate first.
+                    for (MwAssetTagCertificate atagTempCert : atagCerts){
+                        if (validateAssetTagCert(atagTempCert)) {
+                            log.debug("Valid asset tag certificate found for host with UUID {}.", uuid);
+                            return atagTempCert;
+                        }
+                    }
+                    log.info("No valid asset tag certificate found for host with UUID {}.", uuid);
+                    return null;
+                }
+            } else {
+                log.error("UUID specified for the host is not valid.");
+                throw new ASException(ErrorCode.AS_HOST_NOT_FOUND);
+            }            
+        } catch (ASException ase) {
+            log.error("Error during querying of valid asset tag certificate. Error Details - {}:{}.", ase.getErrorCode(), ase.getErrorMessage());
+            throw ase;
+        } catch (Exception ex) {
+            log.error("Unexpected error during querying of valid asset tag certificate. Error Details - {}.", ex.getMessage());
+            throw new ASException(ex);
+        }        
+    }
     
-//    public MwAssetTagCertificate findValidAssetTagCertForHost(Integer hostID){
-//        try {
-//            // Find the asset tag certificates for the specified UUID of the host. Note that this might return back multiple
-//            // values. We need to evaluate each of the certificates to make sure that they are valid
-//            // The below query has been modified to return back the results ordered by the insert date with the latest one first
-//            // So if the host has been provisioned multiple times, we will pick up the latest one.
-//            if (hostID != 0) {
-//                List<MwAssetTagCertificate> atagCerts = My.jpa().mwAssetTagCertificate().findAssetTagCertificatesByHostID(hostID);
-//                if (atagCerts.isEmpty()) {
-//                    log.info("Asset tag certificate has not been provisioned for the host with ID : {}.", hostID);
-//                    return null;
-//                } else {
-//                    // For each of the asset tag certs that are returned back, we need to validate the certificate first.
-//                    // Ideally there should be only one that is valid.
-//                    for (MwAssetTagCertificate atagTempCert : atagCerts){
-//                        if (validateAssetTagCert(atagTempCert)) {
-//                            log.debug("Valid asset tag certificate found for host with ID {}.", hostID);
-//                            return atagTempCert;
-//                        }
-//                    }
-//                    log.info("No valid asset tag certificate found for host with ID {}.", hostID);
-//                }
-//            } else {
-//                log.error("ID specified for the host is not valid.");
-//                throw new ASException(ErrorCode.AS_HOST_NOT_FOUND);
-//            }            
-//        } catch (ASException ase) {
-//            log.error("Error during querying of valid asset tag certificate using host ID. Error Details - {}:{}.", ase.getErrorCode(), ase.getErrorMessage());
-//            throw ase;
-//        } catch (Exception ex) {
-//            log.error("Unexpected error during querying of valid asset tag certificate using host ID. Error Details - {}.", ex.getMessage());
-//            throw new ASException(ex);
-//        }
-//        
-//        return null;
-//    }
+    public MwAssetTagCertificate findValidAssetTagCertForHost(Integer hostID){
+        try {
+            // Find the asset tag certificates for the specified UUID of the host. Note that this might return back multiple
+            // values. We need to evaluate each of the certificates to make sure that they are valid
+            // The below query has been modified to return back the results ordered by the insert date with the latest one first
+            // So if the host has been provisioned multiple times, we will pick up the latest one.
+            if (hostID != 0) {
+                //List<MwAssetTagCertificate> atagCerts = My.jpa().mwAssetTagCertificate().findAssetTagCertificatesByHostID(hostID);
+                MwAssetTagCertificateJpaController assetTagController = new MwAssetTagCertificateJpaController(getEntityManagerFactory());
+                List<MwAssetTagCertificate> atagCerts = assetTagController.findAssetTagCertificatesByHostID(hostID);
+                if (atagCerts.isEmpty()) {
+                    log.info("Asset tag certificate has not been provisioned for the host with ID : {}.", hostID);
+                    return null;
+                } else {
+                    // For each of the asset tag certs that are returned back, we need to validate the certificate first.
+                    // Ideally there should be only one that is valid.
+                    for (MwAssetTagCertificate atagTempCert : atagCerts){
+                        if (validateAssetTagCert(atagTempCert)) {
+                            log.debug("Valid asset tag certificate found for host with ID {}.", hostID);
+                            return atagTempCert;
+                        }
+                    }
+                    log.info("No valid asset tag certificate found for host with ID {}.", hostID);
+                }
+            } else {
+                log.error("ID specified for the host is not valid.");
+                throw new ASException(ErrorCode.AS_HOST_NOT_FOUND);
+            }            
+        } catch (ASException ase) {
+            log.error("Error during querying of valid asset tag certificate using host ID. Error Details - {}:{}.", ase.getErrorCode(), ase.getErrorMessage());
+            throw ase;
+        } catch (Exception ex) {
+            log.error("Unexpected error during querying of valid asset tag certificate using host ID. Error Details - {}.", ex.getMessage());
+            throw new ASException(ex);
+        }
+        
+        return null;
+    }
 
     /**
      * Validates the asset tag certificate and returns back true/false accordingly.
@@ -447,43 +456,64 @@ public class AssetTagCertBO extends BaseBO {
      * @return 
      */
     
-//    private boolean validateAssetTagCert(MwAssetTagCertificate atagObj){
-//        boolean isValid = false;
-//        
-//        try {
-//            // First let us verify if the revoked flag is set
-//            if (atagObj.getRevoked() == true)
-//                return false;
-//            
-//            // X509AttributeCertificate provides a helper function that validates both the dates and the signature.
-//            // For that we need to first get the CA certificate that signed the Attribute Certificate. We need to
-//            // extract this from the PEM file list and pass it to the helper function
-//            X509AttributeCertificate atagAttrCertForHost = X509AttributeCertificate.valueOf(atagObj.getCertificate());
-//            
-//            List<X509Certificate> atagCaCerts = null;
-//            
-//            try (InputStream atagCaIn = new FileInputStream(My.configuration().getAssetTagCaCertificateFile())) {
+    private boolean validateAssetTagCert(MwAssetTagCertificate atagObj){
+        boolean isValid = false;
+        
+        try {
+            // First let us verify if the revoked flag is set
+            if (atagObj.getRevoked() == true)
+                return false;
+            
+            // X509AttributeCertificate provides a helper function that validates both the dates and the signature.
+            // For that we need to first get the CA certificate that signed the Attribute Certificate. We need to
+            // extract this from the PEM file list and pass it to the helper function
+            X509AttributeCertificate atagAttrCertForHost = X509AttributeCertificate.valueOf(atagObj.getCertificate());
+            
+            List<X509Certificate> atagCaCerts = null;
+            ////////////////
+            FileDAO fileDao = null;
+            try {
+                fileDao = TagJdbi.fileDao();
+                File cacertFile = fileDao.findByName("cacerts");
+                if( cacertFile == null ) {
+                    log.error("Error loading the cacert pem file to extract the CA certificate(s).");
+                }
+                else {
+                     atagCaCerts = X509Util.decodePemCertificates(new String(cacertFile.getContent(), "UTF-8"));
+                    //IOUtils.closeQuietly(atagCaIn);
+                    log.debug("Added {} certificates from AssetTagCA.pem", atagCaCerts.size());
+//                    cacerts = X509Util.decodePemCertificates(new String(cacertFile.getContent(), "UTF-8"));
+                }
+            }
+            catch(Exception e) {
+                log.error("Cannot load cacerts", e);
+                atagCaCerts = null;
+            }
+            
+            ///////////////
+            
+//            try (InputStream atagCaIn = new FileInputStream(ASConfig.getAssetTagCaCertificateFile())) {
 //                atagCaCerts = X509Util.decodePemCertificates(IOUtils.toString(atagCaIn));
 //                //IOUtils.closeQuietly(atagCaIn);
 //                log.debug("Added {} certificates from AssetTagCA.pem", atagCaCerts.size());
 //            } catch(IOException | CertificateException ex) {
 //                log.error("Error loading the Asset Tag pem file to extract the CA certificate(s).",ex);
 //            }
-//            
-//            // The below isValid function verifies both the signature and the dates.
-//            if (atagCaCerts != null ) {
-//                for (X509Certificate atagCACert : atagCaCerts) {
-//                    if (atagAttrCertForHost.isValid(atagCACert))
-//                        return true;
-//                }
-//            }
-//            
-//        } catch (Exception ex) {
-//            throw new ASException (ex);
-//        }
-//                
-//        return isValid;        
-//    }
+            
+            // The below isValid function verifies both the signature and the dates.
+            if (atagCaCerts != null ) {
+                for (X509Certificate atagCACert : atagCaCerts) {
+                    if (atagAttrCertForHost.isValid(atagCACert))
+                        return true;
+                }
+            }
+            
+        } catch (Exception ex) {
+            throw new ASException (ex);
+        }
+                
+        return isValid;        
+    }
     
     protected static final ObjectMapper mapper = new ObjectMapper();
      

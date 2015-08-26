@@ -347,7 +347,9 @@ public class TrustAgentSecureClient {
     
     public ClientRequestType getQuote(String nonce, String pcrList) throws PropertyException, JAXBException, UnknownHostException, IOException, KeyManagementException, NoSuchAlgorithmException {
         QuoteRequest quoteRequest = new QuoteRequest();
-        quoteRequest.setPcrList(pcrList);
+        log.debug("pcrList String: {}", pcrList);
+        log.debug("Proposed string is {}",pcrList+",22,22");
+        quoteRequest.setPcrList(pcrList+",22,22");
         quoteRequest.setNonce(nonce);
         this.data = getXml(quoteRequest).getBytes();
         ClientRequestType clientRequestType = sendQuoteRequest();

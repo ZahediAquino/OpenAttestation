@@ -7,12 +7,17 @@ package com.intel.mtwilson.datatypes;
 //import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.intel.mtwilson.util.validation.Regex;
 import com.intel.mtwilson.datatypes.Document;
+import javax.xml.bind.annotation.*;
+
+
+
 
 /**
  * 
  * @author jbuhacoff
  */
 //@JacksonXmlRootElement(localName="file")
+@XmlRootElement(name="file")
 public class File extends Document {
     
     private String name;

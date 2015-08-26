@@ -487,6 +487,7 @@ public class ApiClient implements AttestationService, WhitelistService, AssetTag
         MultivaluedMap<String,String> query = new MultivaluedMapImpl();
         query.add("hostName", hostname.toString());
         // need to support both formats:  "BIOS:1,VMM:1" from 0.5.1 and JSON from 0.5.2
+        log.debug("Getting status for host: {}", hostname);
         ApiResponse response = httpClient.get(asurl("/hosts/trust", query));
         HostTrustResponse trust;
         if( response.httpStatusCode == HttpStatus.SC_OK ) {            

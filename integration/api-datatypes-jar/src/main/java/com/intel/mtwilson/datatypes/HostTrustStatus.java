@@ -16,6 +16,7 @@
 package com.intel.mtwilson.datatypes;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * @since 0.5.1
@@ -27,6 +28,9 @@ public class HostTrustStatus
     @JsonProperty("vmm") public boolean vmm = false;
     @JsonProperty("location") public boolean location = false;
 
+    @JsonIgnore
+    @JsonProperty("asset_tag") public boolean asset_tag = false;
+       
     public HostTrustStatus() {
         
     }
@@ -35,5 +39,6 @@ public class HostTrustStatus
         this.bios = copy.bios;
         this.vmm = copy.vmm;
         this.location = copy.location;
+        this.asset_tag = copy.asset_tag;
     }
 }

@@ -125,7 +125,13 @@ public class ConverterUtil {
         else {
 				hostVO.setVmmStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_FALSE));
         }
-        if( hostTrustResponse.trust.bios && hostTrustResponse.trust.vmm ) {
+        if( hostTrustResponse.trust.asset_tag ) {
+				hostVO.setAssetTagStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_TRUE));
+        }
+        else {
+				hostVO.setAssetTagStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_FALSE));
+        }
+        if( hostTrustResponse.trust.bios && hostTrustResponse.trust.vmm && hostTrustResponse.trust.asset_tag) {
 				hostVO.setOverAllStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_TRUE));
 				hostVO.setOverAllStatusBoolean(true);
         }

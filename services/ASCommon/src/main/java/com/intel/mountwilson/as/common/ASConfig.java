@@ -256,7 +256,6 @@ public class ASConfig extends ConfigBase{
         Connection c = DriverManager.getConnection(getJpaProperties().getProperty("javax.persistence.jdbc.url"), getDatabaseUsername(), getDatabasePassword());
         return c;
     }
-    
     public static String getAssetTagMtWilsonBaseUrl() {
         Configuration conf = getConfiguration();
         return conf.getString("mtwilson.atag.mtwilson.baseurl", "");
