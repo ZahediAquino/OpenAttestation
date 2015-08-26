@@ -80,6 +80,11 @@ public class PcrLogReport {
     public void setVerifiedOn(Date verifiedOn) {
         this.verifiedOn = verifiedOn;
     }
+    
+    @JsonProperty("ModuleLogs")
+    public List<ModuleLogReport> getModuleLogs() {
+        return moduleLogs;
+    }
 
     @JsonProperty("ModuleLogs")
     public void setModuleLogs(List<ModuleLogReport> moduleLogs) {
@@ -97,9 +102,5 @@ public class PcrLogReport {
         this.whiteListValue = whiteListValue;
     }
     
-    @JsonProperty("ModuleLogs")
-    public List<ModuleLogReport> getModuleLogs() {
-        return moduleLogs;
-    }
 
 }
