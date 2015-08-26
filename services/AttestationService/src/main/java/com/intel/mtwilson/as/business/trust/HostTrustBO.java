@@ -252,15 +252,15 @@ public class HostTrustBO extends BaseBO {
 //        }
         log.debug("Cert Sha1: " + certSha1);
         PcrManifest goodKnownValue = (PcrManifest) pcrManifestMap.get("22");
-        log.debug("Checking PCR 22: {} - {}",certSha1, goodKnownValue.getPcrValue());
+        //log.debug("Checking PCR 22: {} - {}",certSha1, goodKnownValue.getPcrValue());
         String pcr = "22";
-            log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
-             boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
-             log.info(String.format("PCR %s Host Trust status %s", pcr,
-                        String.valueOf(trustStatus)));
-               if (!trustStatus) {
-                    response = false;
-                }
+            //log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
+            boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
+            log.info(String.format("PCR %s Host Trust status %s", pcr,
+            String.valueOf(trustStatus)));
+            if (!trustStatus) {
+                 response = false;
+            }
 //            if (pcrManifestMap.containsKey(pcr)) {
 //                IManifest pcrMf = pcrManifestMap.get(pcr);
 //                boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));
