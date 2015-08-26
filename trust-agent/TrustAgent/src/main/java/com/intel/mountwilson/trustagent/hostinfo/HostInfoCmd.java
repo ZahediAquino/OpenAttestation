@@ -95,10 +95,10 @@ public class HostInfoCmd implements ICommand {
 //            
 //    }
     
-    private String trim(String text) {
-        if( text == null ) { return null; }
-        return text.trim();
-    }
+//    private String trim(String text) {
+//        if( text == null ) { return null; }
+//        return text.trim();
+//    }
 //
 //    /*
 //     * Sample response of dmidecode -s bios-vendor -> Intel Corp. Sample

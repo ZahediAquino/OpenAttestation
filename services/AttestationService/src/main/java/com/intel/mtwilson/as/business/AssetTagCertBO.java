@@ -517,15 +517,15 @@ public class AssetTagCertBO extends BaseBO {
     
     protected static final ObjectMapper mapper = new ObjectMapper();
      
-    private <T> T fromJSON(String document, Class<T> valueType) throws IOException, ApiException {
-        try {
-            return mapper.readValue(document, valueType);
-        }
-        catch(org.codehaus.jackson.JsonParseException e) {
-           
-            throw new ApiException("Cannot parse response", e);
-        }
-    }
+//    private <T> T fromJSON(String document, Class<T> valueType) throws IOException, ApiException {
+//        try {
+//            return mapper.readValue(document, valueType);
+//        }
+//        catch(org.codehaus.jackson.JsonParseException e) {
+//           
+//            throw new ApiException("Cannot parse response", e);
+//        }
+//    }
     
 //    public TagDataType getTagInfoByOID(String oid) throws IOException, ApiException, NoSuchAlgorithmException, KeyManagementException, SignatureException {
 //        log.error("attempting to connect to asset tag host");
