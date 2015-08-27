@@ -434,13 +434,12 @@ public class HostTrustBO extends BaseBO {
                 String hostTrustStatus = hostStatus.get(hostName.getHostname());
                 log.info("The trust status of {} is :{}",
                         new String[] { hostName.toString(), hostTrustStatus });
-                if (hostTrustStatus != null) {
-                    if(hostTrustStatus.equals("unknown"))
+                if(hostTrustStatus != null){
+                    if (hostTrustStatus.equals("unknown")) {
                         trustLevel = "unknown";
-                    else
+                    } else {
                         trustLevel = parseTrustStatus(hostTrustStatus);
-                } else {
-                    trustLevel = parseTrustStatus(hostTrustStatus);
+                    }
                 }
             } catch (ASException e) {
                 log.error("Error while getting trust of host " + hostName, e);
