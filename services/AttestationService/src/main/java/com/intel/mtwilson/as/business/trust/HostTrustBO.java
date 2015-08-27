@@ -202,6 +202,7 @@ public class HostTrustBO extends BaseBO {
          * Verify Location trust 
          */
         trust.location = host.getLocation() != null; // if location is available (it comes from PCR 22), it's trusted
+        trust.asset_tag = false;
         MwAssetTagCertificate atagCert = verifyAssetTagCert(host);
         if(atagCert != null){
             trust.asset_tag = verifyAssetTagTrust(host, host.getVmmMleId(), pcrManifestMap, atagCert);
@@ -213,8 +214,8 @@ public class HostTrustBO extends BaseBO {
     }
 
     private String toString(HostTrustStatus trust) {
-        return String.format("BIOS:%d,VMM:%d", (trust.bios) ? 1 : 0,
-                (trust.vmm) ? 1 : 0);
+        return String.format("BIOS:%d,VMM:%d,ATag:%d", (trust.bios) ? 1 : 0,
+                (trust.vmm) ? 1 : 0, (trust.asset_tag) ? 1 : 0);
     }
     
     private MwAssetTagCertificate verifyAssetTagCert(TblHosts tblHosts){
@@ -243,7 +244,6 @@ public class HostTrustBO extends BaseBO {
              TblMle mle,
              HashMap<String, ? extends IManifest> pcrManifestMap,
              MwAssetTagCertificate atagCert) {
-        boolean response = true;
         
         String certSha1 = Sha1Digest.valueOf(atagCert.getPCREvent()).toString();
 //        if (gkvPcrManifestMap.size() <= 0) {
@@ -258,9 +258,7 @@ public class HostTrustBO extends BaseBO {
              boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
              log.info(String.format("PCR %s Host Trust status %s", pcr,
                         String.valueOf(trustStatus)));
-               if (!trustStatus) {
-                    response = false;
-                }
+               
 //            if (pcrManifestMap.containsKey(pcr)) {
 //                IManifest pcrMf = pcrManifestMap.get(pcr);
 //                boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));
@@ -279,7 +277,7 @@ public class HostTrustBO extends BaseBO {
 //                log.info(String.format("PCR %s not found in manifest.", pcr));
 //                throw new ASException(ErrorCode.AS_PCR_NOT_FOUND,pcr);
 //            }
-            return true;
+            return trustStatus;
         
     }
 
