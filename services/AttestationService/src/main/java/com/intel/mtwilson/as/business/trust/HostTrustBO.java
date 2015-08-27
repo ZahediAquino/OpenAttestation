@@ -247,12 +247,14 @@ public class HostTrustBO extends BaseBO {
         String certSha1 = Sha1Digest.valueOf(atagCert.getPCREvent()).toString();
         log.debug("Cert Sha1: " + certSha1);
         PcrManifest goodKnownValue = (PcrManifest) pcrManifestMap.get("22");
-        log.debug("Checking PCR 22: {} - {}", certSha1, goodKnownValue.getPcrValue());
-        String pcr = "22";
-        log.debug("PCR to be checked: {} - {}", pcr, pcrManifestMap.get(pcr));
-        boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
-        log.info(String.format("PCR %s Host Trust status %s", pcr,String.valueOf(trustStatus)));
-
+        boolean trustStatus = false;
+        if(goodKnownValue != null){
+            log.debug("Checking PCR 22: {} - {}", certSha1, goodKnownValue.getPcrValue());
+            String pcr = "22";
+            log.debug("PCR to be checked: {} - {}", pcr, pcrManifestMap.get(pcr));
+            trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
+            log.info(String.format("PCR %s Host Trust status %s", pcr,String.valueOf(trustStatus)));
+        }
         return trustStatus;
 
     }
