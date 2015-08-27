@@ -257,33 +257,30 @@ public class HostTrustBO extends BaseBO {
         //log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
         if(goodKnownValue != null)
         {
-            
-        boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
-        log.info(String.format("PCR %s Host Trust status %s", pcr,
-                String.valueOf(trustStatus)));
-        if (!trustStatus) {
-            response = false;
-        }
-//            if (pcrManifestMap.containsKey(pcr)) {
-//                IManifest pcrMf = pcrManifestMap.get(pcr);
-//                boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));
-//                log.info(String.format("PCR %s Host Trust status %s", pcr,
-//                        String.valueOf(trustStatus)));
-//                /*
-//                 * Log to database
-//                 */
-//                logTrustStatus(host, mle,  pcrMf);
-//
-//                if (!trustStatus) {
-//                    response = false;
-//                }
-//
-//            } else {
-//                log.info(String.format("PCR %s not found in manifest.", pcr));
-//                throw new ASException(ErrorCode.AS_PCR_NOT_FOUND,pcr);
-//            }
-        return true;
-
+            boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
+            log.info(String.format("PCR %s Host Trust status %s", pcr,String.valueOf(trustStatus)));
+            if (!trustStatus) {
+                response = false;
+            }
+    //            if (pcrManifestMap.containsKey(pcr)) {
+    //                IManifest pcrMf = pcrManifestMap.get(pcr);
+    //                boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));
+    //                log.info(String.format("PCR %s Host Trust status %s", pcr,
+    //                        String.valueOf(trustStatus)));
+    //                /*
+    //                 * Log to database
+    //                 */
+    //                logTrustStatus(host, mle,  pcrMf);
+    //
+    //                if (!trustStatus) {
+    //                    response = false;
+    //                }
+    //
+    //            } else {
+    //                log.info(String.format("PCR %s not found in manifest.", pcr));
+    //                throw new ASException(ErrorCode.AS_PCR_NOT_FOUND,pcr);
+    //            }
+            return true;
         } else {
             return false;
         }
