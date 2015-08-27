@@ -195,7 +195,8 @@ public class TrustAgentSecureClient {
             Unmarshaller u = jc.createUnmarshaller();
             log.debug("Created Unmarshaller Instance {}", u.toString());            
             assert u != null;
-            assert new String(buf) != null;
+            //assert new String(buf) != null; //Expresion always return null.
+            assert buf != null;
             log.debug("Unmarshalling");
             JAXBElement po =  (JAXBElement) u.unmarshal(new StringReader(new String(buf).trim()));
             log.debug("Unmarshalled");

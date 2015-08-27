@@ -396,7 +396,7 @@ public class HostTrustBO extends BaseBO {
     public OpenStackHostTrustLevelReport getPollHosts(OpenStackHostTrustLevelQuery input) {
         OpenStackHostTrustLevelReport hostTrusts = new OpenStackHostTrustLevelReport();
         Date today = new Date(System.currentTimeMillis());
-        String trustLevel;
+        String trustLevel = null;
 
         // fetch pcr value from host agent in parallel
         for (final Hostname hostName : input.hosts) {
@@ -440,7 +440,10 @@ public class HostTrustBO extends BaseBO {
                     } else {
                         trustLevel = parseTrustStatus(hostTrustStatus);
                     }
-                } 
+                } else {
+                    log.error("Error while getting trust of host hostTrustStatus is null");
+                    trustLevel = "unknown";
+                }
             } catch (ASException e) {
                 log.error("Error while getting trust of host " + hostName, e);
                 trustLevel = "unknown";
