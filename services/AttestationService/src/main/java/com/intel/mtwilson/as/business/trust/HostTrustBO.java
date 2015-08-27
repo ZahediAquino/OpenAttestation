@@ -440,8 +440,7 @@ public class HostTrustBO extends BaseBO {
                     } else {
                         trustLevel = parseTrustStatus(hostTrustStatus);
                     }
-                } else
-                    throw new NullPointerException();
+                } 
             } catch (ASException e) {
                 log.error("Error while getting trust of host " + hostName, e);
                 trustLevel = "unknown";
