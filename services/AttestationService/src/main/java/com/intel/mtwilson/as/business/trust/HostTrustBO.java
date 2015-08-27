@@ -137,7 +137,7 @@ public class HostTrustBO extends BaseBO {
          */
         HostTrustStatus trust = verifyTrust(tblHosts, pcrManifestMap,
                 gkvBiosPcrManifestMap, gkvVmmPcrManifestMap);
-
+        
         log.info( "Verfication Time {}", (System.currentTimeMillis() - start));
 
         return trust;
@@ -208,8 +208,9 @@ public class HostTrustBO extends BaseBO {
             trust.asset_tag = verifyAssetTagTrust(host, host.getVmmMleId(), pcrManifestMap, atagCert);
             log.debug("Asset Tag Status Answer: {}", trust.asset_tag);
         }
+        log.debug("LogTrustToString: {}", toString(trust));
         logOverallTrustStatus(host, toString(trust));
-
+         
         return trust;
     }
 
@@ -432,7 +433,9 @@ public class HostTrustBO extends BaseBO {
                 if (hostTrustStatus == "unknown") {
                     trustLevel = "unknown";
                 } else {
+                    log.debug("Processing hostTrustStatus String: {}",hostTrustStatus);
                     trustLevel = parseTrustStatus(hostTrustStatus);
+                    log.debug("Trust level obtained: {}",hostTrustStatus);
                 }
             } catch (ASException e) {
                 log.error("Error while getting trust of host " + hostName, e);
@@ -470,19 +473,23 @@ public class HostTrustBO extends BaseBO {
 
         Boolean biostrust = false;
         Boolean vmmtrust = false;
+        Boolean atagtrust = false;
         String[] parts = hostTrustStatus.split(",");
-
+        //Sample Input: BIOS:1,VMM:1,ATag:0
         for (String part : parts) {
             String[] subParts = part.split(":");
             if (subParts[0].equals("BIOS")) {
                 biostrust = subParts[1].equals("1");
-            } else {
+            } else if(subParts[0].equals("VMM")) {
                 vmmtrust = subParts[1].equals("1");
+            }
+            else {
+                atagtrust = subParts[1].equals("1");
             }
 
         }
 
-        if (biostrust && vmmtrust) {
+        if (biostrust && vmmtrust && atagtrust) {
             result = "trusted";
         }
 

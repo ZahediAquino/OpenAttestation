@@ -472,6 +472,9 @@ public class ApiClient implements AttestationService, WhitelistService, AssetTag
                     else if(subParts[0].equals("VMM")) {
                             trustStatus.vmm = subParts[1].equals("1");
                     }
+                    else if(subParts[0].equals("ATag")) {
+                            trustStatus.asset_tag = subParts[1].equals("1");
+                    }
             }
             return trustStatus;
     }
@@ -489,6 +492,7 @@ public class ApiClient implements AttestationService, WhitelistService, AssetTag
         // need to support both formats:  "BIOS:1,VMM:1" from 0.5.1 and JSON from 0.5.2
         log.debug("Getting status for host: {}", hostname);
         ApiResponse response = httpClient.get(asurl("/hosts/trust", query));
+        log.debug("Server Response: {}",text(response));
         HostTrustResponse trust;
         if( response.httpStatusCode == HttpStatus.SC_OK ) {            
             if( APPLICATION_JSON_TYPE.equals(response.contentType) ) {

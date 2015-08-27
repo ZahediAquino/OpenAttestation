@@ -27,8 +27,6 @@ public class HostTrustStatus
     @JsonProperty("bios") public boolean bios = false;
     @JsonProperty("vmm") public boolean vmm = false;
     @JsonProperty("location") public boolean location = false;
-
-    @JsonIgnore
     @JsonProperty("asset_tag") public boolean asset_tag = false;
        
     public HostTrustStatus() {
