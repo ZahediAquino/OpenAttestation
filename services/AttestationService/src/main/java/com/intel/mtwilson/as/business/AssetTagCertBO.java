@@ -471,7 +471,7 @@ public class AssetTagCertBO extends BaseBO {
             
             List<X509Certificate> atagCaCerts = null;
             ////////////////
-            FileDAO fileDao = null;
+            FileDAO fileDao;
             try {
                 fileDao = TagJdbi.fileDao();
                 File cacertFile = fileDao.findByName("cacerts");
