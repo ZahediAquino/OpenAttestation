@@ -151,7 +151,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	@Override
 	public TrustedHostVO getSingleHostTrust(String hostName,AttestationService apiClientServices,X509Certificate[] trustedCertificates)throws DemoPortalException {
 		
-		TrustedHostVO hostVO = null;
+		TrustedHostVO hostVO;
 		HostDetailsEntityVO hostDetailsEntityVO = new HostDetailsEntityVO();
 		hostDetailsEntityVO.setHostName(hostName);
 		String xmloutput = null;
@@ -189,8 +189,8 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	public Map<String, List<Map<String, String>>> getAllOemInfo(ApiClient client)throws DemoPortalException {
 		
 		Map<String, List<Map<String, String>>> map = new HashMap<String, List<Map<String,String>>>();
-		List<MleDetailsEntityVO> mleList = null;
-        List<Map<String, String>> list = new ArrayList<Map<String,String>>();
+		List<MleDetailsEntityVO> mleList;
+        List<Map<String, String>> list;
 		
 		try {
 			WhitelistService service = (WhitelistService) client;
@@ -228,7 +228,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	 */
 	@Override
 	public Map<String, Boolean> getOSAndVMMInfo(ApiClient client)throws DemoPortalException {
-		 List<MleDetailsEntityVO> mleList = null;
+		 List<MleDetailsEntityVO> mleList;
 		 //This is a MAP of OS/VMM name and boolean variable which denote about current os/vmm info is VMWare type or not. 
 		 Map<String,Boolean> maps = new HashMap<String, Boolean>();
 		 WhitelistService service = (WhitelistService) client;
