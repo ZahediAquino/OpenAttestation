@@ -49,11 +49,11 @@ public class MwAssetTagCertificateJpaController extends GenericJpaController<MwA
 
     public void edit(MwAssetTagCertificate mwAssetTagCertificate) throws NonexistentEntityException, Exception {
         EntityManager em = getEntityManager();
-        Integer id = null;
+        Integer id;
+        em.getTransaction().begin();
+        mwAssetTagCertificate = em.merge(mwAssetTagCertificate);
+        id = mwAssetTagCertificate.getId();
         try {
-            em.getTransaction().begin();
-            mwAssetTagCertificate = em.merge(mwAssetTagCertificate);
-            id = mwAssetTagCertificate.getId();
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
