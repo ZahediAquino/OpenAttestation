@@ -134,7 +134,7 @@ public class Global {
             // the mtwilson api client keystore is stored in our database as a file
             log.debug("Preparing Mt Wilson Web Service API Client...");
             FileDAO fileDao = null;
-            //ByteArrayResource keystoreResource = null;
+            //ByteArrayResource keystoreResource = null; //292 and 293 Variable is not being used after assigned
             try {
                 fileDao = TagJdbi.fileDao();
                 File mtwilsonKeystoreFile = fileDao.findByName("mtwilson-client-keystore");
