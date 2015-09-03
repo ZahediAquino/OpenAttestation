@@ -135,8 +135,11 @@ public class HostTrustBO extends BaseBO {
          * Verify trust
 		 *
          */
+        log.info("tblHosts.getId()" + tblHosts.getId());
+        log.info("tblHosts.getIPAddress()" + tblHosts.getIPAddress());
         HostTrustStatus trust = verifyTrust(tblHosts, pcrManifestMap,
                 gkvBiosPcrManifestMap, gkvVmmPcrManifestMap);
+        
         
         log.info( "Verfication Time {}", (System.currentTimeMillis() - start));
 
@@ -224,7 +227,8 @@ public class HostTrustBO extends BaseBO {
             log.debug("Checking if there are any asset tag certificates mapped to host with ID : {}", tblHosts.getId());
             // Load the asset tag certificate only if it is associated and valid.
             AssetTagCertBO atagCertBO = new AssetTagCertBO();
-            MwAssetTagCertificate atagCertForHost = atagCertBO.findValidAssetTagCertForHost(tblHosts.getId());            
+            MwAssetTagCertificate atagCertForHost = atagCertBO.findValidAssetTagCertForHost(tblHosts.getId());  
+            log.info("atagCertBO.findValidAssetTagCertForHost("+ tblHosts.getId() + ")");
             if (atagCertForHost != null) {
                 log.debug("Asset tag certificate is associated to host {} with status {}.", tblHosts.getName(), atagCertForHost.getRevoked());
                 return atagCertForHost;
@@ -252,13 +256,15 @@ public class HostTrustBO extends BaseBO {
 //                    mle.getVersion());
 //        }
         log.debug("Cert Sha1: " + certSha1);
+        IManifest pcrMf = pcrManifestMap.get("22");
         PcrManifest goodKnownValue = (PcrManifest) pcrManifestMap.get("22");
         log.debug("Checking PCR 22: {} - {}",certSha1, goodKnownValue.getPcrValue());
         String pcr = "22";
-            log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
-             boolean trustStatus = certSha1.toUpperCase().equals(goodKnownValue.getPcrValue().toUpperCase());
-             log.info(String.format("PCR %s Host Trust status %s", pcr,
-                        String.valueOf(trustStatus)));
+        log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
+        boolean trustStatus = certSha1.toUpperCase().equalsIgnoreCase(goodKnownValue.getPcrValue().toUpperCase());
+        log.info(String.format("PCR %s Host Trust status %s", pcr, String.valueOf(trustStatus)));
+        logTrustStatus(host, mle, pcrMf);
+             
                
 //            if (pcrManifestMap.containsKey(pcr)) {
 //                IManifest pcrMf = pcrManifestMap.get(pcr);

@@ -35,10 +35,12 @@ import com.intel.mountwilson.manifest.data.IManifest;
 import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mountwilson.manifest.factory.DefaultManifestStrategyFactory;
 import com.intel.mtwilson.as.controller.TblHostSpecificManifestJpaController;
+import com.intel.mtwilson.as.data.MwAssetTagCertificate;
 import com.intel.mtwilson.as.data.TblModuleManifest;
 import com.intel.mtwilson.as.data.TblModuleManifestLog;
 import com.intel.mtwilson.crypto.CryptographyException;
 import com.intel.mtwilson.datatypes.*;
+import com.intel.mtwilson.util.crypto.Sha1Digest;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
@@ -55,6 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReportsBO extends BaseBO {
     Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private static String ASSET_TAG_PCR = "22";
     
     public HostsTrustReportType getTrustReport(Collection<Hostname> hostNames) { // datatype.Hostname
         try {
@@ -282,7 +285,13 @@ public class ReportsBO extends BaseBO {
                 for (TblTaLog log : logs) {
                     boolean value = (failureOnly && log.getTrustStatus() == false);
                     if (!failureOnly || value) {
-                        attestationReport.getPcrLogs().add(getPcrManifestLog(tblHosts, log, failureOnly));
+                        if (log.getManifestName().equalsIgnoreCase(ASSET_TAG_PCR)) {
+                           attestationReport.getPcrLogs().add(getPcrLogReportForAssetTag(log, tblHosts.getId()));
+                        }
+                        else {
+                           attestationReport.getPcrLogs().add(getPcrManifestLog(tblHosts, log, failureOnly));
+                        }
+                        
                     }
                 }
             }
@@ -382,6 +391,27 @@ public class ReportsBO extends BaseBO {
     
     public TblHostSpecificManifestJpaController getTblHostSpecificManifestJpaController() {
 	return new TblHostSpecificManifestJpaController(getEntityManagerFactory());
+    }
+    
+    private PcrLogReport getPcrLogReportForAssetTag(TblTaLog taLog, Integer hostId) {
+        logger.debug("getPcrLogReportForAssetTag : Creating pcr log report for asset tag verification for host with uuid {}.", hostId);
+        AssetTagCertBO atagCertBO = new AssetTagCertBO();
+        MwAssetTagCertificate atagCert = atagCertBO.findValidAssetTagCertForHost(hostId);
+        if (atagCert != null) {  
+            logger.debug("getPcrLogReportForAssetTag : Found a valid asset tag certificate for the host with white list value {}", atagCert.getPCREvent().toString());
+            PcrLogReport manifest = new PcrLogReport();
+            manifest.setName(Integer.parseInt(ASSET_TAG_PCR));
+            manifest.setValue(taLog.getManifestValue());
+            manifest.setWhiteListValue(new  Sha1Digest(atagCert.getPCREvent()).toString());
+            if(manifest.getValue().equals(manifest.getWhiteListValue())) {
+                manifest.setTrustStatus(1);
+            }else{
+                manifest.setTrustStatus(0);
+            }
+            manifest.setVerifiedOn(new Date());
+            return manifest;
+        }
+        return null;
     }
     
     
