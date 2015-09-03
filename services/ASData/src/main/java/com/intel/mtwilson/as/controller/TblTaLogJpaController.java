@@ -34,6 +34,8 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,6 +43,10 @@ import javax.persistence.EntityManagerFactory;
  * @author dsmagadx
  */
 public class TblTaLogJpaController implements Serializable {
+    
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    
+    
     public TblTaLogJpaController( EntityManagerFactory emf) {
         this.emf = emf;
     }
@@ -63,17 +69,20 @@ public class TblTaLogJpaController implements Serializable {
 
     public void edit(TblTaLog tblTaLog) throws IllegalOrphanException, NonexistentEntityException, ASDataException {
         EntityManager em = getEntityManager();
+        Integer id = 0;
         try {
             em.getTransaction().begin();
             // commenting out unused variable for klocwork scans
             // stdalex 3/4
             //TblTaLog persistentTblTaLog = em.find(TblTaLog.class, tblTaLog.getId());
             tblTaLog = em.merge(tblTaLog);
+            id = tblTaLog.getId();
             em.getTransaction().commit();
+            log.debug("The tblTaLog with id #" + id + " has been modified");
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = tblTaLog.getId();
+                id = tblTaLog.getId();
                 if (findTblTaLog(id) == null) {
                     throw new NonexistentEntityException("The tblTaLog with id " + id + " no longer exists.");
                 }

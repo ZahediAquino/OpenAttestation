@@ -94,11 +94,11 @@ public class HostInfoCmd implements ICommand {
 //        }
 //            
 //    }
-    
-    private String trim(String text) {
-        if( text == null ) { return null; }
-        return text.trim();
-    }
+// Not used method    
+//    private String trim(String text) {
+//        if( text == null ) { return null; }
+//        return text.trim();
+//    }
 //
 //    /*
 //     * Sample response of dmidecode -s bios-vendor -> Intel Corp. Sample
