@@ -218,7 +218,8 @@ public class CommandUtil {
         } finally {
            
                 try {
-                    fStream.close();
+                    if(fStream != null)
+                        fStream.close();
                 } catch (IOException e) {
                     log.warn("Error while closing stream", e);
                 }
