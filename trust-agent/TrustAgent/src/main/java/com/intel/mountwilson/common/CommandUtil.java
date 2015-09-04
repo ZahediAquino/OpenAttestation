@@ -203,7 +203,7 @@ public class CommandUtil {
     public static byte[] readfile(String fileName) throws TAException {
 
 
-        InputStream fStream;
+        InputStream fStream = null;
         try {
             int fileLength = (int) new File(fileName).length();
             fStream = new FileInputStream(fileName);
@@ -212,10 +212,16 @@ public class CommandUtil {
             if (read != fileLength) {
                 log.warn("Lenght of file read is not same as file length");
             }
-            fStream.close();
             return fileContents;
         } catch (Exception ex) {
             throw new TAException(ErrorCode.ERROR, "Error while reading cert", ex);
+        } finally {
+           
+                try {
+                    fStream.close();
+                } catch (IOException e) {
+                    log.warn("Error while closing stream", e);
+                }
         }
 
 
