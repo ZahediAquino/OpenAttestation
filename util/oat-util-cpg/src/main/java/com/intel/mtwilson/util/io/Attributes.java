@@ -8,12 +8,9 @@ package com.intel.mtwilson.util.io;
 //import com.fasterxml.jackson.annotation.JsonAnySetter;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A wrapper around Map which implements Copyable and provides 
@@ -37,11 +34,6 @@ public class Attributes implements Copyable {
      * Stores the list of attribute names to exclude from the map
      */
     protected final HashSet<String> exclude = new HashSet<>();
-    
-    /**
-     * Saves into a log any error
-     */
-    private final Logger log = LoggerFactory.getLogger(getClass());
     
     /**
      * 
@@ -113,23 +105,26 @@ public class Attributes implements Copyable {
     }
 
     public void copyFrom(Attributes source) {
-        
-        try{
-            for (String key : attributes.keySet()) {
-                Object value = source.attributes.get(key);
-                if (value instanceof Copyable) {
-                    Object copy = ((Copyable) value).copy();
-                    this.attributes.put(key, copy);
-                } else {
+        Map<String, Object> attrs = new HashMap();
+        for (String key : attributes.keySet()) {
+            Object value = source.attributes.get(key);
+            
+            if (value instanceof Copyable) {
+                Object copy = ((Copyable)value).copy();
+                //this.attributes.put(key, copy);
+                attrs.put(key, copy);
+            } else {
                 // since most objects don't implement Copyable there's still
-                    // a big chance here for havng a shallow copy of a list or
-                    // map. might be helpful to rely on a tool like xstream to
-                    // copy by serializing then deserializing into a new instance.
-                    this.attributes.put(key, value);
-                }
+                // a big chance here for havng a shallow copy of a list or
+                // map. might be helpful to rely on a tool like xstream to
+                // copy by serializing then deserializing into a new instance.
+                //this.attributes.put(key, value);
+                attrs.put(key, value);
             }
-        }catch (ConcurrentModificationException e){
-            log.error(e.getMessage());
+        }
+        for (String key : attrs.keySet()) {
+            Object value = source.attributes.get(key);
+            this.attributes.put(key, value);
         }
     }
 }
