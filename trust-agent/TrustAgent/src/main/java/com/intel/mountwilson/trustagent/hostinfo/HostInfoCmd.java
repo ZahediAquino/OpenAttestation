@@ -217,19 +217,23 @@ public class HostInfoCmd implements ICommand {
         //CommandResult result = CommandUtil.runCommand2("tagent system-info dmidecode -s system-uuid");
         CommandResult result = CommandUtil.runCommand2("dmidecode -s system-uuid");
         // sample output would look like: 4235D571-8542-FFD3-5BFE-6D9DAC874C84
-        List<String> resultList = Arrays.asList(result.getStdout().split("\n"));
-        if (resultList != null && resultList.size() > 0) {
-            for (String data : resultList) {
-                if (data.trim().startsWith("#")) { // ignore the comments
-                    continue;
-                }                
-                context.setHostUUID(data.trim());
-                log.info("got uuid data: {}",data.trim());
-                break;
-            }
-        }
+        if(null != result.getStdout())
+        {
+            List<String> resultList = Arrays.asList(result.getStdout().split("\n"));
 
-        log.info("Context set with host UUID info: " + context.getHostUUID());
-        //context.setResponseXML(null);
+            if (resultList != null && resultList.size() > 0) {
+                for (String data : resultList) {
+                    if (data.trim().startsWith("#")) { // ignore the comments
+                        continue;
+                    }
+                    context.setHostUUID(data.trim());
+                    log.info("got uuid data: {}", data.trim());
+                    break;
+                }
+            }
+
+            log.info("Context set with host UUID info: " + context.getHostUUID());
+            //context.setResponseXML(null);
+        }
     }
 }
