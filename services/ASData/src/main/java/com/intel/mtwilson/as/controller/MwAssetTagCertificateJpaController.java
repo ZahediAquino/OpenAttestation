@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -49,14 +50,14 @@ public class MwAssetTagCertificateJpaController extends GenericJpaController<MwA
 
     public void edit(MwAssetTagCertificate mwAssetTagCertificate) throws NonexistentEntityException, Exception {
         EntityManager em = getEntityManager();
-        Integer id = null;
         try {
             em.getTransaction().begin();
             mwAssetTagCertificate = em.merge(mwAssetTagCertificate);
-            id = mwAssetTagCertificate.getId();
+            mwAssetTagCertificate.getId();
             em.getTransaction().commit();
-        } catch (Exception ex) {
+        } catch (PersistenceException ex) {
             String msg = ex.getLocalizedMessage();
+            Integer id = mwAssetTagCertificate.getId();
             if (msg == null || msg.length() == 0) {
                 if (id != null && findMwAssetTagCertificate(id) == null) {
                     throw new NonexistentEntityException("The mwAssetTagCertificate with id " + id + " no longer exists.");
