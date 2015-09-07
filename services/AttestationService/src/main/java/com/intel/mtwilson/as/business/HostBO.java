@@ -135,7 +135,7 @@ public class HostBO extends BaseBO {
 					"Saving Host in database with TlsPolicyName {} and TlsKeystoreLength {}",
 					tblHosts.getTlsPolicyName(),tblHosts.getTlsKeystore() == null ? "null" : tblHosts.getTlsKeystore().length);
                         Map<String,String> attributes = agent.getHostAttributes();
-                        String hostUuidAttr;
+                        String hostUuidAttr = null;
                         if(attributes != null)
                              hostUuidAttr= attributes.get("Host_UUID");
                         if ((attributes != null) && (!attributes.isEmpty()) && (hostUuidAttr != null))
