@@ -177,13 +177,19 @@ public class TADataContext {
     }
     
     public File getMeasureLogLaunchScript() {
-        return new File(Config.getInstance().getProperty("modulesScript.filename"));
+        if(Config.getInstance().getProperty("modulesScript.filename") != null)
+            return new File(Config.getInstance().getProperty("modulesScript.filename"));
         //return new File(Folders.application() + File.separator + "bin" + File.separator + "module_analysis.sh"); // Config.getInstance().getProperty("modulesScript.filename"));
+        else
+            return null;
     }
     
     public File getMeasureLogXmlFile() {
-        return new File (Config.getInstance().getProperty("modulesXml.filename"));
+        if(Config.getInstance().getProperty("modulesXml.filename") != null)
+            return new File (Config.getInstance().getProperty("modulesXml.filename"));
         //return new File(Folders.repository() + File.separator + "measureLog.xml"); // Config.getInstance().getProperty("modulesXml.filename"));
+        else 
+            return null;
     }
     
     public void setModules(String allModules) {
