@@ -181,7 +181,7 @@ public class TADataContext {
             return new File(Config.getInstance().getProperty("modulesScript.filename"));
         //return new File(Folders.application() + File.separator + "bin" + File.separator + "module_analysis.sh"); // Config.getInstance().getProperty("modulesScript.filename"));
         else
-            return null;
+            return new File("");
     }
     
     public File getMeasureLogXmlFile() {
@@ -189,7 +189,7 @@ public class TADataContext {
             return new File (Config.getInstance().getProperty("modulesXml.filename"));
         //return new File(Folders.repository() + File.separator + "measureLog.xml"); // Config.getInstance().getProperty("modulesXml.filename"));
         else 
-            return null;
+            return new File("");
     }
     
     public void setModules(String allModules) {
