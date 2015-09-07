@@ -35,19 +35,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetHisPrivacyCAWebService2 }
-     * 
-     */
-    public GetHisPrivacyCAWebService2 createGetHisPrivacyCAWebService2() {
-        return new GetHisPrivacyCAWebService2();
-    }
-
-    /**
      * Create an instance of {@link GetHisPrivacyCAWebService2Response }
      * 
      */
     public GetHisPrivacyCAWebService2Response createGetHisPrivacyCAWebService2Response() {
         return new GetHisPrivacyCAWebService2Response();
+    }
+
+    /**
+     * Create an instance of {@link GetHisPrivacyCAWebService2 }
+     * 
+     */
+    public GetHisPrivacyCAWebService2 createGetHisPrivacyCAWebService2() {
+        return new GetHisPrivacyCAWebService2();
     }
 
     /**
