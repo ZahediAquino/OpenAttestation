@@ -135,7 +135,9 @@ public class HostBO extends BaseBO {
 					"Saving Host in database with TlsPolicyName {} and TlsKeystoreLength {}",
 					tblHosts.getTlsPolicyName(),tblHosts.getTlsKeystore() == null ? "null" : tblHosts.getTlsKeystore().length);
                         Map<String,String> attributes = agent.getHostAttributes();
-                        String hostUuidAttr = attributes.get("Host_UUID");
+                        String hostUuidAttr;
+                        if(attributes != null)
+                             hostUuidAttr= attributes.get("Host_UUID");
                         if ((attributes != null) && (!attributes.isEmpty()) && (hostUuidAttr != null))
                             tblHosts.setHardwareUuid(hostUuidAttr.toLowerCase().trim());
 //                        
@@ -516,12 +518,14 @@ public class HostBO extends BaseBO {
 			if (searchCriteria != null && !searchCriteria.isEmpty()) {
                                 log.info("searchCriteria is not null -- calling tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria)");
 				tblHostList = tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria);
-                                log.info(new Integer(tblHostList.size()).toString());
+                                if (tblHostList != null)
+                                    log.info(Integer.toString(tblHostList.size()));
                         }
                         else {
                                 log.info("calling tblHostsJpaController.findTblHostsEntities()");
 				tblHostList = tblHostsJpaController.findTblHostsEntities();
-                                log.info(new Integer(tblHostList.size()).toString());
+                                if (tblHostList != null)
+                                    log.info(Integer.toString(tblHostList.size()));
                         }
 
 			if (tblHostList != null) {
