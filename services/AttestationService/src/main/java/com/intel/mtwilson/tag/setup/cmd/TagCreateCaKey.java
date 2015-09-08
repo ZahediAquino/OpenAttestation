@@ -21,6 +21,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -106,12 +107,16 @@ public class TagCreateCaKey extends TagCommand {
     }
     
     
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) {
         TagCreateCaKey cmd = new TagCreateCaKey();
         cmd.setOptions(new MapConfiguration(new Properties()));
-        //Removing to facilitate args passing
-        //cmd.execute(new String[] { "CN=Asset CA,OU=Datacenter,C=US" });
-        cmd.execute(args);
+        try {
+            //Removing to facilitate args passing
+            //cmd.execute(new String[] { "CN=Asset CA,OU=Datacenter,C=US" });
+            cmd.execute(args);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(TagCreateCaKey.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }    
     
