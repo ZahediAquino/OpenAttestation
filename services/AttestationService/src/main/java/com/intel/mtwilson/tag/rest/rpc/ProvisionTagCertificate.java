@@ -8,6 +8,7 @@ package com.intel.mtwilson.tag.rest.rpc;
 import com.intel.mtwilson.datatypes.CryptoMediaType;
 import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mtwilson.util.io.UUID;
+import com.intel.mtwilson.util.io.Iso8601Date;
 //import com.intel.mtwilson.My;
 //import com.intel.mtwilson.MyFilesystem;
 import com.intel.mtwilson.ApiException;
@@ -198,7 +199,7 @@ public class ProvisionTagCertificate  {
         CertificateFilterCriteria criteria = new CertificateFilterCriteria();
         criteria.subjectEqualTo = subject;
         criteria.revoked = false;
-        criteria.validOn = new Date(); 
+        criteria.validOn = new Iso8601Date(new Date()); 
         CertificateCollection results = certificateRepository.search(criteria);
         Date today = new Date();
         Certificate latestCert = null;

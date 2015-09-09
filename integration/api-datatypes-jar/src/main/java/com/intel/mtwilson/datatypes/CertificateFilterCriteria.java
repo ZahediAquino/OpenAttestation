@@ -7,6 +7,7 @@ package com.intel.mtwilson.datatypes;
 import com.intel.mtwilson.util.crypto.Sha1Digest;
 import com.intel.mtwilson.util.crypto.Sha256Digest;
 import com.intel.mtwilson.util.io.UUID;
+import com.intel.mtwilson.util.io.Iso8601Date;
 //import com.intel.mtwilson.datatypes.FilterCriteria;
 //import com.intel.mtwilson.datatypes.DefaultFilterCriteria;
 import java.util.Date;
@@ -37,11 +38,11 @@ public class CertificateFilterCriteria extends DefaultFilterCriteria implements 
     @QueryParam("statusEqualTo")
     public String statusEqualTo;
     @QueryParam("validOn")
-    public Date validOn;
+    public Iso8601Date validOn;
     @QueryParam("validBefore")
-    public Date validBefore;
+    public Iso8601Date validBefore;
     @QueryParam("validAfter")
-    public Date validAfter;
+    public Iso8601Date validAfter;
     @Unchecked
     @QueryParam("sha1")
     public Sha1Digest sha1;

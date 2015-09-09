@@ -39,7 +39,7 @@ public class CertificateRepository implements DocumentRepository<Certificate, Ce
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CertificateRepository.class);
     
     @Override
-    @RequiresPermissions("tag_certificates:search") 
+//    @RequiresPermissions("tag_certificates:search") 
     public CertificateCollection search(CertificateFilterCriteria criteria) {
         log.debug("Certificate:Search - Got request to search for the Certificates.");        
         CertificateCollection objCollection = new CertificateCollection();
@@ -116,8 +116,9 @@ public class CertificateRepository implements DocumentRepository<Certificate, Ce
     }
 
     @Override
-    @RequiresPermissions("tag_certificates:retrieve") 
+//    @RequiresPermissions("tag_certificates:retrieve") 
     public Certificate retrieve(CertificateLocator locator) {
+        log.debug("Retrieving Certificate");
         if (locator == null || locator.id == null) { return null;}
         log.debug("Certificate:Retrieve - Got request to retrieve user with id {}.", locator.id);                
         try (CertificateDAO dao = TagJdbi.certificateDao()) {
@@ -132,7 +133,7 @@ public class CertificateRepository implements DocumentRepository<Certificate, Ce
     }
 
     @Override
-    @RequiresPermissions("tag_certificates:store") 
+//    @RequiresPermissions("tag_certificates:store") 
     public void store(Certificate item) {
         log.debug("Certificate:Store - Got request to update Certificate with id {}.", item.getId().toString());        
         CertificateLocator locator = new CertificateLocator(); // will be used if we need to throw an exception
@@ -157,7 +158,7 @@ public class CertificateRepository implements DocumentRepository<Certificate, Ce
     }
 
     @Override
-    @RequiresPermissions("tag_certificates:create") 
+//    @RequiresPermissions("tag_certificates:create") 
     public void create(Certificate item) {
         log.debug("Certificate:Create - Got request to create a new Certificate {}.", item.getId().toString());
         CertificateLocator locator = new CertificateLocator();
@@ -182,7 +183,7 @@ public class CertificateRepository implements DocumentRepository<Certificate, Ce
     }
 
     @Override
-    @RequiresPermissions("tag_certificates:delete") 
+//    @RequiresPermissions("tag_certificates:delete") 
     public void delete(CertificateLocator locator) {
         if (locator == null || locator.id == null) { return;}
         log.debug("Certificate:Delete - Got request to delete Certificate with id {}.", locator.id.toString());                
@@ -201,7 +202,7 @@ public class CertificateRepository implements DocumentRepository<Certificate, Ce
     }
     
     @Override
-    @RequiresPermissions("tag_certificates:delete,search") 
+//    @RequiresPermissions("tag_certificates:delete,search") 
     public void delete(CertificateFilterCriteria criteria) {
         log.debug("Certificate:Delete - Got request to delete certificate by search criteria.");        
         CertificateCollection objCollection = search(criteria);
