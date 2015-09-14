@@ -126,9 +126,8 @@ public class IntelHostAgent implements HostAgent {
     public Map<String, String> getHostAttributes() throws IOException {
        HashMap<String,String> hm = new HashMap<String, String>();
         // Retrieve the data from the host and add it into the hashmap
-       log.debug("This is where I supposedly call the TAgent for HWUUID info...");
-       trustAgentClient.getHostAttributes();
-       
+       log.debug("This is where I supposedly call the TAgent for HWUUID info [IHA]...");
+       hm.put("Host_UUID", trustAgentClient.getHostAttributes().trim());
 //        HostInfo hostInfo = client.getHostInfo();
 //        // Currently we are just adding the UUID of th host. Going ahead we can add additional details
 //        if (hostInfo != null)
