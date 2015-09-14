@@ -79,9 +79,9 @@ mkdir -p /usr/local/bin
 cp tagent pcakey /usr/local/bin
 
 #rc3Begin skaja
-#chmod 700 module_analysis.sh
-#cp module_analysis.sh "${package_dir}"/bin
-#echo "module_script=${package_dir}/bin/module_analysis.sh" >> "${intel_conf_dir}/${package_name}.properties"
+chmod 700 module_analysis.sh
+mkdir "${intel_conf_dir}"/trustagent
+cp module_analysis.sh "${intel_conf_dir}"/trustagent/
 #rc3End
 
 java_install $JAVA_PACKAGE
