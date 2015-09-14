@@ -23,7 +23,7 @@
 	
     <script type="text/javascript" src="Scripts/commonUtils.js"></script>
 	<script type="text/javascript" src="Scripts/home.js"></script>
-        <script> var assetTagUrl = "tag/index.html5?tab=tags"; </script>
+        <script> var assetTagUrl = "tag/index.html5"; </script>
 </head>
 <body>
 	<div class="header">
@@ -47,10 +47,9 @@
 							</ul>
 						</li>
                                                 <li>
-							<a>Asset Tag Management_home.jsp</a>
+							<a>Asset Tag Management</a>
 							<ul>
-                                                            <!-- li><a href="javascript:getAssetCertificatePage()" data-i18n="link.certificate_management">Certificate Management</a></li -->
-                                                            <li><a href="javascript:;" onclick="getAssetCertificatePage1()" data-i18n="link.certificate_management">Certificate Management</a></li>
+                                                            <!-- li><a href="javascript:getAssetCertificatePage()" data-i18n="link.certificate_management">Certificate Management</a></li -->                                                        
                                                             <li><a href="javascript:getAssetCertificatePage()" data-i18n="link.certificate_management">Certificate Management</a></li>
 							</ul>
 						</li>

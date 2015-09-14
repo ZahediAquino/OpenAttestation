@@ -21,3 +21,4 @@
 /services/oat-tag-dao-jooq/target/
 /services/WLMService/target/
 /portals/TrustDashBoard/target/
+/services/oat-tag-jdbi/target/
