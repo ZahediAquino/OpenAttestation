@@ -111,6 +111,8 @@ public enum ErrorCode {
     WS_MLE_OEM_DOES_NOT_EXIST(2021, "MLE name '%s' version '%s' oem '%s' is not configured in the system."),
     WS_MLE_OS_DOES_NOT_EXIST(2022, "MLE name '%s' version '%s' os '%s' os version '%s' is not configured in the system."),
     WS_MLE_PCR_NOT_VALID(2023, "White list for the PCR '%s' is not a valid value"),
+    WS_MLE_RETRIEVAL_ERROR(2024, "Error during retrieval of MLE information: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
+    WS_MODULE_WHITELIST_CREATE_ERROR(2025, "Error during Module whitelist creation: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
     
     // Below are error codes for the Management service
     // 3000 to 3100 General Management Service errors
