@@ -22,22 +22,36 @@ import com.intel.mountwilson.manifest.data.IManifest;
 import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mtwilson.agent.HostAgent;
 import com.intel.mtwilson.agent.HostAgentFactory;
+import com.intel.mtwilson.as.controller.TblEventTypeJpaController;
+import com.intel.mtwilson.as.controller.TblHostSpecificManifestJpaController;
 import com.intel.mtwilson.as.controller.TblHostsJpaController;
 import com.intel.mtwilson.as.controller.TblLocationPcrJpaController;
 import com.intel.mtwilson.as.controller.TblMleJpaController;
+import com.intel.mtwilson.as.controller.TblModuleManifestJpaController;
+import com.intel.mtwilson.as.controller.TblPackageNamespaceJpaController;
 import com.intel.mtwilson.as.controller.TblPcrManifestJpaController;
 import com.intel.mtwilson.as.controller.TblTaLogJpaController;
 import com.intel.mtwilson.as.controller.exceptions.IllegalOrphanException;
 import com.intel.mtwilson.as.controller.exceptions.NonexistentEntityException;
+import com.intel.mtwilson.as.data.TblEventType;
+import com.intel.mtwilson.as.data.TblHostSpecificManifest;
 import com.intel.mtwilson.as.data.TblHosts;
 import com.intel.mtwilson.as.data.TblMle;
+import com.intel.mtwilson.as.data.TblModuleManifest;
+import com.intel.mtwilson.as.data.TblPackageNamespace;
 import com.intel.mtwilson.as.data.TblTaLog;
 import com.intel.mtwilson.as.helper.BaseBO;
 import com.intel.mtwilson.crypto.CryptographyException;
+//import com.intel.mtwilson.crypto.Sha1Digest;
+import com.intel.mtwilson.util.crypto.Sha1Digest;
+
 //import com.intel.mtwilson.crypto.X509Util;
 import com.intel.mtwilson.util.x509.X509Util;
 import com.intel.mtwilson.datatypes.*;
+import com.intel.mtwilson.util.model.Measurement;
 import com.intel.mtwilson.util.ResourceFinder;
+import com.intel.mtwilson.util.io.UUID;
+import com.intel.mtwilson.util.model.PcrEventLog;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -54,8 +68,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -67,6 +84,7 @@ public class HostBO extends BaseBO {
 
 	private static final String COMMAND_LINE_MANIFEST = "/b.b00 vmbTrustedBoot=true tboot=0x0x101a000";
 	private static final String LOCATION_PCR = "22";
+        private static final String MODULE_PCR = "19";
         private Logger log = LoggerFactory.getLogger(getClass());
 	private TblMle biosMleId = null;
 	private TblMle vmmMleId = null;
@@ -101,12 +119,10 @@ public class HostBO extends BaseBO {
 			}
 
 			if (canFetchAIKCertificateForHost(host.getVmm().getName())) { // datatype.Vmm
-				if (!host.getAddOn_Connection_String().toLowerCase()
-						.contains("citrix")) {
+				if (!host.getAddOn_Connection_String().toLowerCase().contains("citrix")) {
 					certificate = getAIKCertificateForHost(tblHosts, host);
 					// we have to check that the aik certificate was signed by a trusted privacy ca
-					X509Certificate hostAikCert = X509Util
-							.decodePemCertificate(certificate);
+					X509Certificate hostAikCert = X509Util.decodePemCertificate(certificate);
 					hostAikCert.checkValidity();
 					// read privacy ca certificate
 					InputStream privacyCaIn = new FileInputStream( ResourceFinder.getFile("PrivacyCA.cer"));
@@ -122,25 +138,45 @@ public class HostBO extends BaseBO {
 			} else {
 				// ESX host so get the location for the host and store in the table
 				pcrMap = getHostPcrManifest(tblHosts, host);
+                                
 				// BUG #497 sending both the new TblHosts record and the TxtHost object just to get the TlsPolicy into
 				// the initial call so that with the trust_first_certificate policy we will obtain the host certificate now while adding it
 				log.info("Getting location for host from VCenter");
 				location = getLocation(pcrMap);
 			}
                         
-                        
+                                                
                         HostAgentFactory factory = new HostAgentFactory();
                         HostAgent agent = factory.getHostAgent(tblHosts);
-			log.info(
-					"Saving Host in database with TlsPolicyName {} and TlsKeystoreLength {}",
-					tblHosts.getTlsPolicyName(),tblHosts.getTlsKeystore() == null ? "null" : tblHosts.getTlsKeystore().length);
+			log.info("Saving Host in database with TlsPolicyName {} and TlsKeystoreLength {}",tblHosts.getTlsPolicyName(),tblHosts.getTlsKeystore() == null ? "null" : tblHosts.getTlsKeystore().length);
                         Map<String,String> attributes = agent.getHostAttributes();
                         String hostUuidAttr = attributes.get("Host_UUID");
                         if ((attributes != null) && (!attributes.isEmpty()) && (hostUuidAttr != null))
                             tblHosts.setHardwareUuid(hostUuidAttr.toLowerCase().trim());
 //                        
 			log.debug("Saving the host details in the DB");
-			saveHostInDatabase(tblHosts, host, certificate, location, pcrMap);
+                        
+                        // retrieve the complete manifest and get module info inserted into database
+                        // We only handle module info for PCR 19
+			HashMap<String, ? extends IManifest> pcrs = getHostPcrManifest(tblHosts, host);
+                        List<TblHostSpecificManifest> tblHostSpecificManifests = null;
+                        
+                        if(vmmMleId.getRequiredManifestList().contains(MODULE_PCR)) {
+                            
+                            PcrManifest pcr19 = (PcrManifest) pcrs.get(MODULE_PCR);
+                            addModuleWhiteList(pcr19, tblHosts, host, hostUuidAttr);
+                            
+                            log.info("Host specific modules would be retrieved from the host that extends into PCR 19.");
+                            String hostType = host.getVendor();
+                            tblHostSpecificManifests = createHostSpecificManifestRecords(vmmMleId, pcrs, hostType);
+                        }
+                        else {
+                            log.info("Host specific modules will not be configured since PCR 19 is not selected for attestation");
+                        }
+                        
+			//saveHostInDatabase(tblHosts, host, certificate, location, pcrMap);
+                        saveHostInDatabase(tblHosts, host, certificate, location, pcrMap, tblHostSpecificManifests);
+                        
 
 		} catch (ASException ase) {
 			throw ase;
@@ -249,6 +285,26 @@ public class HostBO extends BaseBO {
 					// created ahead of create of host
 				}
 			}
+                        
+                        List<TblHostSpecificManifest> tblHostSpecificManifests = null;
+                        
+                        if(vmmMleId.getId().intValue() != tblHosts.getVmmMleId().getId().intValue() ) {
+                            log.info("VMM is updated. Update the host specific manifest");
+                            HashMap<String, ? extends IManifest> pcrs = getHostPcrManifest(tblHosts, host);
+                            
+                            deleteHostSpecificManifest(tblHosts);
+                            
+                            //We need to check if the white list configured for the MLE requires PCR 19. If not, we will skip creating the host specific modules.
+                            
+                            if(vmmMleId.getRequiredManifestList().contains(MODULE_PCR)) {
+                                log.debug("Host specific modules would be retrieved from the host that extends into PCR 19.");
+                                // Added the Vendor parameter to the below function so that we can handle the host specific records differently for different types of hosts.
+                                String hostType = host.getVendor();
+                                tblHostSpecificManifests = createHostSpecificManifestRecords(vmmMleId, pcrs, hostType);
+                            } else {
+                                log.debug("Host specific modules will not be configured since PCR 19 is not selected for attestation");
+                            }
+                        }
 
 			log.info("Saving Host in database");
 			tblHosts.setBiosMleId(biosMleId);
@@ -261,6 +317,11 @@ public class HostBO extends BaseBO {
 
 			log.info("Updating Host in database");
 			getHostsJpaController().edit(tblHosts);
+                        
+                        if(tblHostSpecificManifests != null) {
+                            log.debug("Updating Host Specific Manifest in database");
+                            createHostSpecificManifest(tblHostSpecificManifests, tblHosts);
+                        }
 
 		} catch (ASException ase) {
 			throw ase;
@@ -285,6 +346,7 @@ public class HostBO extends BaseBO {
 			}
 			log.info("Deleting Host from database");
                         deleteHostAssetTagMapping(tblHosts);
+                        deleteHostSpecificManifest(tblHosts);
 			deleteTALogs(tblHosts.getId());
 
 			getHostsJpaController().destroy(tblHosts.getId());
@@ -299,7 +361,26 @@ public class HostBO extends BaseBO {
 		// return new HostResponse(ErrorCode.OK);
 		return "true";
 	}
-
+        
+     // PREMIUM FEATURE ? 
+        private void deleteHostSpecificManifest(TblHosts tblHosts) throws NonexistentEntityException, IOException {
+                //TblHostSpecificManifestJpaController tblHostSpecificManifestJpaController = My.jpa().mwHostSpecificManifest();
+            
+                TblHostSpecificManifestJpaController tblHostSpecificManifestJpaController = getHostSpecificManifestJpaController();
+                
+                for(TblModuleManifest moduleManifest : tblHosts.getVmmMleId().getTblModuleManifestCollection()) {
+                     if( moduleManifest.getUseHostSpecificDigestValue() != null && moduleManifest.getUseHostSpecificDigestValue().booleanValue() ) {
+                        // For open source we used to have multiple module manifests for the same hosts. So, the below query by hostID was returning multiple results.
+                        //String hostSpecificDigestValue = new TblHostSpecificManifestJpaController(getEntityManagerFactory()).findByHostID(hostId).getDigestValue();
+                        TblHostSpecificManifest hostSpecificManifest = tblHostSpecificManifestJpaController.findByModuleAndHostID(tblHosts.getId(), moduleManifest.getId());
+                        if (hostSpecificManifest != null) {
+                                log.debug("Deleting Host specific manifest." + moduleManifest.getComponentName() + ":" + hostSpecificManifest.getDigestValue());
+                                tblHostSpecificManifestJpaController.destroy(hostSpecificManifest.getId());
+                        }                        
+                    }
+                }                
+        }
+        
        
 	private void deleteTALogs(Integer hostId) throws IllegalOrphanException {
 
@@ -385,8 +466,7 @@ public class HostBO extends BaseBO {
 		}
 	}
 
-	private void saveHostInDatabase(TblHosts newRecordWithTlsPolicyAndKeystore,TxtHost host, String certificate, String location,
-			HashMap<String, ? extends IManifest> pcrMap) throws CryptographyException {
+	private void saveHostInDatabase(TblHosts newRecordWithTlsPolicyAndKeystore,TxtHost host, String certificate, String location, HashMap<String, ? extends IManifest> pcrMap, List<TblHostSpecificManifest> tblHostSpecificManifests) throws CryptographyException, IOException {
 
 		// Building objects and validating that manifests are created ahead of create of host
 		TblHosts tblHosts = newRecordWithTlsPolicyAndKeystore; // new TblHosts();
@@ -424,8 +504,261 @@ public class HostBO extends BaseBO {
 		// create the host
 		log.debug("COMMITING NEW HOST DO DATABASE");
 		hostController.create(tblHosts);
+                log.debug("Save host specific manifest if any");
+                createHostSpecificManifest(tblHostSpecificManifests, tblHosts);
 
 	}
+        
+        
+        
+        private List<TblHostSpecificManifest> createHostSpecificManifestRecords(TblMle vmmMleId, HashMap<String, ? extends IManifest> pcrManifest, String hostType) throws IOException {
+            List<TblHostSpecificManifest> tblHostSpecificManifests = new ArrayList<>();
+            
+            if(vmmMleId.getRequiredManifestList().contains(MODULE_PCR) && pcrManifest !=null)
+            {
+                PcrManifest pcrMf19 = (PcrManifest) pcrManifest.get(MODULE_PCR);
+                if(pcrMf19.containsPcrEventLog(19))
+                {
+                   PcrEventLog pcrEventLog = pcrMf19.getPcrEventLog(19); 
+                   if(pcrEventLog != null)
+                   {
+                       for(Measurement m : pcrEventLog.getEventLog()) {
+                           if(m != null && m.getInfo() != null && (!m.getInfo().isEmpty())) {
+                               
+                               String mEventName = m.getInfo().get("EventName");
+                               String mComponentName = m.getInfo().get("ComponentName");
+                               log.debug("Checking host specific manifest for event '"   + mEventName + "' field '" + m.getLabel() + "' component '" + mComponentName + "'");
+                               
+                               if(hostType.equals("intel") && m.getInfo().get("EventName") != null) {
+                                   log.debug("Adding host specific manifest for event " + m.getInfo().get("EventName") + ": field=" + m.getLabel() + " component=" + m.getInfo().get("ComponentName"));
+                                   log.debug("Querying manifest for event: " + m.getInfo().get("EventName") + ": MLE_ID=" + vmmMleId.getId() + " component=" + m.getInfo().get("ComponentName"));
+                                   
+                                   // For open source XEN and KVM both the modules that get extended to PCR 19 should be added into the host specific table
+                                   
+                                    //TblModuleManifest tblModuleManifest = My.jpa().mwModuleManifest().findByMleNameEventName(vmmMleId.getId(), m.getInfo().get("ComponentName"),  m.getInfo().get("EventName"));
+                                    TblModuleManifestJpaController tblModuleManifestJpaController = getModuleJpaController();
+                                    TblModuleManifest tblModuleManifest = tblModuleManifestJpaController.findByMleNameEventName(vmmMleId.getId(), m.getInfo().get("ComponentName"), m.getInfo().get("EventName"));
+                                    
+                                    TblHostSpecificManifest tblHostSpecificManifest = new TblHostSpecificManifest();
+                                    tblHostSpecificManifest.setDigestValue(m.getValue().toString());
+                                    tblHostSpecificManifest.setModuleManifestID(tblModuleManifest);
+                                    tblHostSpecificManifests.add(tblHostSpecificManifest);
+                               }
+                           }
+                       }
+                   }
+                    
+                }
+                else {
+                    log.warn("No PCR 19 found.SO not saving host specific manifest.");
+                }
+            }
+            else {
+                log.warn("It is not possible to get PCR 19 info. Unable to perform database insertion");
+            }
+            
+            return tblHostSpecificManifests;
+        }
+        
+        private void createHostSpecificManifest(List<TblHostSpecificManifest> tblHostSpecificManifests, TblHosts tblHosts) throws IOException {
+            if(tblHostSpecificManifests != null && !tblHostSpecificManifests.isEmpty()) {
+                for(TblHostSpecificManifest tblHostSpecificManifest : tblHostSpecificManifests)
+                {
+                    tblHostSpecificManifest.setHostID(tblHosts.getId());
+                    TblHostSpecificManifestJpaController tblHostSpecificManifestJpaController  = getHostSpecificManifestJpaController();
+                    tblHostSpecificManifestJpaController.create(tblHostSpecificManifest);
+                }
+                
+            }
+        }
+        
+        private void addModuleWhiteList(PcrManifest pcr19, TblHosts tblHosts, TxtHost host, String uuid) {
+        try {
+            TblModuleManifestJpaController tblModuleManifestJpa = getModuleJpaController();
+            TblMleJpaController tblMleJpa = getMleJpaController();
+            TblEventTypeJpaController tblEventJpa = getEventJpaController();
+            TblPackageNamespaceJpaController tblPackageJpa = getPackageJpaController();
+            TblEventType tblEvent;
+            TblMle tblMle = tblMleJpa.findTblMleByUUID(uuid);
+            TblPackageNamespace nsPackNS;
+
+            if (tblMle == null) {
+                try {
+                    // First check if the entry exists in the MLE table.
+                    tblMle = getMleDetails(host.getVmm().getName(),
+                            host.getVmm().getVersion(),
+                            host.getVmm().getOsName(),
+                            host.getVmm().getOsVersion(),
+                            "");
+
+                } catch (NoResultException nre) {
+                    throw new ASException(nre, ErrorCode.WS_MLE_DOES_NOT_EXIST, host.getVmm().getName(), host.getVmm().getVersion());
+                }
+            }
+
+            if (tblMle == null) {
+                log.error("MLE specified is not found in the DB");
+                throw new ASException(ErrorCode.WS_MLE_RETRIEVAL_ERROR, this.getClass().getSimpleName());
+            }
+
+            String eventName = "";
+            String componentName = "";
+            String fullComponentName = "";
+            String digest = "";
+            String packageName = "";
+            String packageVendor = "";
+            String packageVersion = "";
+            String extendedtoPCR = "";
+            try {
+                // Before we insert the record, we need the identity for the event name               
+                if (pcr19.containsPcrEventLog(19)) {
+                    PcrEventLog pcrEventLog = pcr19.getPcrEventLog(19);
+                    if (pcrEventLog != null) {
+                        for (Measurement m : pcrEventLog.getEventLog()) {
+                            if (m.getInfo().get("ExtendedToPCR").equals("19")) {
+                                //tblEvent = tblEventJpa.findEventTypeByName(m.getInfo().get("EventName"));
+                                eventName = m.getInfo().get("EventName");
+                                componentName = m.getInfo().get("ComponentName");
+                                packageName = String.valueOf(m.getInfo().get("PackageName"));
+                                packageVendor = String.valueOf(m.getInfo().get("PackageVendor"));
+                                packageVersion = String.valueOf(m.getInfo().get("PackageVersion"));
+                                extendedtoPCR = String.valueOf(m.getInfo().get("ExtendedToPCR"));
+                                digest = String.valueOf(m.getValue());
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (NoResultException nre) {
+                throw new ASException(nre, ErrorCode.WS_EVENT_TYPE_DOES_NOT_EXIST);
+            }
+
+            try {
+                // Before we insert the record, we need the identity for the event name
+                tblEvent = tblEventJpa.findEventTypeByName(eventName);
+
+            } catch (NoResultException nre) {
+                throw new ASException(nre, ErrorCode.WS_EVENT_TYPE_DOES_NOT_EXIST, eventName);
+            }
+            validateNull("EventName", eventName);
+            validateNull("ComponentName", componentName);
+
+            // For Open Source hypervisors, we do not want to prefix the event type field name. So, we need to check if the event name
+            // corresponds to VMware, then we will append the event type fieldName to the component name. Otherwise we won't
+            if (eventName.contains("Vim25")) {
+                fullComponentName = tblEvent.getFieldName() + "." + componentName;
+            } else {
+                fullComponentName = componentName;
+            }
+
+            Integer componentID = tblModuleManifestJpa.findByMleIdEventId(tblMle.getId(), fullComponentName, tblEvent.getId());
+
+            if (componentID != null && componentID != 0) {
+                throw new ASException(ErrorCode.WS_MODULE_WHITELIST_ALREADY_EXISTS, componentName);
+            }
+
+            try {
+
+                // Since there will be only one entry for now, we will just hardcode it for now.
+                // TO-DO: See if we can change this.
+                // Nov-12,2013: Changed to use the function that accepts the ID instead of the name for better
+                // performance.
+                nsPackNS = tblPackageJpa.findByName("Standard_Global_NS");
+
+            } catch (NoResultException nre) {
+                throw new ASException(ErrorCode.WS_NAME_SPACE_DOES_NOT_EXIST);
+            }
+
+            TblModuleManifest newModuleRecord = new TblModuleManifest();
+            if (uuid != null && !uuid.isEmpty()) {
+                newModuleRecord.setUuid_hex(uuid);
+            } else {
+                newModuleRecord.setUuid_hex(new UUID().toString());
+            }
+
+            newModuleRecord.setMleId(tblMle);
+            newModuleRecord.setMle_uuid_hex(tblMle.getUuid_hex());
+            newModuleRecord.setEventID(tblEvent);
+            newModuleRecord.setNameSpaceID(nsPackNS);
+            newModuleRecord.setComponentName(fullComponentName);
+            newModuleRecord.setDigestValue(digest);
+            newModuleRecord.setPackageName(packageName);
+            newModuleRecord.setPackageVendor(packageVendor);
+            newModuleRecord.setPackageVersion(packageVersion);
+            newModuleRecord.setUseHostSpecificDigestValue(Boolean.FALSE);
+            newModuleRecord.setExtendedToPCR(extendedtoPCR);
+            newModuleRecord.setDescription("");
+
+            tblModuleManifestJpa.create(newModuleRecord);
+        } catch (ASException ase) {
+            throw ase;
+        } catch (Exception e) {
+//                    throw new ASException(ErrorCode.SYSTEM_ERROR, "Exception while adding Module white list data. " + e.getMessage(), e);
+            // throw new ASException(e);
+            log.error("Error during Module whitelist creation.", e);
+            throw new ASException(ErrorCode.WS_MODULE_WHITELIST_CREATE_ERROR, e.getClass().getSimpleName());
+        }
+    }
+            
+               
+        /**
+        *
+        * @param mleName
+        * @param mleVersion
+        * @param osName
+        * @param osVersion
+        * @param oemName
+        * @return
+        */
+        private TblMle getMleDetails(String mleName, String mleVersion, String osName, String osVersion, String oemName) {
+            TblMle tblMle;
+            log.debug(String.format("Mle name '%s' version '%s' os '%s' os version '%s' oem '%s'. ",mleName, mleVersion, osName, osVersion, oemName));
+            validateNull("mleName", mleName);
+            validateNull("mleVersion", mleVersion);
+            validateMleExtraAttributes(osName, osVersion, oemName);
+            
+            TblMleJpaController tblMleJpa = getMleJpaController();
+            if (StringUtils.isNotBlank(oemName)) {
+                log.info("Getting BIOS MLE from database");
+                tblMle = tblMleJpa.findBiosMle(mleName, mleVersion, oemName);
+            } else {
+                log.info("Get VMM MLE from database");
+                tblMle = tblMleJpa.findVmmMle(mleName, mleVersion, osName, osVersion);
+            }
+            return tblMle;
+        }
+        
+         /**
+        *
+        * @param label
+        * @param input
+        * @return
+        */
+        private String validateNull(String label, String input) {
+            if (input == null || input.isEmpty()) {
+                // log.debug(String.format("Required input parameter '%s' is null or missing.", label));
+                log.debug("Required input parameter {} is null or missing.", label);
+                throw new ASException(ErrorCode.WS_MLE_DATA_MISSING, label);
+            }
+            return input;
+        }
+        
+        /**
+        *
+        * @param osName
+        * @param osVersion
+        * @param oemName
+        */
+        private void validateMleExtraAttributes(String osName, String osVersion, String oemName) {
+            if (StringUtils.isNotBlank(oemName)) {
+                if ((StringUtils.isNotBlank(osName) || StringUtils.isNotBlank(osVersion))) {
+                    throw new ASException(ErrorCode.WS_OEM_OS_DATA_CANNOT_COEXIST);
+                }
+            } else if (StringUtils.isBlank(osName) || StringUtils.isBlank(osVersion)) {
+                throw new ASException(ErrorCode.WS_MLE_DATA_MISSING, "OEM/OS");
+            }
+
+        }
 
 
 	public HostResponse isHostRegistered(String hostnameOrAddress) {
@@ -686,7 +1019,23 @@ public class HostBO extends BaseBO {
 	public TblMleJpaController getMleJpaController() {
 		return new TblMleJpaController(getEntityManagerFactory());
 	}
-	
+        
+        public TblModuleManifestJpaController getModuleJpaController() {
+                return new TblModuleManifestJpaController(getEntityManagerFactory());
+        }
+        
+        public TblHostSpecificManifestJpaController getHostSpecificManifestJpaController() {
+                return new TblHostSpecificManifestJpaController(getEntityManagerFactory());
+        }
+        
+        public TblEventTypeJpaController getEventJpaController() {
+            return new TblEventTypeJpaController(getEntityManagerFactory());
+        }
+        
+        public TblPackageNamespaceJpaController getPackageJpaController() {
+            return new TblPackageNamespaceJpaController(getEntityManagerFactory());
+        }
+        	
 	public HostAgent getHostAgent(TblHosts tblHosts) {
 		return new HostAgentFactory().getHostAgent(tblHosts);
 	}

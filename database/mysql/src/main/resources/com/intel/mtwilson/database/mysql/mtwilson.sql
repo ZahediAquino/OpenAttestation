@@ -398,3 +398,17 @@ UPDATE mw_ta_log mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m
 
 
 
+INSERT INTO `mw_event_type` (`ID`, `Name`, `FieldName`) VALUES (1,'Vim25Api.HostTpmSoftwareComponentEventDetails','componentName');
+INSERT INTO `mw_event_type` (`ID`, `Name`, `FieldName`) VALUES (2,'Vim25Api.HostTpmOptionEventDetails','bootOptions');
+INSERT INTO `mw_event_type` (`ID`, `Name`, `FieldName`) VALUES (3,'Vim25Api.HostTpmBootSecurityOptionEventDetails','bootSecurityOption');
+INSERT INTO `mw_event_type` (`ID`, `Name`, `FieldName`) VALUES (4,'Vim25Api.HostTpmCommandEventDetails','commandLine');
+INSERT INTO `mw_event_type` (`ID`, `Name`, `FieldName`) VALUES (5,'OpenSource.EventName','OpenSource');
+INSERT INTO `mw_package_namespace` (`ID`, `Name`, `VendorName`) VALUES (1,'Standard_Global_NS','VMware');
+
+INSERT INTO mw_changelog (ID, APPLIED_AT, DESCRIPTION) VALUES (20130430154900,NOW(),'patch for adding a new entry into the event type table for open source module attestation.');
+
+
+
+
+
+
