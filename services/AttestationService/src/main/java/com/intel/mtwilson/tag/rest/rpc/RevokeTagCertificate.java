@@ -36,7 +36,7 @@ import javax.ws.rs.core.Context;
  * 
  * @author ssbangal
  */
-@Path("/tag-certificate-requests-rpc/revoke-tag-certificate-api")
+@Path("/tag-certificate-requests-rpc/revoke-tag-certificate")
 @RPC("revoke-tag-certificate")
 //@JacksonXmlRootElement(localName="revoke_tag_certificate")
 public class RevokeTagCertificate{
