@@ -302,7 +302,7 @@ export restCall=${server/8181/8080}
    if [ "$accept" == "yes" ]; then
      echo "completed sucessfully " > $tpaDir/completion
    else
-     dialog --backtitle "$TITLE" --msgbox "Certificate deployed.\nThank you for using the Asset Tag Provisioning Tool" 10 34
+     dialog --backtitle "$TITLE" --msgbox "Certificate deployed.\nThank you for using the Asset Tag Provisioning Tool\nPlease reboot your host so the PCR value is updated." 10 34
    fi
   else
    if [ "$accept" == "yes" ]; then
