@@ -1122,7 +1122,7 @@ mtwilson.atag = mtwilson.atag || {};
                 // optional argument:  "effective" date
                 //ajax.json.post('certificates', data.certificates[i]); 
                 log.debug("Sending provision-certificate request for "+ uuid);
-                ajax.json.post('revoke-certificate', {'certId': uuid}, {'uri': '/AttestationService/resources/tag-certificate-requests-rpc/revoke-tag-certificate-api?certId='+uuid, datapath: 'revokeCertificates', idkey: 'uuid'});
+                ajax.json.post('revoke-certificate', {'certId': uuid}, {'uri': '/AttestationService/resources/tag-certificate-requests-rpc/revoke-tag-certificate?certId='+uuid, datapath: 'revokeCertificates', idkey: 'uuid'});
             }
         }
         //view.sync();
