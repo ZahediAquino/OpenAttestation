@@ -20,6 +20,7 @@ import com.intel.mountwilson.manifest.data.IManifest;
 import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mountwilson.manifest.helper.TAHelper;
 import com.intel.mtwilson.agent.HostAgent;
+import com.intel.mtwilson.util.model.Measurement;
 //import com.intel.mtwilson.crypto.X509Util;
 import com.intel.mtwilson.util.x509.X509Util;
 import com.intel.mtwilson.util.net.InternetAddress;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +55,21 @@ public class IntelHostAgent implements HostAgent {
     
     @Override
     public HashMap<String, ? extends IManifest> getManifest() {
-        // XXX TODO  obtain the manifest map  using existing code in one of the trust agent helper classes
-        return manifestMap;
+        
+        if(manifestMap !=null ) {
+            return manifestMap;
+        }
+        else {
+            try {
+                TAHelper helper = new TAHelper();
+                HashMap<String, PcrManifest> pcrMap = helper.getQuoteInformationForHost(hostAddress.toString(), trustAgentClient, "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23");
+                manifestMap = pcrMap;
+            }
+            catch(Exception e) {
+                //throw new IOException(e);
+            }
+            return manifestMap;
+        }
     }
     
     

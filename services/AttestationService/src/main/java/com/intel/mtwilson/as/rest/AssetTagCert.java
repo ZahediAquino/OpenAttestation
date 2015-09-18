@@ -39,7 +39,7 @@ public class AssetTagCert {
      * @return 
      */
     //@RolesAllowed({"AssetTagManagement"})
-    @RequiresPermissions({"tag_certificates:create","hosts:search"})
+//    @RequiresPermissions({"tag_certificates:create","hosts:search"})
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
@@ -56,7 +56,7 @@ public class AssetTagCert {
      * @return 
      */
     //@RolesAllowed({"AssetTagManagement"})
-    @RequiresPermissions({"tag_certificates:store"})
+//    @RequiresPermissions({"tag_certificates:store"})
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)

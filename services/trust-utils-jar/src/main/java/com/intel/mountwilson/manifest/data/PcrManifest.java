@@ -15,6 +15,9 @@
 
 package com.intel.mountwilson.manifest.data;
 
+import com.intel.mtwilson.util.model.PcrEventLog;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 
@@ -26,16 +29,18 @@ import java.util.logging.Logger;
  */
 public class PcrManifest implements IManifest {
 	Logger log = Logger.getLogger(getClass().getName());
-	public PcrManifest(int pcrNumber, String pcrValue) {
+	private int pcrNumber;
+	private String pcrValue;
+        private final PcrEventLog[] pcrEventLogs = new PcrEventLog[24];
+	protected boolean verifyStatus = false;
+        
+        
+        public PcrManifest(int pcrNumber, String pcrValue) {
 		super();
 		this.pcrNumber = pcrNumber;
 		this.pcrValue = pcrValue;
 	}
 
-	private int pcrNumber;
-	private String pcrValue;
-	protected boolean verifyStatus = false;
-	
 	
 	public int getPcrNumber() {
 		return pcrNumber;
@@ -52,6 +57,25 @@ public class PcrManifest implements IManifest {
 	public void setPcrValue(String pcrValue) {
 		this.pcrValue = pcrValue;
 	}
+        
+        public PcrEventLog getPcrEventLog(int index) {
+            return pcrEventLogs[index];
+        }
+        
+        public void setPcrEventLog(PcrEventLog pcrEventLog) {
+            pcrEventLogs[pcrEventLog.getPcrIndex().toInteger()] = pcrEventLog;
+        }
+        
+        public List<PcrEventLog> getPcrEventLogs() {
+            ArrayList<PcrEventLog> pcrEventLogsList = new ArrayList<>();
+            for (PcrEventLog pcrEventLog : pcrEventLogs) {
+                if (pcrEventLog != null)
+                    pcrEventLogsList.add(pcrEventLog);
+            }
+            return pcrEventLogsList;
+        }
+        
+        
 
 	@Override
 	public boolean verify(IManifest gkv) {
@@ -75,5 +99,17 @@ public class PcrManifest implements IManifest {
 	public boolean getVerifyStatus() {
 		return verifyStatus;
 	}
+        
+        /**
+        * Checks to see if the PcrManifest contains a PcrEventLog for the same pcr index as the given PcrEventLog (index only, does not check contents) 
+        * @param pcr
+        * @return true if the PcrManifest contains the given Pcr at its specified index and value, and false in all other cases
+        */
+        public boolean containsPcrEventLog(int index) {
+            if( pcrEventLogs[index] == null ) { return false; }
+            return true;
+        }
+        
+        
 
 }
