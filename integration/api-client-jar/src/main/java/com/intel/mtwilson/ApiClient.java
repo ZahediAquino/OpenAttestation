@@ -22,6 +22,8 @@ import com.intel.mountwilson.as.hostmanifestreport.data.HostManifestReportType;
 import com.intel.mountwilson.as.hosttrustreport.data.HostsTrustReportType;
 import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import com.intel.mtwilson.datatypes.*;
+import com.intel.mtwilson.datatypes.xml.HostTrustXmlResponse;
+import com.intel.mtwilson.datatypes.xml.HostTrustXmlResponseList;
 import com.intel.mtwilson.io.ConfigurationUtil;
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +36,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBContext;
@@ -855,6 +858,16 @@ public class ApiClient implements AttestationService, WhitelistService, AssetTag
         return "true".equals(result);
     }
     
-    
+    @Override
+    public List<HostTrustXmlResponse> getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException {
+            // prepare the request
+            String hostnamesCSV = StringUtils.join(hostnames, ","); // calls toString() on each hostname
+            MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+            query.add("hosts", hostnamesCSV);
+            query.add("force_verify", Boolean.toString(forceVerify));
+            // make the request and parse the xml response
+            HostTrustXmlResponseList list = xml(httpGet(asurl("/hosts/bulk/trust/saml", query)), HostTrustXmlResponseList.class);
+            return list.getHost(); // get the list of <Host> elements inside the root <Hosts> element... it's an automatically generated method name. would have been nice if they named it getHostList()
+        }
 
 }

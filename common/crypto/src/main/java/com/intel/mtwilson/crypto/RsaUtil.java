@@ -25,7 +25,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -263,6 +266,31 @@ public class RsaUtil {
             return privateKey;
         }
         catch(Exception e) {
+            throw new CryptographyException(e);
+        }
+    }
+    
+    public static PublicKey decodePemPublicKey(String text) throws CryptographyException {
+        List<Pem> list = PemLikeParser.parse(text);
+        for(Pem pem : list) {
+            if( "PUBLIC KEY".equals(pem.getBanner()) ) {
+//                byte[] der = Base64.decodeBase64(pem.getContent());
+                byte[] der = pem.getContent();
+                return decodeDerPublicKey(der);
+            }
+        }
+        return null;
+//        Pem pem = Pem.valueOf(text);
+//        return decodeDerPublicKey(pem.getContent());
+    }
+    
+    public static PublicKey decodeDerPublicKey(byte[] publicKeyBytes) throws CryptographyException {
+        try {
+            KeyFactory factory = KeyFactory.getInstance("RSA"); // throws NoSuchAlgorithmException
+            PublicKey publicKey  = factory.generatePublic(new X509EncodedKeySpec(publicKeyBytes)); // throws InvalidKeySpecException
+            return publicKey;
+        }
+        catch(NoSuchAlgorithmException | InvalidKeySpecException e) {
             throw new CryptographyException(e);
         }
     }

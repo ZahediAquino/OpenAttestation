@@ -36,13 +36,17 @@ import com.intel.mtwilson.datatypes.HostTrustResponse;
 import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mtwilson.datatypes.PcrLogReport;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
+import com.intel.mtwilson.datatypes.xml.HostTrustXmlResponse;
+import com.intel.mtwilson.saml.TrustAssertion;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -328,7 +332,34 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	 */
 	@Override
 	public String trustVerificationDetails(String hostName,AttestationService apiClientServices,X509Certificate[] trustedCertificates)throws DemoPortalException {
-        return ConverterUtil.formateXMLString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<error>Operation Not Supported</error>\n");
+        //return ConverterUtil.formateXMLString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<error>This is working!!</error>\n");
+        
+        //log.info("DemoPortalServicesImpl.trustVerificationDetails >>");
+	    String xmloutput = null;
+            Set<Hostname> hostnames = new HashSet<Hostname>();
+            log.info("<<<<<<Hostname: " + hostName + ">>>>>>>");
+            hostnames.add(new Hostname(hostName));
+            try {
+                //calling into Services to get SAML for a Host.
+                List<HostTrustXmlResponse> trust = apiClientServices.getSamlForMultipleHosts(hostnames, false);
+
+                for (HostTrustXmlResponse hostTrustXmlResponse : trust) {
+                    TrustAssertion trustAssertion = new TrustAssertion(trustedCertificates, hostTrustXmlResponse.getAssertion());
+                    if (trustAssertion.isValid()) {
+                        //Store SAML Assertion into a String.
+                        xmloutput = hostTrustXmlResponse.getAssertion();
+                    } else {
+                        log.error("Error While Getting SAML ." + hostTrustXmlResponse.getErrorCode() + ". " + hostTrustXmlResponse.getErrorMessage());
+                        throw new DemoPortalException("Error While Getting SAML. " + hostTrustXmlResponse.getErrorCode() + ". " + hostTrustXmlResponse.getErrorMessage());
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw ConnectionUtil.handleDemoPortalException(e);
+            }
+            //format a SAML String into a XML type using helper Function.
+            return ConverterUtil.formateXMLString(xmloutput);
 	}
 	
         

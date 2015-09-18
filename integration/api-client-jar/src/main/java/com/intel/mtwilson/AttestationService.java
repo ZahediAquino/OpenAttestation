@@ -61,5 +61,7 @@ public interface AttestationService {
     
     AttestationReport getAttestationReport(Hostname hostname) throws IOException, ApiException, SignatureException;
 
-    X509Certificate getTlsCertificateForTrustedHost(Hostname hostname) throws IOException, ApiException, SignatureException;;
+    X509Certificate getTlsCertificateForTrustedHost(Hostname hostname) throws IOException, ApiException, SignatureException;
+    
+    List<HostTrustXmlResponse> getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException;
 }

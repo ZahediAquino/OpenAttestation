@@ -82,8 +82,12 @@ function populateHostTrustDataIntoTable(hostDetails) {
 }
 
 function fnGetTrustSamlDetails(hostName) {
-	window.open("getView/trustVerificationDetails.html?hostName="+hostName,"","location=0,menubar=0,status=1,scrollbars=1, width=700,height=600");
+	//window.open("getView/trustVerificationDetails.html?hostName="+hostName,"","location=0,menubar=0,status=1,scrollbars=1, width=700,height=600");
 	//Window.open('getData/getHostTrustSatusForPageNo.html',hostName,'width=200,height=100');
+        var str = '<div id="samlAssertionReport"></div>';
+        fnOpenDialog(str,"trust_assertion", 950, 600,false);
+        $('#showFailureReportTable').prepend(disabledDiv);
+        sendHTMLAjaxRequest(false, 'getView/trustVerificationDetails.html',"hostName="+hostName , fnDisplayContent, null, 'samlAssertionReport');
 }
 
 function fngetHostTrustNextPage(pageNo) {
