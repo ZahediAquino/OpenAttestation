@@ -69,6 +69,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import org.apache.commons.lang.ArrayUtils;
 
 import org.bouncycastle.openssl.PEMWriter;
 import org.slf4j.Logger;
@@ -99,6 +100,7 @@ public class TAHelper {
    
    public static final String BEGIN_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----";
    public static final String END_PUBLIC_KEY = "-----END PUBLIC KEY-----";
+   private String[] openSourceHostSpecificModules = {"initrd","vmlinuz"};
 
    
     public TAHelper(/*EntityManagerFactory entityManagerFactory*/) {
@@ -526,13 +528,17 @@ public class TAHelper {
                             digestValue = reader.getElementText();
                         }
 
-                        log.debug("Process module " + componentName + " getting extended to " + extendedToPCR);
-
+                        log.debug("Process module " + componentName + " getting extended to " + extendedToPCR);                      
+                        
+                        boolean useHostSpecificDigest = false;
+                        if (ArrayUtils.contains(openSourceHostSpecificModules, componentName)) {
+                            useHostSpecificDigest = true;
+                        }
+                        
                         // Attach the PcrEvent logs to the corresponding pcr indexes.
                         // Note: Since we will not be processing the even logs for 17 & 18, we will ignore them for now.
                         
-                        
-                        Measurement m = convertHostTpmEventLogEntryToMeasurement(extendedToPCR, componentName, digestValue);
+                        Measurement m = convertHostTpmEventLogEntryToMeasurement(extendedToPCR, componentName, digestValue, useHostSpecificDigest);
                         if(pcrMp.get(String.valueOf(extendedToPCR)).containsPcrEventLog(extendedToPCR)) {
                             pcrMp.get(String.valueOf(extendedToPCR)).getPcrEventLog(extendedToPCR).getEventLog().add(m);
                         }
@@ -832,7 +838,7 @@ public class TAHelper {
      * @param moduleHash
      * @return
      */
-    private static Measurement convertHostTpmEventLogEntryToMeasurement(int extendedToPcr, String moduleName, String moduleHash) {
+    private static Measurement convertHostTpmEventLogEntryToMeasurement(int extendedToPcr, String moduleName, String moduleHash, boolean useHostSpecificDigest) {
         HashMap<String, String> info = new HashMap<String, String>();
         info.put("EventName", "OpenSource.EventName");  // For OpenSource since we do not have any events associated, we are creating a dummy one.
         // Removing the prefix of "OpenSource" as it is being captured in the event type
@@ -841,6 +847,12 @@ public class TAHelper {
         info.put("PackageVendor", "");
         info.put("PackageVersion", "");
         info.put("ExtendedToPCR", String.valueOf(extendedToPcr));
+        if(useHostSpecificDigest) {
+            info.put("UseHostSpecificDigest", "true");
+        }
+        else {
+            info.put("UseHostSpecificDigest", "false");
+        }
 
         return new Measurement(new Sha1Digest(moduleHash), moduleName, info);
     }

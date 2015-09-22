@@ -341,12 +341,14 @@ public class HostBO extends BaseBO {
 
 		try {
 			TblHosts tblHosts = getHostByName(hostName);
+                        String hardware_uuid = tblHosts.getHardwareUuid();                        
 			if (tblHosts == null) {
 				throw new ASException(ErrorCode.AS_HOST_NOT_FOUND, hostName);
 			}
 			log.info("Deleting Host from database");
                         deleteHostAssetTagMapping(tblHosts);
                         deleteHostSpecificManifest(tblHosts);
+                        deleteModulesForMLE(createTxtHostFromDatabaseRecord(tblHosts), hardware_uuid);
 			deleteTALogs(tblHosts.getId());
 
 			getHostsJpaController().destroy(tblHosts.getId());
@@ -369,16 +371,68 @@ public class HostBO extends BaseBO {
                 TblHostSpecificManifestJpaController tblHostSpecificManifestJpaController = getHostSpecificManifestJpaController();
                 
                 for(TblModuleManifest moduleManifest : tblHosts.getVmmMleId().getTblModuleManifestCollection()) {
+                     log.info("LOGGING ++++++++++ moduleManifest.getId(): " + moduleManifest.getId());
+                     log.info("LOGGING ++++++++++ moduleManifest.getUseHostSpecificDigestValue(): " + moduleManifest.getUseHostSpecificDigestValue());
+                     log.info("LOGGING ++++++++++ moduleManifest.getUseHostSpecificDigestValue().booleanValue(): " + moduleManifest.getUseHostSpecificDigestValue().booleanValue());
                      if( moduleManifest.getUseHostSpecificDigestValue() != null && moduleManifest.getUseHostSpecificDigestValue().booleanValue() ) {
                         // For open source we used to have multiple module manifests for the same hosts. So, the below query by hostID was returning multiple results.
                         //String hostSpecificDigestValue = new TblHostSpecificManifestJpaController(getEntityManagerFactory()).findByHostID(hostId).getDigestValue();
                         TblHostSpecificManifest hostSpecificManifest = tblHostSpecificManifestJpaController.findByModuleAndHostID(tblHosts.getId(), moduleManifest.getId());
+                        log.info("LOGGING ++++++++++ hostSpecificManifest.getId(): " + hostSpecificManifest.getId());
+                        log.info("LOGGING ++++++++++ hostSpecificManifest.getDigestValue(): " + hostSpecificManifest.getDigestValue());
                         if (hostSpecificManifest != null) {
                                 log.debug("Deleting Host specific manifest." + moduleManifest.getComponentName() + ":" + hostSpecificManifest.getDigestValue());
+                                log.info("LOGGING ++++++++++ Deleting Host specific manifest." + moduleManifest.getComponentName() + ":" + hostSpecificManifest.getDigestValue());
+                                log.info("LOGGING ++++++++++ Deleting Host specific manifest.getId()" + moduleManifest.getComponentName() + ":" + hostSpecificManifest.getDigestValue());
                                 tblHostSpecificManifestJpaController.destroy(hostSpecificManifest.getId());
                         }                        
                     }
                 }                
+        }
+        
+        private void deleteModulesForMLE(TxtHostRecord host, String uuid_hex) throws NonexistentEntityException, IOException {
+            
+            TblMleJpaController tblMleJpaController  = getMleJpaController();
+            TblModuleManifestJpaController tblModuleManifestJpaController = getModuleJpaController();
+            
+            try {                
+                log.info("LOGGING ++++++++++ host.uuid_hex: " + uuid_hex);
+                log.info("LOGGING ++++++++++ host.Hardware_Uuid: " + host.Hardware_Uuid);
+                log.info("LOGGING ++++++++++ host.VMM_Name: " + host.VMM_Name);
+                log.info("LOGGING ++++++++++ host.VMM_Version: " + host.VMM_Version);
+                log.info("LOGGING ++++++++++ host.VMM_OSName: " + host.VMM_OSName);
+                log.info("LOGGING ++++++++++ host.VMM_OSVersion: " + host.VMM_OSVersion);
+                TblMle tblMle = tblMleJpaController.findVmmMle(host.VMM_Name, host.VMM_Version, host.VMM_OSName, host.VMM_OSVersion);
+                
+                if(tblMle != null) {
+                    log.info("LOGGING ++++++++++ tblMle.getId(): " + tblMle.getId());
+                    log.info("LOGGING ++++++++++ tblMle.getUuid_hex(): " + tblMle.getUuid_hex());
+                }
+                else {
+                    log.info("LOGGING ++++++++++ tblMle.getUuid_hex(): EVALUATES TO NULL!");
+                }
+                if (tblMle != null) {
+                    
+                    // Retrieve the list of all the modules for the specified VMM MLE.
+                    //List<TblModuleManifest> moduleList = tblModuleManifestJpaController.findTblModuleManifestByMleUuid(tblMle.getUuid_hex());
+                    //List<TblModuleManifest> moduleList = tblModuleManifestJpaController.findTblModuleManifestByMleUuid(host.Hardware_Uuid);
+                    List<TblModuleManifest> moduleList = tblModuleManifestJpaController.findTblModuleManifestByHardwareUuid(host.Hardware_Uuid);
+                    if(moduleList !=null) log.info("LOGGING ++++++++++ moduleList.size(): " + moduleList.size()); else log.info("LOGGING ++++++++++ moduleList.size() EVALUATES TO NULL! ");
+                    if (moduleList != null && moduleList.size() > 0) {
+                        for (TblModuleManifest moduleObj : moduleList) {
+                            //if (moduleObj.getUseHostSpecificDigestValue()) // we cannot delete the host specific one since it would be referenced by the Hosts
+                            //    continue;
+                            log.info("LOGGING ++++++++++ moduleObj.getId(): " +moduleObj.getId());
+                            tblModuleManifestJpaController.destroy(moduleObj.getId());
+                        }
+                    }
+                }
+
+            
+            } catch (IllegalOrphanException | NonexistentEntityException ex) {
+                log.error("Error during the deletion of VMM modules {}. ", host.VMM_Name, ex);
+                throw new ASException(ErrorCode.WS_MODULE_WHITELIST_DELETE_ERROR, ex.getClass().getSimpleName());
+            }          
         }
         
        
@@ -392,6 +446,7 @@ public class HostBO extends BaseBO {
 
 			for (TblTaLog taLog : taLogs) {
 				try {
+                                        log.info("LOGGING ++++++++++ taLog.getId(): " + taLog.getId());
 					tblTaLogJpaController.destroy(taLog.getId());
 				} catch (NonexistentEntityException e) {
 					log.warn("Ta Log is already deleted " + taLog.getId());
@@ -609,6 +664,7 @@ public class HostBO extends BaseBO {
             String packageVendor = "";
             String packageVersion = "";
             String extendedtoPCR = "";
+            boolean useHostSpecificDigest = false;
             try {
                 // Before we insert the record, we need the identity for the event name               
                 if (pcr19.containsPcrEventLog(19)) {
@@ -624,6 +680,7 @@ public class HostBO extends BaseBO {
                                 packageVersion = String.valueOf(m.getInfo().get("PackageVersion"));
                                 extendedtoPCR = String.valueOf(m.getInfo().get("ExtendedToPCR"));
                                 digest = String.valueOf(m.getValue());
+                                useHostSpecificDigest = Boolean.valueOf(m.getInfo().get("UseHostSpecificDigest"));
                                 break;
                             }
                         }
@@ -685,7 +742,7 @@ public class HostBO extends BaseBO {
             newModuleRecord.setPackageName(packageName);
             newModuleRecord.setPackageVendor(packageVendor);
             newModuleRecord.setPackageVersion(packageVersion);
-            newModuleRecord.setUseHostSpecificDigestValue(Boolean.FALSE);
+            newModuleRecord.setUseHostSpecificDigestValue(useHostSpecificDigest);
             newModuleRecord.setExtendedToPCR(extendedtoPCR);
             newModuleRecord.setDescription("");
 
@@ -948,6 +1005,7 @@ public class HostBO extends BaseBO {
 		hostObj.VMM_Version = tblHost.getVmmMleId().getVersion();
 		hostObj.VMM_OSName = tblHost.getVmmMleId().getOsId().getName();
 		hostObj.VMM_OSVersion = tblHost.getVmmMleId().getOsId().getVersion();
+                hostObj.Hardware_Uuid = tblHost.getHardwareUuid();
 
 		return hostObj;
 	}
