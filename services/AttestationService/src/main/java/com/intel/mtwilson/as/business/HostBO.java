@@ -33,6 +33,7 @@ import com.intel.mtwilson.as.controller.TblPcrManifestJpaController;
 import com.intel.mtwilson.as.controller.TblTaLogJpaController;
 import com.intel.mtwilson.as.controller.exceptions.IllegalOrphanException;
 import com.intel.mtwilson.as.controller.exceptions.NonexistentEntityException;
+import com.intel.mtwilson.as.data.MwAssetTagCertificate;
 import com.intel.mtwilson.as.data.TblEventType;
 import com.intel.mtwilson.as.data.TblHostSpecificManifest;
 import com.intel.mtwilson.as.data.TblHosts;
@@ -177,6 +178,10 @@ public class HostBO extends BaseBO {
 			//saveHostInDatabase(tblHosts, host, certificate, location, pcrMap);
                         saveHostInDatabase(tblHosts, host, certificate, location, pcrMap, tblHostSpecificManifests);
                         
+                         // Now that the host has been registered successfully, let us see if there is an asset tag certificated configured for the host
+                        // to which the host has to be associated
+                        associateAssetTagCertForHost(host, agent.getHostAttributes(), tblHosts); //attributes);
+                        
 
 		} catch (ASException ase) {
 			throw ase;
@@ -238,7 +243,57 @@ public class HostBO extends BaseBO {
 
 	private boolean canFetchAIKCertificateForHost(String vmmName) {
 		return (!vmmName.contains("ESX"));
-	}	
+	}
+        
+        /**
+     * 
+     * @param host 
+     */
+    private void associateAssetTagCertForHost(TxtHost host, Map<String, String> hostAttributes, TblHosts tblHost) {
+        String hostUUID;
+        
+        try {
+            log.debug("Starting the procedure to map the asset tag certificate for host {}.", host.getHostName().toString());
+            
+            // First let us find if the asset tag is configured for this host or not. This information
+            // would be available in the mw_asset_tag_certificate table, where the host's UUID would be
+            // present.
+            if (hostAttributes != null && hostAttributes.containsKey("Host_UUID")) {
+                hostUUID = hostAttributes.get("Host_UUID");
+            } else {
+                log.info("Since UUID for the host {} is not specified, asset tag would not be configured.", host.getHostName().toString());
+                return;
+            }
+            
+            // Now that we have a valid host UUID, let us search for an entry in the db.
+            AssetTagCertBO atagCertBO = new AssetTagCertBO();
+            MwAssetTagCertificate atagCert = atagCertBO.findValidAssetTagCertForHost(hostUUID);
+            if (atagCert != null) {
+                log.debug("Found a valid asset tag certificate for the host {} with UUID {}.", host.getHostName().toString(), hostUUID);
+                // Now that there is a asset tag certificate for the host, let us retrieve the host ID and update
+                // the asset tag certificate with that ID
+                //TblHosts tblHost = My.jpa().mwHosts().findByName(host.getHostName().toString());
+                if (tblHost != null) {
+                    AssetTagCertAssociateRequest atagMapRequest = new AssetTagCertAssociateRequest();
+                    atagMapRequest.setSha1OfAssetCert(atagCert.getSHA1Hash());
+                    atagMapRequest.setHostID(tblHost.getId());
+                    
+                    boolean mapAssetTagCertToHost = atagCertBO.mapAssetTagCertToHostById(atagMapRequest);
+                    if (mapAssetTagCertToHost)
+                        log.info("Successfully mapped the asset tag certificate with UUID {} to host {}", atagCert.getUuid(), tblHost.getName());
+                    else
+                        log.info("No valid asset tag certificate configured for the host {}.", tblHost.getName());
+                }
+            } else {
+                log.info("No valid asset tag certificate configured for the host {}.", host.getHostName().toString());
+            }
+            
+        } catch (Exception ex) {
+            // Log the error and return back.
+            log.info("Error during asset tag configuration for the host {}. Details: {}.", host.getHostName().toString(), ex.getMessage());
+        }
+        
+    }
 
 	public String updateHost(TxtHost host) {
 
