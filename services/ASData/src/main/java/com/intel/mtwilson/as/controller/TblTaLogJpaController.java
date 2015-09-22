@@ -179,8 +179,6 @@ public class TblTaLogJpaController implements Serializable {
         EntityManager em = getEntityManager();
         try {
             Query query = em.createNamedQuery("TblTaLog.findLogsByHostId");
-            log.info("LOGGING ++++++++++ findLogsByHostId.hostId: " + hostId);
-            log.info("LOGGING ++++++++++ findLogsByHostId.lastUpdatedTs: " + lastUpdatedTs);
             
             query.setParameter("hostID", hostId);
             query.setParameter("updatedOn", lastUpdatedTs);
