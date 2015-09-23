@@ -303,6 +303,8 @@ function main {
           rm -rf "${package_dir}"
         fi
 	rm /usr/local/bin/${script_name}
+        rm -rf ${package_dir}/module_analysis.sh
+        rm -rf /var/tpa/tpa.sh
         ;;
       *)
          echo "Usage: $0 {start|stop|restart|status|setup}"
