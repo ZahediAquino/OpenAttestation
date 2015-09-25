@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 //    @NamedQuery(name = "TblModuleManifest.findByCreatedOn", query = "SELECT t FROM TblModuleManifest t WHERE t.createdOn = :createdOn"),
     @NamedQuery(name = "TblModuleManifest.findByMleId", query = "SELECT t FROM TblModuleManifest t WHERE t.mleId.id = :mleId"),
     @NamedQuery(name = "TblModuleManifest.findByUuidHex", query = "SELECT t FROM TblModuleManifest t WHERE t.uuid_hex = :uuid_hex"),
+    @NamedQuery(name = "TblModuleManifest.findByHardwareUuid", query = "SELECT t FROM TblModuleManifest t WHERE t.uuid_hex = :uuid_hex"),
     @NamedQuery(name = "TblModuleManifest.findByMleUuidHex", query = "SELECT t FROM TblModuleManifest t WHERE t.mle_uuid_hex = :mle_uuid_hex"),    
     @NamedQuery(name = "TblModuleManifest.findByComponentNameLike", query = "SELECT t FROM TblModuleManifest t WHERE t.componentName LIKE :name"),    
     @NamedQuery(name = "TblModuleManifest.findByMleNameEventName", query = "SELECT t FROM TblModuleManifest t WHERE t.mleId.id = :mleId and t.componentName= :name and t.eventID.name = :eventName"),

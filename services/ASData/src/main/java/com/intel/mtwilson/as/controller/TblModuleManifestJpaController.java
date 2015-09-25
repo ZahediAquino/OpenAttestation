@@ -638,7 +638,26 @@ public class TblModuleManifestJpaController implements Serializable {
         } finally {
             em.close();
         }               
-    }    
+    }
+    
+    public List<TblModuleManifest> findTblModuleManifestByHardwareUuid(String uuid) {
+        
+        EntityManager em = getEntityManager();
+        try {
+
+            Query query = em.createNamedQuery("TblModuleManifest.findByHardwareUuid");
+            query.setParameter("uuid_hex", uuid);
+
+            List<TblModuleManifest> moduleList = query.getResultList();
+            return moduleList;
+
+        } catch(NoResultException e){
+        	log.error(String.format("Module information with UUID {} not found in the DB.", uuid));
+        	return null;
+        } finally {
+            em.close();
+        }               
+    }   
 
     public List<TblModuleManifest> findTblModuleManifestByComponentNameLike(String moduleName) {
         

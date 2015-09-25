@@ -167,6 +167,8 @@ function getRemoteTag() {
  if [ ! "$accept" == "yes"]; then
    dialog --stdout --backtitle "$TITLE" --msgbox 'Tag selection downloaded successfully!' 6 20
  fi
+ tagFile=$selectionFile
+ isUsingXml=1
 }
 
 function getTagOption() {
@@ -302,7 +304,7 @@ export restCall=${server/8181/8080}
    if [ "$accept" == "yes" ]; then
      echo "completed sucessfully " > $tpaDir/completion
    else
-     dialog --backtitle "$TITLE" --msgbox "Certificate deployed.\nThank you for using the Asset Tag Provisioning Tool" 10 34
+     dialog --backtitle "$TITLE" --msgbox "Certificate deployed.\nThank you for using the Asset Tag Provisioning Tool\n\nPlease reboot to update TPM" 10 34
    fi
   else
    if [ "$accept" == "yes" ]; then
@@ -321,15 +323,15 @@ function _main() {
  while [ $mybreak -ne 1 ]; do
   case "$tagChoice" in 
    1)
-    #getRemoteTag
-    #if [ $functionReturn -eq 0 ]; then
-    # mybreak=1
-    #else
-    #  tagChoice=4
-    #fi
-    mybreak=1
+    getRemoteTag
+    if [ $functionReturn -eq 0 ]; then
+     mybreak=1
+    else
+      tagChoice=4
+    fi
+    #mybreak=1
     # autoSelect=0
-    tagChoice=4
+    #tagChoice=4
     ;;
    2)
     getLocalTag

@@ -403,7 +403,7 @@ public class ReportsBO extends BaseBO {
             manifest.setName(Integer.parseInt(ASSET_TAG_PCR));
             manifest.setValue(taLog.getManifestValue());
             manifest.setWhiteListValue(new  Sha1Digest(atagCert.getPCREvent()).toString());
-            if(manifest.getValue().equals(manifest.getWhiteListValue())) {
+            if(manifest.getValue().equalsIgnoreCase(manifest.getWhiteListValue())) {
                 manifest.setTrustStatus(1);
             }else{
                 manifest.setTrustStatus(0);

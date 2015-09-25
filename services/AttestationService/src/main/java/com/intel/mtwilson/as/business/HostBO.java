@@ -33,6 +33,7 @@ import com.intel.mtwilson.as.controller.TblPcrManifestJpaController;
 import com.intel.mtwilson.as.controller.TblTaLogJpaController;
 import com.intel.mtwilson.as.controller.exceptions.IllegalOrphanException;
 import com.intel.mtwilson.as.controller.exceptions.NonexistentEntityException;
+import com.intel.mtwilson.as.data.MwAssetTagCertificate;
 import com.intel.mtwilson.as.data.TblEventType;
 import com.intel.mtwilson.as.data.TblHostSpecificManifest;
 import com.intel.mtwilson.as.data.TblHosts;
@@ -177,6 +178,10 @@ public class HostBO extends BaseBO {
 			//saveHostInDatabase(tblHosts, host, certificate, location, pcrMap);
                         saveHostInDatabase(tblHosts, host, certificate, location, pcrMap, tblHostSpecificManifests);
                         
+                         // Now that the host has been registered successfully, let us see if there is an asset tag certificated configured for the host
+                        // to which the host has to be associated
+                        associateAssetTagCertForHost(host, agent.getHostAttributes(), tblHosts); //attributes);
+                        
 
 		} catch (ASException ase) {
 			throw ase;
@@ -238,7 +243,57 @@ public class HostBO extends BaseBO {
 
 	private boolean canFetchAIKCertificateForHost(String vmmName) {
 		return (!vmmName.contains("ESX"));
-	}	
+	}
+        
+        /**
+     * 
+     * @param host 
+     */
+    private void associateAssetTagCertForHost(TxtHost host, Map<String, String> hostAttributes, TblHosts tblHost) {
+        String hostUUID;
+        
+        try {
+            log.debug("Starting the procedure to map the asset tag certificate for host {}.", host.getHostName().toString());
+            
+            // First let us find if the asset tag is configured for this host or not. This information
+            // would be available in the mw_asset_tag_certificate table, where the host's UUID would be
+            // present.
+            if (hostAttributes != null && hostAttributes.containsKey("Host_UUID")) {
+                hostUUID = hostAttributes.get("Host_UUID");
+            } else {
+                log.info("Since UUID for the host {} is not specified, asset tag would not be configured.", host.getHostName().toString());
+                return;
+            }
+            
+            // Now that we have a valid host UUID, let us search for an entry in the db.
+            AssetTagCertBO atagCertBO = new AssetTagCertBO();
+            MwAssetTagCertificate atagCert = atagCertBO.findValidAssetTagCertForHost(hostUUID);
+            if (atagCert != null) {
+                log.debug("Found a valid asset tag certificate for the host {} with UUID {}.", host.getHostName().toString(), hostUUID);
+                // Now that there is a asset tag certificate for the host, let us retrieve the host ID and update
+                // the asset tag certificate with that ID
+                //TblHosts tblHost = My.jpa().mwHosts().findByName(host.getHostName().toString());
+                if (tblHost != null) {
+                    AssetTagCertAssociateRequest atagMapRequest = new AssetTagCertAssociateRequest();
+                    atagMapRequest.setSha1OfAssetCert(atagCert.getSHA1Hash());
+                    atagMapRequest.setHostID(tblHost.getId());
+                    
+                    boolean mapAssetTagCertToHost = atagCertBO.mapAssetTagCertToHostById(atagMapRequest);
+                    if (mapAssetTagCertToHost)
+                        log.info("Successfully mapped the asset tag certificate with UUID {} to host {}", atagCert.getUuid(), tblHost.getName());
+                    else
+                        log.info("No valid asset tag certificate configured for the host {}.", tblHost.getName());
+                }
+            } else {
+                log.info("No valid asset tag certificate configured for the host {}.", host.getHostName().toString());
+            }
+            
+        } catch (Exception ex) {
+            // Log the error and return back.
+            log.info("Error during asset tag configuration for the host {}. Details: {}.", host.getHostName().toString(), ex.getMessage());
+        }
+        
+    }
 
 	public String updateHost(TxtHost host) {
 
@@ -347,6 +402,7 @@ public class HostBO extends BaseBO {
 			log.info("Deleting Host from database");
                         deleteHostAssetTagMapping(tblHosts);
                         deleteHostSpecificManifest(tblHosts);
+                        deleteModulesForMLE(createTxtHostFromDatabaseRecord(tblHosts));
 			deleteTALogs(tblHosts.getId());
 
 			getHostsJpaController().destroy(tblHosts.getId());
@@ -371,7 +427,6 @@ public class HostBO extends BaseBO {
                 for(TblModuleManifest moduleManifest : tblHosts.getVmmMleId().getTblModuleManifestCollection()) {
                      if( moduleManifest.getUseHostSpecificDigestValue() != null && moduleManifest.getUseHostSpecificDigestValue().booleanValue() ) {
                         // For open source we used to have multiple module manifests for the same hosts. So, the below query by hostID was returning multiple results.
-                        //String hostSpecificDigestValue = new TblHostSpecificManifestJpaController(getEntityManagerFactory()).findByHostID(hostId).getDigestValue();
                         TblHostSpecificManifest hostSpecificManifest = tblHostSpecificManifestJpaController.findByModuleAndHostID(tblHosts.getId(), moduleManifest.getId());
                         if (hostSpecificManifest != null) {
                                 log.debug("Deleting Host specific manifest." + moduleManifest.getComponentName() + ":" + hostSpecificManifest.getDigestValue());
@@ -379,6 +434,34 @@ public class HostBO extends BaseBO {
                         }                        
                     }
                 }                
+        }
+        
+        private void deleteModulesForMLE(TxtHostRecord host) throws NonexistentEntityException, IOException {
+            
+            TblMleJpaController tblMleJpaController  = getMleJpaController();
+            TblModuleManifestJpaController tblModuleManifestJpaController = getModuleJpaController();
+            
+            try {
+                TblMle tblMle = tblMleJpaController.findVmmMle(host.VMM_Name, host.VMM_Version, host.VMM_OSName, host.VMM_OSVersion);
+                
+                if (tblMle != null) {
+                    
+                    // Retrieve the list of all the modules for the specified VMM MLE.
+                    List<TblModuleManifest> moduleList = tblModuleManifestJpaController.findTblModuleManifestByHardwareUuid(host.Hardware_Uuid);
+                    if (moduleList != null && moduleList.size() > 0) {
+                        for (TblModuleManifest moduleObj : moduleList) {
+                            //if (moduleObj.getUseHostSpecificDigestValue()) // we cannot delete the host specific one since it would be referenced by the Hosts
+                            //    continue;
+                            tblModuleManifestJpaController.destroy(moduleObj.getId());
+                        }
+                    }
+                }
+
+            
+            } catch (IllegalOrphanException | NonexistentEntityException ex) {
+                log.error("Error during the deletion of VMM modules {}. ", host.VMM_Name, ex);
+                throw new ASException(ErrorCode.WS_MODULE_WHITELIST_DELETE_ERROR, ex.getClass().getSimpleName());
+            }          
         }
         
        
@@ -609,6 +692,7 @@ public class HostBO extends BaseBO {
             String packageVendor = "";
             String packageVersion = "";
             String extendedtoPCR = "";
+            boolean useHostSpecificDigest = false;
             try {
                 // Before we insert the record, we need the identity for the event name               
                 if (pcr19.containsPcrEventLog(19)) {
@@ -624,6 +708,7 @@ public class HostBO extends BaseBO {
                                 packageVersion = String.valueOf(m.getInfo().get("PackageVersion"));
                                 extendedtoPCR = String.valueOf(m.getInfo().get("ExtendedToPCR"));
                                 digest = String.valueOf(m.getValue());
+                                useHostSpecificDigest = Boolean.valueOf(m.getInfo().get("UseHostSpecificDigest"));
                                 break;
                             }
                         }
@@ -685,7 +770,7 @@ public class HostBO extends BaseBO {
             newModuleRecord.setPackageName(packageName);
             newModuleRecord.setPackageVendor(packageVendor);
             newModuleRecord.setPackageVersion(packageVersion);
-            newModuleRecord.setUseHostSpecificDigestValue(Boolean.FALSE);
+            newModuleRecord.setUseHostSpecificDigestValue(useHostSpecificDigest);
             newModuleRecord.setExtendedToPCR(extendedtoPCR);
             newModuleRecord.setDescription("");
 
@@ -948,6 +1033,7 @@ public class HostBO extends BaseBO {
 		hostObj.VMM_Version = tblHost.getVmmMleId().getVersion();
 		hostObj.VMM_OSName = tblHost.getVmmMleId().getOsId().getName();
 		hostObj.VMM_OSVersion = tblHost.getVmmMleId().getOsId().getVersion();
+                hostObj.Hardware_Uuid = tblHost.getHardwareUuid();
 
 		return hostObj;
 	}

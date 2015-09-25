@@ -112,7 +112,6 @@ public class TxtHost {
         // We assume connectionString starts with either "intel:", "vmware:" or "citrix" prefixes
         String vendor  = getAddOn_Connection_String().substring(0, getAddOn_Connection_String().indexOf(":"));
         log.debug("Vendor calculated :" + vendor);
-        log.info("DELETE(debugging purposes) ++++++++++++++++ Vendor calculated :" + vendor);
         return vendor;
         
     }

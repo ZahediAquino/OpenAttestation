@@ -168,7 +168,7 @@ function getFailureReportSuccess(responseJSON) {
                         '<td align="center" class="failureReportRow1"><a isColpase="true" onclick="fnColapseFailReport(this)"><img class="imageClass" border="0" alt="-" src="images/plus.jpg"></a></td>'+
                         '<td class="failureReportRow2">'+reportdata[item].name+'</td>'+
                         '<td class="failureReportRow3" style="'+styleUntrusted+'" >'+reportdata[item].value+'</td>'+
-                        '<td class="failureReportRow4" >'+reportdata[item].whiteListValue+'</td>'+
+                        '<td class="failureReportRow4" >'+reportdata[item].whiteListValue.toUpperCase()+'</td>'+
                         '</tr>';
                 
 		var moduleLog = reportdata[item].moduleLogs;
