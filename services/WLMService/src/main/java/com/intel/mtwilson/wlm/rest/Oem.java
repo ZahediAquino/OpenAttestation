@@ -99,7 +99,7 @@ public class Oem {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public String addOem(OemData oemData) {
-        return oemBo.createOem(oemData);
+        return oemBo.createOem(oemData,"");
     }
     
     /**

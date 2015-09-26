@@ -98,7 +98,7 @@ public class Os {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public String addOs(OsData osData) {
-        return osBO.createOs(osData);
+        return osBO.createOs(osData,"");
     }
     
     
