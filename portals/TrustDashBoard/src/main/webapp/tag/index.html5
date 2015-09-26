@@ -212,7 +212,7 @@ function isNumber(n) {
            
             <!-- <div class="singleDiv" style="height: 25px;"></div> -->
                             <!--div id="nameOfPage" class="NameHeader">Search Certificates</div--> 
-                            <div id="nameOfPage" class="NameHeader" style="margin-bottom: 6px;"><span data-i18n="header.certificate_browse">Browse Certificates</span>&nbsp;&nbsp; 
+                            <div id="nameOfPage" class="NameHeader" style="margin-bottom: 6px;display:none;"><span data-i18n="header.certificate_browse">Browse Certificates</span>&nbsp;&nbsp; 
                                 <a href="javascript:toggleElementVisibility('certificate-search-form')" style='font-size: 0.8em'>(<span data-i18n="link.search">Search</span>)</a>
                             </div> 
 
@@ -327,12 +327,11 @@ function isNumber(n) {
                         </div>                                              
 
 
-                    <div id="log">
+                    <!--div id="log">
                         <h1>Application Log</h1>
                         <div id="logwindow" style="height: 400px; max-height: 400px; overflow: scroll; border: 2px solid #555555; margin-top: 15px; padding: 4px;">
                         </div>
-                        <!-- end log tab -->
-                    </div>
+                    </div-->
                     <!-- content-wrap ends-->	
                 </div>
             </div>
@@ -352,9 +351,9 @@ function isNumber(n) {
 
 
         <!-- configure javascript logging -->								
-        <script>
+        <!--script>
             log.attach("logwindow");
-        </script>
+        </script-->
 
         <!-- script must be at the end of the markup so it can reference any element -->
         <script>
