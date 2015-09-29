@@ -85,7 +85,9 @@ public enum ErrorCode {
     AS_INVALID_ASSET_TAG_CERTIFICATE_HASH(1030, "Invalid asset tag certificate hash specified."),
     AS_INVALID_ASSET_TAG_CERTIFICATE(1031, "Invalid asset tag certificate specified."),
     AS_HOST_SPECIFIED_IS_CURRENTLY_NOT_MAPPED_TO_ASSET_TAG_CERTIFICATE(1032, "Host specified is currently not mapped to any asset tag certificate."),
-    
+    AS_TPM_NOT_SUPPORTED(1033,"Host '%s' does not support TXT."),
+    AS_BULK_HOST_TRUST_ERROR(1034, "Error during bulk host trust retrieval: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
+    AS_HOST_TRUST_ERROR(1035, "Error during retrieval of host trust status: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
 
     // Error codes for White List Service
     WS_OEM_DOES_NOT_EXIST(2001, "OEM '%s' is not configured in the system."),

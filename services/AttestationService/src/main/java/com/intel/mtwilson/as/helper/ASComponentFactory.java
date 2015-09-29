@@ -80,5 +80,21 @@ public class ASComponentFactory {
         }
         return bean;
     }
+     
+     public static HostBO getHostBO1() {
+        HostBO bean = new HostBO();
+        return bean;
+    }
 
+    public static HostTrustBO getHostTrustBO1() {
+        HostTrustBO bean = new HostTrustBO();
+        HostBO hostBO = getHostBO1();
+        bean.setHostBO(hostBO);
+        return bean;
+    }
+    
+     public static ReportsBO getReportsBO1() {
+        ReportsBO bean = new ReportsBO();
+        return bean;
+    }
 }

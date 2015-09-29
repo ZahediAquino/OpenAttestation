@@ -18,5 +18,6 @@
     <class>com.intel.mtwilson.as.data.TblModuleManifest</class>
     <class>com.intel.mtwilson.as.data.TblModuleManifestLog</class>
     <class>com.intel.mtwilson.as.data.TblPackageNamespace</class>
+    <class>com.intel.mtwilson.as.data.TblSamlAssertion</class>
   </persistence-unit>
 </persistence>

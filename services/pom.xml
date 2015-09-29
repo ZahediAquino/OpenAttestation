@@ -38,6 +38,10 @@
     <module>oat-tag-jdbi</module>
     <module>oat-tag-dao-jooq</module>
     <module>oat-saml-verifier</module>
+    <module>oat-trust-policy</module>
+    <module>oat-tag-model</module>
+    <module>oat-audit-api</module>
+    <module>oat-saml</module>
   </modules>
 
 </project>

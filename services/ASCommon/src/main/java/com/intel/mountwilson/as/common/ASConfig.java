@@ -377,5 +377,29 @@ public class ASConfig extends ConfigBase{
             return new File(ConfigurationUtil.getConfigurationFolderPath() + File.separator + path);
         }
     }
+    
+    public static String getDataEncryptionKeyBase64() {
+        Configuration conf = getConfiguration();
+        return conf.getString("mtwilson.as.dek", ""); // removing default in mtwilson 1.2;  was "hPKk/2uvMFRAkpJNJgoBwA=="
+    }
+    
+    public static File getSamlCertificateFile() {
+        Configuration conf = getConfiguration();
+        return findConfigurationFile(conf.getString("mtwilson.saml.certificate.file", "saml.crt.pem"));
+    }
 
+    public static File getSamlKeystoreFile() {
+        Configuration conf = getConfiguration();
+        return findConfigurationFile(conf.getString("saml.keystore.file", "mtwilson-saml.jks"));
+    }
+
+    public static String getSamlKeystorePassword() {
+        Configuration conf = getConfiguration();
+        return conf.getString("saml.key.password"); // bug #733 
+    }
+    
+    public static String getSamlKeyAlias() {
+        Configuration conf = getConfiguration();
+        return conf.getString("saml.key.alias"); 
+    }
 }

@@ -55,6 +55,9 @@ import org.slf4j.LoggerFactory;
 public class TblHosts implements Serializable {
     @Transient
     private transient Logger log = LoggerFactory.getLogger(getClass());
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "hostId")
+    private Collection<TblSamlAssertion> tblSamlAssertionCollection;
     @Column(name = "Location")
     private String location;
     private static final long serialVersionUID = 1L;
@@ -111,7 +114,11 @@ public class TblHosts implements Serializable {
     private String bios_mle_uuid_hex;
     @Column(name = "vmm_mle_uuid_hex")
     private String vmm_mle_uuid_hex;
-
+    @Column(name = "AIK_SHA1")
+    private String aikSha1;
+//    @Column(name = "binding_key_certificate")
+//    private String bindingKeyCertificate;
+    
     public TblHosts() {
     }
 
@@ -316,6 +323,29 @@ public class TblHosts implements Serializable {
     public void setVmm_mle_uuid_hex(String vmm_mle_uuid_hex) {
         this.vmm_mle_uuid_hex = vmm_mle_uuid_hex;
     }
- 
     
+    public String getAikSha1() {
+        return aikSha1;
+    }
+    
+    public void setAikSha1(String aikSha1) {
+        this.aikSha1 = aikSha1;
+    }
+    
+//    public String getBindingKeyCertificate() {
+//        return this.bindingKeyCertificate;
+//    }
+//
+//    public void setBindingKeyCertificate(String bindingKeyCertificate) {
+//        this.bindingKeyCertificate = bindingKeyCertificate;
+//    }
+
+    @XmlTransient
+    public Collection<TblSamlAssertion> getTblSamlAssertionCollection() {
+        return this.tblSamlAssertionCollection;
+    }
+
+    public void setTblSamlAssertionCollection(Collection<TblSamlAssertion> tblSamlAssertionCollection) {
+        this.tblSamlAssertionCollection = tblSamlAssertionCollection;
+    }
 }

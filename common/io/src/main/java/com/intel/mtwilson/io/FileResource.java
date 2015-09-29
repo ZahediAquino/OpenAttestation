@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import com.intel.mtwilson.util.io.Resource;
 
 /**
  * A thin wrapper for Java's File class

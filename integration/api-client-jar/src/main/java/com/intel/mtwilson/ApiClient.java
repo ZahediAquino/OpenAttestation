@@ -859,15 +859,14 @@ public class ApiClient implements AttestationService, WhitelistService, AssetTag
     }
     
     @Override
-    public List<HostTrustXmlResponse> getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException {
+    public String getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException {
             // prepare the request
             String hostnamesCSV = StringUtils.join(hostnames, ","); // calls toString() on each hostname
             MultivaluedMap<String,String> query = new MultivaluedMapImpl();
             query.add("hosts", hostnamesCSV);
             query.add("force_verify", Boolean.toString(forceVerify));
-            // make the request and parse the xml response
-            HostTrustXmlResponseList list = xml(httpGet(asurl("/hosts/bulk/trust/saml", query)), HostTrustXmlResponseList.class);
-            return list.getHost(); // get the list of <Host> elements inside the root <Hosts> element... it's an automatically generated method name. would have been nice if they named it getHostList()
+            ApiResponse result = httpGet(asurl("/hosts/bulk/trust/saml", query));
+            return new String(result.content, "UTF-8");
         }
 
 }

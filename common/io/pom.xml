@@ -67,8 +67,10 @@
     <dependency>
     	<groupId>org.codehaus.jackson</groupId>
     	<artifactId>jackson-jaxrs</artifactId>
-    	<version>1.9.11</version>
     </dependency>
-
+    <dependency>
+        <groupId>com.intel.mtwilson.core.util</groupId>
+        <artifactId>oat-util-cpg</artifactId>
+    </dependency>
   </dependencies>  
 </project>

@@ -61,6 +61,10 @@ public class TxtHostRecord {
 //    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
     public String Hardware_Uuid;
+    @JsonProperty
+    public String AIK_PublicKey;
+    @JsonProperty
+    public String AIK_SHA1;
     
     public TxtHostRecord() {
         
@@ -86,5 +90,7 @@ public class TxtHostRecord {
         Location = input.getLocation();
         AIK_Certificate = input.getAikCertificate();
         Hardware_Uuid = null;
+//        AIK_PublicKey = input.getAikPublicKey();
+//        AIK_SHA1 = input.getAikSha1();
     }
 }

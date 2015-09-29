@@ -371,12 +371,21 @@
                     <artifactId>shiro-core</artifactId>
                     <version>1.2.2</version>
                 </dependency>
-                <!--dependency>
+                <dependency>
                         <groupId>com.intel.mtwilson.core.services</groupId>
-                        <artifactId>oat-tag-model</artifactId>
-                        <version>0.1-SNAPSHOT</version>
-                        <type>jar</type>
-                </dependency-->
+                        <artifactId>oat-trust-policy</artifactId>
+                        <version>2.2</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.intel.mtwilson.core.integration</groupId>
+                        <artifactId>oat-configuration</artifactId>
+                        <version>2.2</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.intel.mtwilson.core.services</groupId>
+                        <artifactId>oat-saml</artifactId>
+                        <version>2.2</version>
+                </dependency>
         </dependencies>
 	<properties />
 </project>

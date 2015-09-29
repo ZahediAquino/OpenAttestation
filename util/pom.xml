@@ -19,6 +19,7 @@
         <module>oat-util-cpg</module>
         <module>oat-util-jdbi</module>
         <module>oat-util-jaxrs2-server</module>
+        <module>oat-util-configuration</module>
     </modules>
 
 </project>

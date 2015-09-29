@@ -18,6 +18,7 @@
     <module>api-client-jar</module>
     <module>oat-tag-selection-json</module>
     <module>oat-tag-selection-xml</module>
+    <module>oat-configuration</module>
   </modules>
 
 </project>

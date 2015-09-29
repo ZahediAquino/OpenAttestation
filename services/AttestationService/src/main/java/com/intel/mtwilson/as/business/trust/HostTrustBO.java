@@ -26,26 +26,38 @@ import com.intel.mountwilson.manifest.factory.DefaultManifestStrategyFactory;
 import com.intel.mtwilson.agent.*;
 import com.intel.mtwilson.as.business.AssetTagCertBO;
 import com.intel.mtwilson.as.business.HostBO;
-import com.intel.mtwilson.as.business.trust.HostTrustBO;
 import com.intel.mtwilson.as.business.trust.gkv.IGKVStrategy;
 import com.intel.mtwilson.as.business.trust.gkv.factory.DefaultGKVStrategyFactory;
 import com.intel.mtwilson.as.controller.MwKeystoreJpaController;
 import com.intel.mtwilson.as.controller.TblLocationPcrJpaController;
+import com.intel.mtwilson.as.controller.TblSamlAssertionJpaController;
 import com.intel.mtwilson.as.controller.TblTaLogJpaController;
 import com.intel.mtwilson.as.data.MwAssetTagCertificate;
 import com.intel.mtwilson.as.data.TblHosts;
 import com.intel.mtwilson.as.data.TblLocationPcr;
 import com.intel.mtwilson.as.data.TblMle;
+import com.intel.mtwilson.as.data.TblSamlAssertion;
 import com.intel.mtwilson.as.data.TblTaLog;
 import com.intel.mtwilson.as.helper.BaseBO;
+import com.intel.mtwilson.as.rest.HostAttestation;
 import com.intel.mtwilson.crypto.CryptographyException;
 import com.intel.mtwilson.datatypes.*;
+import com.intel.mtwilson.saml.SamlAssertion;
+import com.intel.mtwilson.saml.SamlGenerator;
 import com.intel.mtwilson.util.crypto.Sha1Digest;
+import com.intel.mtwilson.util.io.FileResource;
+import com.intel.mtwilson.util.io.Resource;
+import com.intel.mtwilson.util.io.UUID;
+import java.io.IOException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+import org.apache.commons.configuration.ConfigurationException;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -62,14 +74,33 @@ public class HostTrustBO extends BaseBO {
     Marker sysLogMarker = MarkerFactory.getMarker("SYSLOG"); // TODO we should create a single class to contain all the markers we want to use throughout the code
     private final int CACHE_VALIDITY_SECS = 3600;
     
+    private Resource samlKeystoreResource = null;
     private HostBO hostBO;
     private HashMap<String, String> hostStatus = new HashMap<String, String>();
     
     public HostTrustBO() {
+        loadSamlSigningKey();
     }
     
     public void setHostBO(HostBO hostBO) { this.hostBO = hostBO; }
               
+    private void loadSamlSigningKey() {
+        /*
+        MwKeystore mwKeystore = keystoreJpa.findMwKeystoreByName(SAML_KEYSTORE_NAME);
+        if( mwKeystore != null && mwKeystore.getKeystore() != null ) {
+            samlKeystoreResource = new ByteArrayResource(mwKeystore.getKeystore());
+        }
+        */
+        //samlKeystoreResource = new FileResource(ResourceFinder.getFile(ASConfig.getConfiguration().getString("saml.keystore.file", "SAML.jks"))); 
+        
+        
+        samlKeystoreResource = new FileResource(ASConfig.getSamlKeystoreFile());
+        if(samlKeystoreResource != null)
+            log.info("samlKeystoreResource is not null");
+        else
+            log.info("samlKeystoreResource is null");
+    }
+    
     /**
      * 
      * @param hostName must not be null
@@ -658,6 +689,251 @@ public class HostTrustBO extends BaseBO {
     public TblTaLogJpaController getTblTaLogJpaController() {
     	return new TblTaLogJpaController(getEntityManagerFactory());
     }
+    
+    public String getTrustWithSaml(String host, boolean forceVerify) throws IOException {
+        //My.initDataEncryptionKey();
+        TblHosts tblHosts = getHostByName(new Hostname((host)));
+        return getTrustWithSaml(tblHosts, tblHosts.getName(), forceVerify);
+    }
+    
+    public String getTrustWithSaml(TblHosts tblHosts, String hostId, boolean forceVerify) throws IOException {
+        String hostAttestationUuid = new UUID().toString();
+        log.debug("Generating new UUID for saml assertion record 1: {}", hostAttestationUuid);
+        return getTrustWithSaml(tblHosts, hostId, hostAttestationUuid, forceVerify); //.getSaml();
+    }
+    
+    public String getTrustWithSaml(TblHosts tblHosts, String hostId, String hostAttestationUuid, boolean forceVerify) throws IOException {
+        log.debug("getTrustWithSaml: Getting trust for host: " + tblHosts.getName() + " Force verify flag: " + forceVerify);
+        // Bug: 702: For host not supporting TXT, we need to return back a proper error
+        // make sure the DEK is set for this thread
+        
+//        My.initDataEncryptionKey();
+//        TblHosts tblHosts = getHostByName(new Hostname((host)));
+        HostAgentFactory factory = new HostAgentFactory();
+        HostAgent agent = factory.getHostAgent(tblHosts);
+       // log.info("Value of the TPM flag is : " +  Boolean.toString(agent.isTpmEnabled()));
+        
+        if (!agent.isTpmAvailable()) {
+            throw new ASException(ErrorCode.AS_TPM_NOT_SUPPORTED, hostId);
+        }
+        if(forceVerify != true){
+            //TblSamlAssertion tblSamlAssertion = new TblSamlAssertionJpaController((getEntityManagerFactory())).findByHostAndExpiry(hostId);
+            //TblSamlAssertion tblSamlAssertion = My.jpa().mwSamlAssertion().findByHostAndExpiry(tblHosts.getName()); //hostId);
+            TblSamlAssertionJpaController tblSamlAssertionJpa = getSamlAssertionJpaController();
+            TblSamlAssertion tblSamlAssertion = tblSamlAssertionJpa.findByHostAndExpiry(tblHosts.getName());
+            
+            if(tblSamlAssertion != null){
+                if(tblSamlAssertion.getErrorMessage() == null|| tblSamlAssertion.getErrorMessage().isEmpty()) {
+                    log.debug("Found assertion in cache. Expiry time : " + tblSamlAssertion.getExpiryTs());
+                    //HostAttestation ha = new HostAttestation();
+                    return buildHostAttestation(tblHosts, tblSamlAssertion).getSaml();
+                } else {
+                    log.debug("Found assertion in cache with error set, returning that.");
+                   throw new ASException(new Exception("("+ tblSamlAssertion.getErrorCode() + ") " + tblSamlAssertion.getErrorMessage() + " (cached on " + tblSamlAssertion.getCreatedTs().toString()  +")"));
+                }
+            }
+        }
+        
+        log.debug("Getting trust and saml assertion from host.");
+        
+        try {
+//            return getTrustWithSaml(tblHosts, hostId);
+            return getTrustWithSaml(tblHosts, hostId, hostAttestationUuid);
+        }catch(Exception e) {
+            TblSamlAssertion tblSamlAssertion = new TblSamlAssertion();
+            tblSamlAssertion.setAssertionUuid(hostAttestationUuid);
+            tblSamlAssertion.setHostId(tblHosts);
+            //TxtHost hostTxt = getHostWithTrust(new Hostname(host),tblSamlAssertion); 
+            //TxtHostRecord tmp = new TxtHostRecord();
+            //tmp.HostName = host;
+            //tmp.IPAddress = host;
+            //TxtHost hostTxt = new TxtHost(tmp);
+            
+            tblSamlAssertion.setBiosTrust(false);
+            tblSamlAssertion.setVmmTrust(false);
+            
+            try {
+                log.error("Caught exception, generating saml assertion");
+                log.error("Printing stacktrace first");
+                e.printStackTrace();
+                tblSamlAssertion.setSaml("");
+                int cacheTimeout=ASConfig.getConfiguration().getInt("saml.validity.seconds",3600);
+                tblSamlAssertion.setCreatedTs(Calendar.getInstance().getTime());
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.SECOND, cacheTimeout);
+                tblSamlAssertion.setExpiryTs(cal.getTime());
+                if(e instanceof ASException){
+                    ASException ase = (ASException) e;
+                    log.debug("e is an instance of ASExpection: " +String.valueOf(ase.getErrorCode()));
+                    tblSamlAssertion.setErrorCode(String.valueOf(ase.getErrorCode()));
+                }else{
+                    log.debug("e is NOT an instance of ASExpection: " +String.valueOf(ErrorCode.AS_HOST_TRUST_ERROR.getErrorCode()));
+                    tblSamlAssertion.setErrorCode(String.valueOf(ErrorCode.AS_HOST_TRUST_ERROR.getErrorCode()));
+                }
+                // tblSamlAssertion.setErrorMessage(e.getMessage());
+                // Bug fix for 1038
+                tblSamlAssertion.setErrorMessage(e.getClass().getSimpleName());
+                getSamlAssertionJpaController().create(tblSamlAssertion);
+            }catch(Exception ex){
+                //log.debug("getTrustwithSaml caugh exception while generating error saml assertion");
+                log.error("getTrustwithSaml caugh exception while generating error saml assertion", ex);
+                // String msg = ex.getMessage();
+                String msg = ex.getClass().getSimpleName();
+                // log.debug(msg);
+                // throw new ASException(new Exception("getTrustWithSaml " + msg));
+                throw new ASException(ex, ErrorCode.AS_HOST_TRUST_ERROR, msg);
+                //throw new ASException(new Exception("Host Manifest is missing required PCRs."));
+            } 
+            //Daniel, change the messages into meaningful thiings here
+            //log.debug("e.getMessage = "+e.getMessage());
+            //throw new ASException(new Exception(e.getMessage()));
+            log.error("Error during retrieval of host trust status.", e);
+            throw new ASException(e, ErrorCode.AS_HOST_TRUST_ERROR, e.getClass().getSimpleName());
+            //throw new ASException(new Exception("Host Manifest is missing required PCRs."));
+        }
+    }
+    
+    public TblSamlAssertionJpaController getSamlAssertionJpaController() {
+	return new TblSamlAssertionJpaController(getEntityManagerFactory());
+    }
+    
+    public HostAttestation buildHostAttestation(TblHosts tblHosts, TblSamlAssertion tblSamlAssertion) throws IOException {
+        HostAttestation hostAttestation = new HostAttestation();
+        //hostAttestation.setAikSha1(tblHosts.getAikSha1());
+        //hostAttestation.setChallenge(tblHosts.getChallenge());
+        hostAttestation.setHostName(tblHosts.getName());
+        //hostAttestation.setHostUuid(tblHosts.getUuid_hex()); //.getHardwareUuid());
+        hostAttestation.setId(UUID.valueOf(tblSamlAssertion.getAssertionUuid()));
+        hostAttestation.setSaml(tblSamlAssertion.getSaml());
+        //hostAttestation.setTrustReport(mapper.readValue(tblSamlAssertion.getTrustReport(), TrustReport.class));
 
+        HostTrustStatus hostTrustStatus = new HostTrustStatus();
+        hostTrustStatus.bios = tblSamlAssertion.getBiosTrust();
+        hostTrustStatus.vmm = tblSamlAssertion.getVmmTrust();
+        //hostTrustStatus.asset_tag = tblSamlAssertion.getAssetTagTrust();
+        hostAttestation.setHostTrustResponse(new HostTrustResponse(new Hostname(tblHosts.getName()), hostTrustStatus));
+        return hostAttestation;
+    }
+    
+    public String getTrustWithSaml(TblHosts tblHosts, String hostId, String hostAttestationUuid) {
+        try {
+            //String location = hostTrustBO.getHostLocation(new Hostname(hostName)).location; // example: "San Jose"
+            //HostTrustStatus trustStatus = hostTrustBO.getTrustStatus(new Hostname(hostName)); // example:  BIOS:1,VMM:1
+                
+            TblSamlAssertion tblSamlAssertion = new TblSamlAssertion();
+
+            TxtHost host = getHostWithTrust(tblHosts, hostId,tblSamlAssertion);
+            
+            tblSamlAssertion.setAssertionUuid(hostAttestationUuid);
+            tblSamlAssertion.setBiosTrust(host.isBiosTrusted());
+            tblSamlAssertion.setVmmTrust(host.isVmmTrusted());
+
+            // We need to add the Asset tag related data only if the host is provisioned for it. This is done
+            // by verifying in the asset tag certificate table. 
+            X509AttributeCertificate tagCertificate; 
+            AssetTagCertBO atagCertBO = new AssetTagCertBO();
+            MwAssetTagCertificate atagCertForHost = atagCertBO.findValidAssetTagCertForHost(tblSamlAssertion.getHostId().getId());
+            if (atagCertForHost != null) {
+                log.debug("Host has been provisioned in the system with a TAG.");
+                tagCertificate = X509AttributeCertificate.valueOf(atagCertForHost.getCertificate());
+            } else {
+                log.debug("Host has not been provisioned in the system with a TAG.");
+                tagCertificate = null;
+            }
+
+//            if (tblHosts.getBindingKeyCertificate() != null && !tblHosts.getBindingKeyCertificate().isEmpty()) {
+//                host.setBindingKeyCertificate(tblHosts.getBindingKeyCertificate());
+//            }
+            
+            SamlAssertion samlAssertion = getSamlGenerator().generateHostAssertion(host, tagCertificate, null);
+
+            
+            // We will check if the asset-tag was verified successfully for the host. If so, we need to retrieve
+            // all the attributes for that asset-tag and send it to the saml generator.
+/*            X509AttributeCertificate tagCertificate = null; 
+            if (host.isAssetTagTrusted()) {
+                AssetTagCertBO atagCertBO = new AssetTagCertBO();
+                MwAssetTagCertificate atagCertForHost = atagCertBO.findValidAssetTagCertForHost(tblSamlAssertion.getHostId().getId());
+                if (atagCertForHost != null) {
+                    tagCertificate = X509AttributeCertificate.valueOf(atagCertForHost.getCertificate());
+//                        atags.add(new AttributeOidAndValue("UUID", atagCertForHost.getUuid())); // should already be the "Subject" attribute of the certificate, if not then we need to get it from one of the cert attributes
+                }
+            }
+
+            SamlAssertion samlAssertion = getSamlGenerator().generateHostAssertion(host, tagCertificate);
+*/
+            log.debug("Expiry {}" , samlAssertion.expiry_ts.toString());
+
+            tblSamlAssertion.setSaml(samlAssertion.assertion);
+            tblSamlAssertion.setExpiryTs(samlAssertion.expiry_ts);
+            tblSamlAssertion.setCreatedTs(samlAssertion.created_ts);
+            
+//            TrustReport hostTrustReport = getTrustReportForHost(tblHosts, tblHosts.getName());
+//            tblSamlAssertion.setTrustReport(mapper.writeValueAsString(hostTrustReport));
+//            logTrustReport(tblHosts, hostTrustReport); // Need to cache the attestation report ### v1 requirement to log to mw_ta_log
+                
+            getSamlAssertionJpaController().create(tblSamlAssertion);
+
+            return samlAssertion.assertion;
+        } catch (ASException e) {
+            // ASException sets HTTP Status to 400 for all errors
+            // We override that here to give more specific codes when possible:
+            if (e.getErrorCode().equals(ErrorCode.AS_HOST_NOT_FOUND)) {
+                throw new WebApplicationException(Status.NOT_FOUND);
+            }
+            /*
+             * if( e.getErrorCode().equals(ErrorCode.TA_ERROR)) { throw new
+             * WebApplicationException(Status.INTERNAL_SERVER_ERROR); }
+             *
+             */
+            throw e;
+        } catch (Exception ex) {
+            // throw new ASException( e);
+            log.error("Error during retrieval of host trust status.", ex);
+            throw new ASException(ErrorCode.AS_HOST_TRUST_ERROR, ex.getClass().getSimpleName());
+        }
+    }
+    
+    public TxtHost getHostWithTrust(TblHosts tblHosts, String hostId, TblSamlAssertion tblSamlAssertion) throws IOException {
+        //HostTrustStatus trust = getTrustStatus(tblHosts, hostId);
+        HostTrustStatus trust = getTrustStatus(new Hostname(tblHosts.getName()));
+        TxtHostRecord data = createTxtHostRecord(tblHosts);
+        TxtHost host = new TxtHost(data, trust);
+        tblSamlAssertion.setHostId(tblHosts);
+        tblSamlAssertion.setBiosTrust(trust.bios);
+        tblSamlAssertion.setVmmTrust(trust.vmm);
+        return host;
+    }
+    
+    public HostTrustStatus getTrustStatus(TblHosts tblHosts, String hostId) throws IOException {
+        if (tblHosts == null) {
+            throw new ASException(
+                    ErrorCode.AS_HOST_NOT_FOUND,
+                    hostId);
+        }
+        HostTrustStatus trust = new HostTrustStatus();
+        trust.asset_tag = false;
+        trust.bios = false;
+        trust.location = false;
+        trust.vmm = false;
+
+        return trust;
+    }
+    
+    private SamlGenerator getSamlGenerator() throws UnknownHostException, ConfigurationException, IOException, org.opensaml.xml.ConfigurationException, ClassNotFoundException {
+        org.apache.commons.configuration.Configuration conf = ASConfig.getConfiguration();
+        InetAddress localhost = InetAddress.getLocalHost();
+        String defaultIssuer = "https://" + localhost.getHostAddress() + ":8181/AttestationService"; 
+        String issuer = conf.getString("saml.issuer", defaultIssuer);
+        SamlGenerator saml = new SamlGenerator(samlKeystoreResource, conf);
+        
+        if(saml != null)
+            log.info("getSamlGenerator: saml is not null");
+        else
+            log.info("getSamlGenerator: saml is null");
+        
+        saml.setIssuer(issuer);
+        return saml;
+    }
 }
 

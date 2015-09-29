@@ -397,6 +397,23 @@ ALTER TABLE `mw_ta_log` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
 UPDATE mw_ta_log mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
 
 
+CREATE TABLE `mw_saml_assertion` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `host_id` int(11) NOT NULL,
+  `saml` text,
+  `expiry_ts` datetime NOT NULL,
+  `bios_trust` tinyint(1) NOT NULL,
+  `vmm_trust` tinyint(1) NOT NULL,
+  `error_code` varchar(50) DEFAULT NULL,
+  `error_message` varchar(200) DEFAULT NULL,
+  `created_ts` datetime DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `tbl_hosts_fk` (`host_id`),
+  CONSTRAINT `tbl_hosts_fk` FOREIGN KEY (`host_id`) REFERENCES `mw_hosts` (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1 COMMENT='SAML assertion cache';
+
+ALTER TABLE mw_saml_assertion ADD COLUMN uuid_hex CHAR(36) NULL;
+ALTER TABLE mw_saml_assertion ADD COLUMN trust_report TEXT DEFAULT NULL;
 
 INSERT INTO `mw_event_type` (`ID`, `Name`, `FieldName`) VALUES (1,'Vim25Api.HostTpmSoftwareComponentEventDetails','componentName');
 INSERT INTO `mw_event_type` (`ID`, `Name`, `FieldName`) VALUES (2,'Vim25Api.HostTpmOptionEventDetails','bootOptions');
