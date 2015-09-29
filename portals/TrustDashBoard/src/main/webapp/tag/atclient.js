@@ -368,6 +368,7 @@ mtwilson.atag = mtwilson.atag || {};
                 break;
             case 'revoke-certificate':
                 mtwilson.atag.notify({text: "notify.revoke_certificate_success", clearAfter: 'AUTO', status: 'INFO'});
+                document.getElementById("searchCertButton").click()
                 break;
             case 'configurations':
                 mtwilson.atag.notify({text: i18n.t("notify.create_configuration_success"),clearAfter: 'AUTO', status: 'INFO'});

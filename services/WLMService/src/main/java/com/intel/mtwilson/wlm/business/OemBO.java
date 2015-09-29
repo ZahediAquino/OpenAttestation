@@ -25,6 +25,7 @@ import com.intel.mtwilson.as.data.TblMle;
 import com.intel.mtwilson.as.data.TblOem;
 import com.intel.mtwilson.datatypes.ErrorCode;
 import com.intel.mtwilson.datatypes.OemData;
+import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.wlm.helper.BaseBO;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -99,7 +100,7 @@ public class OemBO extends BaseBO {
      * @param oemData
      * @return 
      */
-    public String createOem(OemData oemData) {
+    public String createOem(OemData oemData, String uuid) {
         try {
             TblOem tblOem = tblOemJpaController.findTblOemByName(oemData.getName());
             
@@ -109,7 +110,11 @@ public class OemBO extends BaseBO {
             tblOem = new TblOem();
             tblOem.setName(oemData.getName());
             tblOem.setDescription(oemData.getDescription());
-            
+            if (uuid != null && !uuid.isEmpty()) {
+                tblOem.setUuid_hex(uuid);
+            } else {
+                tblOem.setUuid_hex(new UUID().toString());
+            }
             tblOemJpaController.create(tblOem);
             
         } catch(ASException ase){

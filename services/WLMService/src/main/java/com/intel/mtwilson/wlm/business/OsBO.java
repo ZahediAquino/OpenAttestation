@@ -25,6 +25,7 @@ import com.intel.mtwilson.as.data.TblMle;
 import com.intel.mtwilson.as.data.TblOs;
 import com.intel.mtwilson.datatypes.ErrorCode;
 import com.intel.mtwilson.datatypes.OsData;
+import com.intel.mtwilson.util.io.UUID;
 import com.intel.mtwilson.wlm.helper.BaseBO;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,7 +102,7 @@ public class OsBO extends BaseBO {
      * @param osData
      * @return 
      */
-    public String createOs(OsData osData) {
+    public String createOs(OsData osData, String uuid) {
         try {
             TblOs tblOs = tblOsJpaController.findTblOsByNameVersion(osData.getName(), osData.getVersion());
 
@@ -113,7 +114,11 @@ public class OsBO extends BaseBO {
             tblOs.setName(osData.getName());
             tblOs.setVersion(osData.getVersion());
             tblOs.setDescription(osData.getDescription());
-
+            if (uuid != null && !uuid.isEmpty()) {
+                tblOs.setUuid_hex(uuid);
+            } else {
+                tblOs.setUuid_hex(new UUID().toString());
+            }
             tblOsJpaController.create(tblOs);
 
         } catch (ASException ase) {
