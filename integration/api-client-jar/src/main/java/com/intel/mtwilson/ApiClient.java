@@ -859,6 +859,45 @@ public class ApiClient implements AttestationService, WhitelistService, AssetTag
     }
     
     @Override
+    public String getSamlForHost(Hostname hostname) throws IOException, ApiException, SignatureException {
+        MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+        query.add("hostName", hostname.toString());
+        // By default we will get it from cache.
+        query.add("force_verify", Boolean.toString(false));
+        String saml = text(httpGet(asurl("/saml/assertions/host", query))); // NOTE: we are returning the raw XML document, we don't try to instantiate any Java object via the xml() funciton. The client can create a TrustAssertion object using this XML string in order to parse it.
+        return saml;
+    }
+    @Override
+    public String getSamlForHost(Hostname hostname, boolean forceVerify) throws IOException, ApiException, SignatureException {
+        MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+        query.add("hostName", hostname.toString());
+        query.add("force_verify", Boolean.toString(forceVerify));
+        String saml = text(httpGet(asurl("/saml/assertions/host", query))); // NOTE: we are returning the raw XML document, we don't try to instantiate any Java object via the xml() funciton. The client can create a TrustAssertion object using this XML string in order to parse it.
+        return saml;
+    }
+    /*
+    @Override
+    public List<HostTrustXmlResponse> getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException {
+            // prepare the request
+            log.info("LOGGING +++++++++++ hostnames.size: " + hostnames.size());
+            log.info("LOGGING +++++++++++ forceVerify" + forceVerify);
+            String hostnamesCSV = StringUtils.join(hostnames, ","); // calls toString() on each hostname
+            MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+            query.add("hosts", hostnamesCSV);
+            query.add("force_verify", Boolean.toString(forceVerify));
+            // make the request and parse the xml response
+            //Print String URL
+            HostTrustXmlResponseList list = xml(httpGet(asurl("/hosts/bulk/trust/saml", query)), HostTrustXmlResponseList.class);
+            if(list.getHost() !=null) log.info("LOGGING +++++++++++ list.getHost().size()" + list.getHost().size()); else log.info("LOGGING +++++++++++ list.getHost() EVALUATES TO NULL!)");
+            List<HostTrustXmlResponse> responses = list.getHost();
+            for (Iterator<HostTrustXmlResponse> it = responses.iterator(); it.hasNext();) {
+                 HostTrustXmlResponse  xmlResponse = it.next();
+                 if(xmlResponse.getAssertion() != null) log.info("\"LOGGING +++++++++++ xmlResponse.getAssertion()" + xmlResponse.getAssertion()); else log.info("\"LOGGING +++++++++++ xmlResponse.getAssertion validates to NULL!");
+                 
+                
+            }
+            return list.getHost(); // get the list of <Host> elements inside the root <Hosts> element... it's an automatically generated method name. would have been nice if they named it getHostList()
+        }*/
     public String getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException {
             // prepare the request
             String hostnamesCSV = StringUtils.join(hostnames, ","); // calls toString() on each hostname

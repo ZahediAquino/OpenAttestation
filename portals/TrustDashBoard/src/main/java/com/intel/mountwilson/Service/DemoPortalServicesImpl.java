@@ -157,7 +157,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	 * @throws DemoPortalException
 	 */
 	@Override
-	public TrustedHostVO getSingleHostTrust(String hostName,AttestationService apiClientServices,X509Certificate[] trustedCertificates)throws DemoPortalException {
+	public TrustedHostVO getSingleHostTrust(String hostName, AttestationService apiClientServices,X509Certificate[] trustedCertificates)throws DemoPortalException {
 		
 		TrustedHostVO hostVO = null;
 	           HostDetailsEntityVO hostDetailsEntityVO = new HostDetailsEntityVO();
@@ -167,6 +167,12 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
             HostTrustResponse hostTrustResponse = null;
             try {
                 log.info("Getting trust Information for Host " + hostName);
+		xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), false);
+		
+                //Set<Hostname> hostnames = new HashSet<Hostname>();
+                //hostnames.add(new Hostname(hostName));
+                //xmloutput = ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, false));
+                
                 hostTrustResponse = apiClientServices.getHostTrust(new Hostname(hostDetailsEntityVO.getHostName()));
                 List<TxtHostRecord> hosts = apiClientServices.queryForHosts(hostDetailsEntityVO.getHostName());
                 TxtHostRecord txtHostRecord = null;

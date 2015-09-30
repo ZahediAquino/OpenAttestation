@@ -63,5 +63,12 @@ public interface AttestationService {
 
     X509Certificate getTlsCertificateForTrustedHost(Hostname hostname) throws IOException, ApiException, SignatureException;
     
+    String getSamlForHost(Hostname hostname) throws IOException, ApiException, SignatureException;
+    
+    String getSamlForHost(Hostname hostname, boolean forceVerify) throws IOException, ApiException, SignatureException;
+    
     String getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException;
+    
+    //List<HostTrustXmlResponse> getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException;
+    
 }
