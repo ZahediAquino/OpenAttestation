@@ -30,6 +30,7 @@ import com.intel.mtwilson.as.controller.TblMleJpaController;
 import com.intel.mtwilson.as.controller.TblModuleManifestJpaController;
 import com.intel.mtwilson.as.controller.TblPackageNamespaceJpaController;
 import com.intel.mtwilson.as.controller.TblPcrManifestJpaController;
+import com.intel.mtwilson.as.controller.TblSamlAssertionJpaController;
 import com.intel.mtwilson.as.controller.TblTaLogJpaController;
 import com.intel.mtwilson.as.controller.exceptions.IllegalOrphanException;
 import com.intel.mtwilson.as.controller.exceptions.NonexistentEntityException;
@@ -40,6 +41,7 @@ import com.intel.mtwilson.as.data.TblHosts;
 import com.intel.mtwilson.as.data.TblMle;
 import com.intel.mtwilson.as.data.TblModuleManifest;
 import com.intel.mtwilson.as.data.TblPackageNamespace;
+import com.intel.mtwilson.as.data.TblSamlAssertion;
 import com.intel.mtwilson.as.data.TblTaLog;
 import com.intel.mtwilson.as.helper.BaseBO;
 import com.intel.mtwilson.crypto.CryptographyException;
@@ -404,6 +406,7 @@ public class HostBO extends BaseBO {
                         deleteHostSpecificManifest(tblHosts);
                         deleteModulesForMLE(createTxtHostFromDatabaseRecord(tblHosts));
 			deleteTALogs(tblHosts.getId());
+                        deleteSAMLAssertions(tblHosts);
 
 			getHostsJpaController().destroy(tblHosts.getId());
                         unmapAssetTagCertFromHost(tblHosts.getId(), tblHosts.getName());
@@ -484,6 +487,30 @@ public class HostBO extends BaseBO {
 		}
 
 	}
+        
+        /**
+         * Deletes all the SAML assertions for the specified host. This should
+         * be called before deleting the host.
+         *
+         * @param hostId
+         */
+        private void deleteSAMLAssertions(TblHosts hostId) throws IOException {
+            
+                TblSamlAssertionJpaController samlJpaController = getSamlAssertionJpaController();
+
+		List<TblSamlAssertion> hostSAMLAssertions = samlJpaController.findByHostID(hostId);
+
+                if (hostSAMLAssertions != null) {
+                        for (TblSamlAssertion hostSAML : hostSAMLAssertions) {
+                                try {
+                                        samlJpaController.destroy(hostSAML.getId());
+                                } catch (NonexistentEntityException e) {
+                                        log.error("Ta Log is already deleted " + hostSAML.getId());
+                                }
+                        }
+                        log.info("Deleted all the logs for the given host " + hostId);
+                }
+        }
         
         private void deleteHostAssetTagMapping(TblHosts tblHosts) throws NonexistentEntityException, IOException {
             AssetTagCertAssociateRequest atagRequest = new AssetTagCertAssociateRequest();
@@ -1133,5 +1160,11 @@ public class HostBO extends BaseBO {
 	public TblTaLogJpaController getTaLogJpaController() {
 		return new TblTaLogJpaController(getEntityManagerFactory());
 	}
+        
+        public TblSamlAssertionJpaController getSamlAssertionJpaController() {
+		return new TblSamlAssertionJpaController(getEntityManagerFactory());
+	}
+        
+        
 }
 

@@ -40,6 +40,7 @@ import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.Statement;
 import org.opensaml.xml.Configuration;
 import org.opensaml.xml.XMLObject;
+import org.opensaml.xml.XMLObjectBuilderFactory;
 import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.io.UnmarshallerFactory;
 import org.opensaml.xml.io.UnmarshallingException;
@@ -98,19 +99,22 @@ public class TrustAssertion {
             Element document = readXml(xml);
             SamlUtil verifier = new SamlUtil(); // ClassNotFoundException, InstantiationException, IllegalAccessException
             boolean isVerified = verifier.verifySAMLSignature(document, trustedSigners);
-            if (isVerified) {
+            log.debug("is SAML signature verified: " + isVerified );
+            //if (isVerified) {
                 log.info("Validated signature in xml document");
+                
                 // populate assertions map
                 DefaultBootstrap.bootstrap(); // required to load default configs that ship with opensaml that specify how to build and parse the xml (if you don't do this you will get a null unmarshaller when you try to parse xml)
+                
                 assertion = readAssertion(document); // ParserConfigurationException, SAXException, IOException, UnmarshallingException
 //                assertionMap = new HashMap<String,String>();        
                 hostAssertionMap = new HashMap<String, HostTrustAssertion>();
                 populateAssertionMap();
                 isValid = true;
                 error = null;
-            } else {
+            /*} else {
                 throw new IllegalArgumentException("Cannot verify XML signature");
-            }
+            }*/
         } catch (Exception e) {
             log.error("Cannot verify trust assertion", e);
             isValid = false;
@@ -304,7 +308,9 @@ public class TrustAssertion {
         xml.addSchemaLocation("http://docs.oasis-open.org/security/saml/v2.0/saml-schema-assertion-2.0.xsd");
         xml.addSchemaLocation("http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd");
         xml.addSchemaLocation("http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd");
-        return xml.parseDocumentElement(xmlDocument);
+        
+        Element myXml = xml.parseDocumentElement(xmlDocument);
+        return myXml;
     }
 
     private Assertion readAssertion(Element document) throws UnmarshallingException {
@@ -329,17 +335,18 @@ public class TrustAssertion {
             if (statement instanceof AttributeStatement) {
                 HashMap<String, String> assertionMap = new HashMap<String, String>();
                 HostTrustAssertion hostTrustAssertion = new HostTrustAssertion(assertion, assertionMap);
-                for (Attribute attribute
-                        : ((AttributeStatement) statement).getAttributes()) {
+                log.debug("attributes.size: " + ((AttributeStatement) statement).getAttributes().size());
+                for (Attribute attribute : ((AttributeStatement) statement).getAttributes()) {
                     String attributeValue = null;
                     for (XMLObject value : attribute.getAttributeValues()) {
                         if (value instanceof XSAny) {
                             attributeValue = (((XSAny) value).getTextContent()); // boolean attributes are the text "true" or "false"
                         }
-                        if (value instanceof XSString) {
+                        if (value instanceof XSString) {   
                             attributeValue = (((XSString) value).getValue());
                         }
                     }
+                    log.debug("assertionMap.put(name, value) "+ attribute.getName() + ", " + attributeValue );
                     assertionMap.put(attribute.getName(), attributeValue);
                 }
                 hostAssertionMap.put(assertionMap.get("Host_Name"), hostTrustAssertion);

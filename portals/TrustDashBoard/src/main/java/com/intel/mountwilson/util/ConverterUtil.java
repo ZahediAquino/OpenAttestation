@@ -30,12 +30,14 @@ import com.intel.mtwilson.datatypes.HostTrustResponse;
 import com.intel.mtwilson.datatypes.MleData;
 import com.intel.mtwilson.datatypes.TxtHost;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
+import com.intel.mtwilson.saml.TrustAssertion;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -110,7 +112,7 @@ public class ConverterUtil {
         
         return hostVO;
     }
-	public static TrustedHostVO getTrustedHostVoFromHostTrustResponseAndTxtHostRecord(HostTrustResponse hostTrustResponse, TxtHostRecord txtHostRecord) {
+	public static TrustedHostVO getTrustedHostVoFromHostTrustResponseAndTxtHostRecord(HostTrustResponse hostTrustResponse, TxtHostRecord txtHostRecord, TrustAssertion.HostTrustAssertion hostTrustAssertion) {
 		TrustedHostVO hostVO = new TrustedHostVO();
 		hostVO.setHostName(hostTrustResponse.hostname.toString());
         if( hostTrustResponse.trust.bios ) {
@@ -127,9 +129,20 @@ public class ConverterUtil {
         }
         if( hostTrustResponse.trust.asset_tag ) {
 				hostVO.setAssetTagStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_TRUE));
+                                
+                                // We will get the asset tag specific attributes here 
+                                StringBuilder atdBuilder = new StringBuilder();
+                                Set<String> attributeNames = hostTrustAssertion.getAttributeNames();
+                                for(String attrName : attributeNames) {
+                                    if(attrName.startsWith("ATAG") && !attrName.contains("UUID")) {
+                                        atdBuilder.append(hostTrustAssertion.getStringAttribute(attrName) + "\n");
+                                    }
+                                }
+                                hostVO.setAssetTagDetails(atdBuilder.toString());
         }
         else {
 				hostVO.setAssetTagStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_FALSE));
+                                hostVO.setAssetTagDetails("Un-Trusted");
         }
         if( hostTrustResponse.trust.bios && hostTrustResponse.trust.vmm && hostTrustResponse.trust.asset_tag) {
 				hostVO.setOverAllStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_TRUE));

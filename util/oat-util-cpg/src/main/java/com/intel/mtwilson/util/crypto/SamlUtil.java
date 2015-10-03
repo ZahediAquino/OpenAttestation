@@ -59,20 +59,47 @@ public class SamlUtil {
     public boolean verifySAMLSignature(Element target, X509Certificate[] trustedSigners) throws MarshalException, XMLSignatureException, KeyStoreException
     {
         // Validate the signature -- i.e. SAML object is pristine:
-        NodeList nl = 
-            target.getElementsByTagNameNS (XMLSignature.XMLNS, "Signature");
+        NodeList nl = target.getElementsByTagNameNS (XMLSignature.XMLNS, "Signature");
         if (nl.getLength () == 0) {
             throw new IllegalArgumentException ("Cannot find Signature element");
         }
 
         DOMValidateContext context = new DOMValidateContext
             (new KeyValueKeySelector (), nl.item (0));
-
+        
         XMLSignature signature = factory.unmarshalXMLSignature (context); // MarshalException
+
+        log.debug("signature.validate(context): " + signature.validate(context));
+        
+        
+        for (Object keyInfoItem : signature.getKeyInfo().getContent ()) {
+          if (keyInfoItem instanceof X509Data) {
+            for (Object X509Item : ((X509Data) keyInfoItem).getContent ()) {
+              if (X509Item instanceof X509Certificate) {
+                X509Certificate theirCert = (X509Certificate) X509Item;
+                log.debug("Found X509 certificate in XML: {}", theirCert.getSubjectX500Principal().getName());
+                //theirCert.get
+                for(X509Certificate ourCert : trustedSigners) {
+                    if (ourCert.equals(theirCert)) {
+                        log.debug("Bingo!! match for cert: " + ourCert.getSubjectX500Principal().getName());
+                        return true;
+                    }
+                    else {
+                        log.info("No match for cert: " + ourCert.getSubjectX500Principal().getName());
+                    }
+                }
+              }
+            }
+          }
+        }
+        
+        
         if (!signature.validate (context)) { // XMLSignatureException
             log.warn("XML signature is not valid");
             return false;
         }
+        
+        
         
         // Find a trusted cert -- i.e. the signer is actually someone we trust:
         for (Object keyInfoItem : signature.getKeyInfo().getContent ()) {

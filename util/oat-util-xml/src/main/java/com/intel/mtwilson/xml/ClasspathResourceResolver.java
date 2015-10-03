@@ -38,10 +38,12 @@ public class ClasspathResourceResolver extends ClasspathResolver /*implements LS
     }
     // the path is like "/saml-schema-assertion-2.0.xsd"
     protected String pathFromFilename(File file) {
+            log.debug("pathFromFilename(): " + prefix+"/"+file.getName());
             return prefix+"/"+file.getName();
     }
     // the path is like "/saml-schema-assertion-2.0.xsd"
     protected String pathFromFilename(String filename) {
+            log.debug("pathFromFilename(): " + filename);
             return prefix+"/"+filename;
     }
     // the path is like "/security/saml/v2.0/saml-schema-assertion-2.0.xsd"
@@ -66,6 +68,8 @@ public class ClasspathResourceResolver extends ClasspathResolver /*implements LS
         log.debug("findResource: {}", path);
         if( path == null || path.isEmpty() || path.equals("/")) { return null; }
         InputStream in = getClass().getResourceAsStream(path);
+        if(in == null) log.debug("getResourceAsStream(): in is NULL");
+        else            log.debug("getResourceAsStream(): in OK");
         if( in == null ) { return null; }
 //        byte[] content = IOUtils.toByteArray(in);
 //        if( content == null || content.length == 0 ) { return null; }
@@ -113,10 +117,10 @@ public class ClasspathResourceResolver extends ClasspathResolver /*implements LS
     public InputStream findResource(String href) {
         if( href == null || href.isEmpty() || href.startsWith("-") ) { return null; } // example of startsWith("-") is  -//W3C//DTD XMLSchema 200102//EN
         try {
-            
-            if( href.startsWith("http") ) { 
+            if( href.startsWith("http") ) {
                 // url like http://docs.oasis-open.org/security/saml/v2.0/saml-schema-assertion-2.0.xsd
                 URL url = new URL(href);
+                
                 String path = pathFromURLWithDomain(url); // the path is like "/docs.oasis-open.org/security/saml/v2.0/saml-schema-assertion-2.0.xsd"
                 log.debug("tried to resolve href {} pathFromURLWithDomain {}", href, path);
                 InputStream in = getResourceAsStream(path);

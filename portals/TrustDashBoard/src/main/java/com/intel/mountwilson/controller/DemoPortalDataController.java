@@ -39,6 +39,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.google.common.collect.Lists;
 import com.intel.mountwilson.Service.IDemoPortalServices;
+import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mountwilson.common.DemoPortalException;
 import com.intel.mountwilson.common.TDPConfig;
 import com.intel.mountwilson.constant.HelperConstant;
@@ -47,6 +48,8 @@ import com.intel.mountwilson.datamodel.HostVmMappingVO;
 import com.intel.mountwilson.util.JSONView;
 import com.intel.mtwilson.ApiClient;
 import com.intel.mtwilson.AttestationService;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
+import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -566,7 +569,8 @@ public class DemoPortalDataController extends MultiActionController {
     	if(session !=null){
     		try{
     			//getting Object from Session and downcast that object to X509Certificate. 
-    			trustedCertificate = (X509Certificate[])session.getAttribute("trustedCertificates");    
+    			trustedCertificate = (X509Certificate[])session.getAttribute("trustedCertificates");
+                        
     		} catch (Exception e) {
     			log.error("Error while creating ApiCliennt Object. "+e.getMessage());
     			throw new DemoPortalException("Error while creating ApiCliennt Object. "+e.getMessage(),e);

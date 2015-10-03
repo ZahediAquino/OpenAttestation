@@ -32,25 +32,25 @@
         <dependency>
             <groupId>org.opensaml</groupId>
             <artifactId>opensaml</artifactId>
-            <version>2.6.4</version>
-            <exclusions>
+            <version>2.5.1-1</version>
+            <!--exclusions>
                 <exclusion>
                     <artifactId>log4j-over-slf4j</artifactId>
                     <groupId>org.slf4j</groupId>
-                </exclusion>
+                </exclusion-->
                 <!-- this exclusion is here because we are providing our own patched version of xmltooling, see below and the "other" projects folder -->
-                <exclusion>
+                <!--exclusion>
                     <groupId>org.opensaml</groupId>
                     <artifactId>xmltooling</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions-->
             <type>jar</type>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.opensaml</groupId>
             <artifactId>xmltooling</artifactId>
             <version>1.4.1</version>
-        </dependency>
+        </dependency-->
         <!-- solves java.lang.ClassNotFoundException: org/jcp/xml/dsig/internal/dom/XMLDSigRI when verifying SAML signatures -->
         <!-- vesrion must be 1.4.3, after this the class org.jcp.xml.dsig.internal.dom.XMLDsigRI is moved to org.apache.jcp  so opensaml doesn't find it -->
         <dependency>
@@ -64,8 +64,11 @@
             <groupId>com.intel.mtwilson.core.util</groupId>
             <artifactId>oat-util-xml</artifactId>
         </dependency>
-                    
-                    
+        <dependency>
+            <groupId>com.intel.mtwilson.core.services</groupId>
+            <artifactId>oat-saml</artifactId>
+            <version>2.2</version>
+        </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>

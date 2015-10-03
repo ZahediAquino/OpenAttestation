@@ -51,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import com.intel.mtwilson.ApiException;
+import com.intel.mtwilson.saml.TrustAssertion.HostTrustAssertion;
 import java.security.SignatureException;
 
 /**
@@ -167,7 +168,10 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
             HostTrustResponse hostTrustResponse = null;
             try {
                 log.info("Getting trust Information for Host " + hostName);
-		xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), false);
+		xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), true);
+                
+                TrustAssertion trustAssertion = new TrustAssertion(trustedCertificates, xmloutput);
+                HostTrustAssertion hostTrustAssertion = trustAssertion.getTrustAssertion(hostName);  
 		
                 //Set<Hostname> hostnames = new HashSet<Hostname>();
                 //hostnames.add(new Hostname(hostName));
@@ -181,7 +185,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
                         txtHostRecord = record;
                     }
                 }
-                hostVO = ConverterUtil.getTrustedHostVoFromHostTrustResponseAndTxtHostRecord(hostTrustResponse, txtHostRecord);
+                hostVO = ConverterUtil.getTrustedHostVoFromHostTrustResponseAndTxtHostRecord(hostTrustResponse, txtHostRecord, hostTrustAssertion);
             } catch (Exception e) {
 
                 hostVO = ConverterUtil.getTrustedHostVoFromHostTrustResponseAndErrorMessage(hostName, e.getMessage());

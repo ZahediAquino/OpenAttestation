@@ -16,6 +16,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -27,6 +29,7 @@ public class XML {
 
     private String schemaPackageName;
     private HashSet<String> schemaLocations;
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     public XML() {
         this.schemaPackageName = null;
@@ -65,9 +68,16 @@ public class XML {
         int i = 0;
         for (String schemaLocation : schemaLocations) {
             InputStream in = resolver.findResource(schemaLocation);
+            if(in == null) log.debug("parseDocumentElement - InputStream is NULL");
+            else           log.debug("parseDocumentElement - InputStream OK");
             schemaSources[i] = new StreamSource(in);
+            
+            log.debug("parseDocumentElement - schemaSources[" + i + "] :" + schemaSources[i].getSystemId() );
             i++;
         }
+        if(schemaSources!=null) log.debug("parseDocumentElement - schemaSources.length: " + schemaSources.length); 
+        else                    log.debug("parseDocumentElement - schemaSources is null");
+        
         Schema schema = schemaFactory.newSchema(schemaSources);
         
 //        Validator validator = schema.newValidator();

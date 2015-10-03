@@ -16,7 +16,7 @@ import org.eclipse.persistence.annotations.Customizer;
  * @author dsmagadX
  */
 @Entity
-@Customizer(AuditEventHandler.class) 
+//@Customizer(AuditEventHandler.class) 
 @Table(name = "mw_saml_assertion")
 @XmlRootElement
 @NamedQueries({
