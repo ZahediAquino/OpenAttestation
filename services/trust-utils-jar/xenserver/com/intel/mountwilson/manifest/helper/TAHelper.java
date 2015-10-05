@@ -538,18 +538,19 @@ public class TAHelper {
                         // Attach the PcrEvent logs to the corresponding pcr indexes.
                         // Note: Since we will not be processing the even logs for 17 & 18, we will ignore them for now.
                         
-                        Measurement m = convertHostTpmEventLogEntryToMeasurement(extendedToPCR, componentName, digestValue, useHostSpecificDigest);
-                        if(pcrMp.get(String.valueOf(extendedToPCR)).containsPcrEventLog(extendedToPCR)) {
-                            pcrMp.get(String.valueOf(extendedToPCR)).getPcrEventLog(extendedToPCR).getEventLog().add(m);
-                        }
-                        else {
-                            PcrIndex pcrIndex = new PcrIndex(extendedToPCR);
-                            ArrayList<Measurement> list = new ArrayList<Measurement>();
-                            list.add(m);
-                            PcrEventLog eventlog = new PcrEventLog(pcrIndex, list);
-                            
-                            pcrMp.get(String.valueOf(extendedToPCR)).setPcrEventLog(eventlog);
-                            //pcrMf.setPcrEventLog(new PcrEventLog(new PcrIndex(extendedToPCR), list));
+                        Measurement m = convertHostTpmEventLogEntryToMeasurement(extendedToPCR, componentName, digestValue, useHostSpecificDigest); 
+                        if (pcrMp.containsKey(String.valueOf(extendedToPCR))){
+                            if(pcrMp.get(String.valueOf(extendedToPCR)).containsPcrEventLog(extendedToPCR)) {
+                                pcrMp.get(String.valueOf(extendedToPCR)).getPcrEventLog(extendedToPCR).getEventLog().add(m);
+                            }
+                            else {
+                                PcrIndex pcrIndex = new PcrIndex(extendedToPCR);
+                                ArrayList<Measurement> list = new ArrayList<Measurement>();
+                                list.add(m);
+                                PcrEventLog eventlog = new PcrEventLog(pcrIndex, list);
+                                pcrMp.get(String.valueOf(extendedToPCR)).setPcrEventLog(eventlog);
+                                //pcrMf.setPcrEventLog(new PcrEventLog(new PcrIndex(extendedToPCR), list));
+                            }
                         }
                     }
                     reader.next();
@@ -562,7 +563,7 @@ public class TAHelper {
                 
             
         }
-                
+        
         return pcrMp;
         
     }
