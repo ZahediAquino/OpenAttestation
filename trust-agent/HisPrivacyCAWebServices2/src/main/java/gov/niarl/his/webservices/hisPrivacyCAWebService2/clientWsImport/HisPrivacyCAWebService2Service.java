@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "HisPrivacyCAWebService2Service", targetNamespace = "http://server.hisPrivacyCAWebService2.webservices.his.niarl.gov/", wsdlLocation = "file:/C:/DCG_OAT/repos/oat-internal/trust-agent/HisPrivacyCAWebServices2/src/main/resources/hisPrivacyCAWebService2.wsdl")
+@WebServiceClient(name = "HisPrivacyCAWebService2Service", targetNamespace = "http://server.hisPrivacyCAWebService2.webservices.his.niarl.gov/", wsdlLocation = "file:/C:/DCG_OAT/repo/oat-internal/trust-agent/HisPrivacyCAWebServices2/src/main/resources/hisPrivacyCAWebService2.wsdl")
 public class HisPrivacyCAWebService2Service
     extends Service
 {
@@ -30,9 +30,9 @@ public class HisPrivacyCAWebService2Service
         try {
             URL baseUrl;
             baseUrl = gov.niarl.his.webservices.hisPrivacyCAWebServices2.clientWsImport.HisPrivacyCAWebService2Service.class.getResource(".");
-            url = new URL(baseUrl, "file:/C:/DCG_OAT/repos/oat-internal/trust-agent/HisPrivacyCAWebServices2/src/main/resources/hisPrivacyCAWebService2.wsdl");
+            url = new URL(baseUrl, "file:/C:/DCG_OAT/repo/oat-internal/trust-agent/HisPrivacyCAWebServices2/src/main/resources/hisPrivacyCAWebService2.wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'file:/C:/DCG_OAT/repos/oat-internal/trust-agent/HisPrivacyCAWebServices2/src/main/resources/hisPrivacyCAWebService2.wsdl', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'file:/C:/DCG_OAT/repo/oat-internal/trust-agent/HisPrivacyCAWebServices2/src/main/resources/hisPrivacyCAWebService2.wsdl', retrying as a local file");
             logger.warning(e.getMessage());
         }
         HISPRIVACYCAWEBSERVICE2SERVICE_WSDL_LOCATION = url;

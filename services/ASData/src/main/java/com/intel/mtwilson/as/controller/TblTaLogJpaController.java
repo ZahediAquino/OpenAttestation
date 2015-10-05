@@ -73,7 +73,7 @@ public class TblTaLogJpaController implements Serializable {
             // commenting out unused variable for klocwork scans
             // stdalex 3/4
             //TblTaLog persistentTblTaLog = em.find(TblTaLog.class, tblTaLog.getId());
-            tblTaLog = em.merge(tblTaLog);
+            em.merge(tblTaLog);
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -202,11 +203,9 @@ public class CommandUtil {
 
     public static byte[] readfile(String fileName) throws TAException {
 
-
-        InputStream fStream = null;
-        try {
+        try (InputStream fStream = new FileInputStream(fileName)) {
             int fileLength = (int) new File(fileName).length();
-            fStream = new FileInputStream(fileName);
+            //fStream = new FileInputStream(fileName);
             byte[] fileContents = new byte[fileLength];
             int read = fStream.read(fileContents);
             if (read != fileLength) {
@@ -215,13 +214,6 @@ public class CommandUtil {
             return fileContents;
         } catch (Exception ex) {
             throw new TAException(ErrorCode.ERROR, "Error while reading cert", ex);
-        } finally {
-           
-                try {
-                    fStream.close();
-                } catch (IOException e) {
-                    log.warn("Error while closing stream", e);
-                }
         }
 
 

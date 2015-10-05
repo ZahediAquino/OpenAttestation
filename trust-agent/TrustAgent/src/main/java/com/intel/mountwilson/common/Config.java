@@ -90,7 +90,7 @@ public class Config {
         }
         else {
             LoggerFactory.getLogger(Config.class.getName()).warn("Property {0} missing in config file.", property);
-            return null;
+            return "";
         }
     }
     

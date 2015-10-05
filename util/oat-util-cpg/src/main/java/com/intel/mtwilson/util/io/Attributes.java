@@ -105,18 +105,26 @@ public class Attributes implements Copyable {
     }
 
     public void copyFrom(Attributes source) {
+        Map<String, Object> attrs = new HashMap();
         for (String key : attributes.keySet()) {
             Object value = source.attributes.get(key);
+            
             if (value instanceof Copyable) {
                 Object copy = ((Copyable)value).copy();
-                this.attributes.put(key, copy);
+                //this.attributes.put(key, copy);
+                attrs.put(key, copy);
             } else {
                 // since most objects don't implement Copyable there's still
                 // a big chance here for havng a shallow copy of a list or
                 // map. might be helpful to rely on a tool like xstream to
                 // copy by serializing then deserializing into a new instance.
-                this.attributes.put(key, value);
+                //this.attributes.put(key, value);
+                attrs.put(key, value);
             }
+        }
+        for (String key : attrs.keySet()) {
+            Object value = source.attributes.get(key);
+            this.attributes.put(key, value);
         }
     }
 }

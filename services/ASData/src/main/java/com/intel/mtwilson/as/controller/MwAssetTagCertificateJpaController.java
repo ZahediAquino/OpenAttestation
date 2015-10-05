@@ -9,10 +9,13 @@ import com.intel.mtwilson.as.data.MwAssetTagCertificate;
 import com.intel.mtwilson.jpa.GenericJpaController;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -47,19 +50,23 @@ public class MwAssetTagCertificateJpaController extends GenericJpaController<MwA
         }
     }
 
-    public void edit(MwAssetTagCertificate mwAssetTagCertificate) throws NonexistentEntityException, Exception {
+    public void edit(MwAssetTagCertificate mwAssetTagCertificate) {
         EntityManager em = getEntityManager();
-        Integer id = null;
         try {
             em.getTransaction().begin();
             mwAssetTagCertificate = em.merge(mwAssetTagCertificate);
-            id = mwAssetTagCertificate.getId();
+            mwAssetTagCertificate.getId();
             em.getTransaction().commit();
-        } catch (Exception ex) {
+        } catch (PersistenceException ex) {
             String msg = ex.getLocalizedMessage();
+            Integer id = mwAssetTagCertificate.getId();
             if (msg == null || msg.length() == 0) {
                 if (id != null && findMwAssetTagCertificate(id) == null) {
-                    throw new NonexistentEntityException("The mwAssetTagCertificate with id " + id + " no longer exists.");
+                    try {
+                        throw new NonexistentEntityException("The mwAssetTagCertificate with id " + id + " no longer exists.");
+                    } catch (NonexistentEntityException ex1) {
+                        Logger.getLogger(MwAssetTagCertificateJpaController.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
                 }
             }
             throw ex;

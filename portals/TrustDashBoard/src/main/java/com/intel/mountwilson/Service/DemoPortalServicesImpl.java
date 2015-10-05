@@ -437,7 +437,8 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
     
 	@Override
 	public HostDetailsEntityVO getSingleHostDetailFromDB(String hostName,AttestationService service) throws DemoPortalException {
-		HostDetailsEntityVO hostDetailsEntityVO  = new HostDetailsEntityVO();
+		//HostDetailsEntityVO hostDetailsEntityVO  = new HostDetailsEntityVO();
+            HostDetailsEntityVO hostDetailsEntityVO;
 		try{
 			hostDetailsEntityVO = ConverterUtil.getHostVOObjectFromTxtHostRecord(service.queryForHosts(hostName).get(0));
 		} catch (Exception e) {

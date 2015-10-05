@@ -79,12 +79,13 @@ public class ASConfig extends ConfigBase{
         Configuration myConfig = getConfiguration();
         Properties prop = new Properties();
         prop.put("javax.persistence.jdbc.driver", myConfig.getString("mountwilson.as.db.driver", getDatabaseDriver()));
-        if( prop.get("javax.persistence.jdbc.driver").equals("com.mysql.jdbc.Driver") ) {
+        Object toCompare = prop.get("javax.persistence.jdbc.driver");
+        if(prop.size() > 0 && (null != toCompare && toCompare.equals("com.mysql.jdbc.Driver"))) {
             prop.put("javax.persistence.jdbc.scheme", "mysql"); // NOTE: this is NOT a standard javax.persistence property, we are setting it for our own use
         }
-        else if( prop.get("javax.persistence.jdbc.driver").equals("org.postgresql.Driver") ) {
-            prop.put("javax.persistence.jdbc.scheme", "postgresql"); // NOTE: this is NOT a standard javax.persistence property, we are setting it for our own use
-        }
+//        else if( prop.get("javax.persistence.jdbc.driver").equals("org.postgresql.Driver") ) {
+//            prop.put("javax.persistence.jdbc.scheme", "postgresql"); // NOTE: this is NOT a standard javax.persistence property, we are setting it for our own use
+//        }
         else {
             prop.put("javax.persistence.jdbc.scheme", "unknown-scheme");
         }
