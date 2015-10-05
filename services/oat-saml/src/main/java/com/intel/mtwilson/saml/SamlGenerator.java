@@ -152,7 +152,8 @@ public class SamlGenerator {
         AssertionMarshaller marshaller = new AssertionMarshaller();
         Element plaintextElement = marshaller.marshall(assertion);
         
-        String originalAssertionString = XMLHelper.nodeToString(plaintextElement);
+        //String originalAssertionString = XMLHelper.nodeToString(plaintextElement);
+        XMLHelper.nodeToString(plaintextElement);
         
         log.info("Uncomment the next line to see the original Assertion String");
         //System.out.println("Assertion String: " + originalAssertionString);//

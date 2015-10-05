@@ -68,15 +68,15 @@ public class XML {
         int i = 0;
         for (String schemaLocation : schemaLocations) {
             InputStream in = resolver.findResource(schemaLocation);
-            if(in == null) log.debug("parseDocumentElement - InputStream is NULL");
-            else           log.debug("parseDocumentElement - InputStream OK");
+//            if(in == null) log.debug("parseDocumentElement - InputStream is NULL");
+//            else           log.debug("parseDocumentElement - InputStream OK");
             schemaSources[i] = new StreamSource(in);
             
             log.debug("parseDocumentElement - schemaSources[" + i + "] :" + schemaSources[i].getSystemId() );
             i++;
         }
-        if(schemaSources!=null) log.debug("parseDocumentElement - schemaSources.length: " + schemaSources.length); 
-        else                    log.debug("parseDocumentElement - schemaSources is null");
+//        if(schemaSources!=null) log.debug("parseDocumentElement - schemaSources.length: " + schemaSources.length); 
+//        else                    log.debug("parseDocumentElement - schemaSources is null");
         
         Schema schema = schemaFactory.newSchema(schemaSources);
         
