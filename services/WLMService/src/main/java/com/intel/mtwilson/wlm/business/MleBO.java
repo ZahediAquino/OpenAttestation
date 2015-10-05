@@ -434,7 +434,7 @@ public class MleBO extends BaseBO {
 		
 		tblPcrManifests.addAll(tblMle.getTblPcrManifestCollection());
 		tblMle.setTblPcrManifestCollection(tblPcrManifests);
-		String oldRequiredManifestList = tblMle.getRequiredManifestList() ==null || tblMle.getRequiredManifestList().equals("") ? "":tblMle.getRequiredManifestList()+",";
+		String oldRequiredManifestList = tblMle.getRequiredManifestList() ==null || tblMle.getRequiredManifestList().length() == 0 ? "":tblMle.getRequiredManifestList()+",";
 		tblMle.setRequiredManifestList(oldRequiredManifestList +getRequiredManifestList(mleManifests));
 		mleJpaController.edit(tblMle);
 

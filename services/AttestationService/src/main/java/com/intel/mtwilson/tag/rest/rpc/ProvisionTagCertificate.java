@@ -370,7 +370,7 @@ public class ProvisionTagCertificate  {
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
         log.debug("Got request to create atag certificate");
          //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
-        TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration());
+        //TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration()); //Variable never used
         SelectionsType selections = null;
         if( xml != null ) {
             selections = Util.fromXml(xml);

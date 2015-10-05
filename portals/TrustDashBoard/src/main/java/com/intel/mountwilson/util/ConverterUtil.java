@@ -183,7 +183,7 @@ public class ConverterUtil {
 			for (hostOS hostOSType : hostOSTypes) {
 				if (osName.toLowerCase().contains(hostOSType.getValue().toLowerCase())) {
 					hostVO.setOsName(TDPConfig.getConfiguration().getString(HelperConstant.IMAGES_ROOT_PATH)+hostOSType.getImageName()); // xxx should be in javascript?
-                                        if (hostOSType.getVmmImageNeeded().toString().equals("false"))
+                                        if (hostOSType.getVmmImageNeeded().equals("false"))
                                             skipAddingVMMImage = true;
                                         break;
 				}
@@ -253,7 +253,7 @@ public class ConverterUtil {
 	public static List<MleDetailsEntityVO> getMleVOListWhereOEMNotNull(List<MleData> mleDataList) {
 		List<MleDetailsEntityVO> detailsEntityVOs = new ArrayList<MleDetailsEntityVO>();
 		for (MleData data : mleDataList) {
-			if (data.getOemName() != null && !(data.getOemName().equals(""))) {
+			if (data.getOemName() != null && !(data.getOemName().length() == 0)) {
 				MleDetailsEntityVO entityVO = new MleDetailsEntityVO();
 				entityVO.setMleId(null);
 				entityVO.setMleName(data.getName());
@@ -273,7 +273,7 @@ public class ConverterUtil {
 	public static List<MleDetailsEntityVO> getMleVOListWhereOEMIsNull(List<MleData> searchMLE) {
 		List<MleDetailsEntityVO> detailsEntityVOs = new ArrayList<MleDetailsEntityVO>();
 		for (MleData data : searchMLE) {
-			if (data.getOemName() == null || data.getOemName().equals("")) {
+			if (data.getOemName() == null || data.getOemName().length() == 0) {
 				MleDetailsEntityVO entityVO = new MleDetailsEntityVO();
 				entityVO.setMleId(null);
 				entityVO.setMleName(data.getName());
