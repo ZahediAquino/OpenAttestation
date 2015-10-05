@@ -95,10 +95,10 @@ public class HostInfoCmd implements ICommand {
 //            
 //    }
     
-    private String trim(String text) {
-        if( text == null ) { return null; }
-        return text.trim();
-    }
+//    private String trim(String text) {
+//        if( text == null ) { return null; }
+//        return text.trim();
+//    }
 //
 //    /*
 //     * Sample response of dmidecode -s bios-vendor -> Intel Corp. Sample
@@ -217,19 +217,23 @@ public class HostInfoCmd implements ICommand {
         //CommandResult result = CommandUtil.runCommand2("tagent system-info dmidecode -s system-uuid");
         CommandResult result = CommandUtil.runCommand2("dmidecode -s system-uuid");
         // sample output would look like: 4235D571-8542-FFD3-5BFE-6D9DAC874C84
-        List<String> resultList = Arrays.asList(result.getStdout().split("\n"));
-        if (resultList != null && resultList.size() > 0) {
-            for (String data : resultList) {
-                if (data.trim().startsWith("#")) { // ignore the comments
-                    continue;
-                }                
-                context.setHostUUID(data.trim());
-                log.info("got uuid data: {}",data.trim());
-                break;
+        if(result != null){
+            List<String> resultList = Arrays.asList(result.getStdout().split("\n"));
+            if (resultList != null && resultList.size() > 0) {
+                for (String data : resultList) {
+                    if (data.trim().startsWith("#")) { // ignore the comments
+                        continue;
+                    }                
+                    context.setHostUUID(data.trim());
+                    log.info("got uuid data: {}",data.trim());
+                    break;
+                }
             }
-        }
 
-        log.info("Context set with host UUID info: " + context.getHostUUID());
-        //context.setResponseXML(null);
+            log.info("Context set with host UUID info: " + context.getHostUUID());
+            //context.setResponseXML(null);        
+        } else {
+            log.info("Cannot get UUID from the host");
+        }
     }
 }

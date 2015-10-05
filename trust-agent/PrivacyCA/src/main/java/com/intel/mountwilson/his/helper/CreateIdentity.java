@@ -254,9 +254,9 @@ public class CreateIdentity  {
 			    ecFileIn.read(ekCert);
 			    log.info("--read EC from file--");
 			    ecFileIn.close();
-			    } else {
-			        ekCert = TpmModule.getCredential(TpmOwnerAuth, "EC");
-			    }
+                        } else {
+                            ekCert = TpmModule.getCredential(TpmOwnerAuth, "EC");
+                        }
 			TpmIdentityRequest encryptedEkCert = new TpmIdentityRequest(ekCert, (RSAPublicKey)pcaCert.getPublicKey(), false); 
 			
 	

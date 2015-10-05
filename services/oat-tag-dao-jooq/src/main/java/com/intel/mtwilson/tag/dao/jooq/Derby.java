@@ -71,7 +71,8 @@ public class Derby {
 //        DriverManager.getConnection("jdbc:derby:MyDbTest;shutdown=true");  // shut down a specific database
         try {
             // shut down all databaes and the derby engine  ; throws SQLException "Derby system shutdown."
-            DriverManager.getConnection(protocol+";shutdown=true"); // same as the protocol above but with create=true replaced with shutdown=true
+            Connection connection = DriverManager.getConnection(protocol+";shutdown=true"); // same as the protocol above but with create=true replaced with shutdown=true
+            connection.close();
         } 
         catch(Exception e) {
             log.info("{}", e.getMessage()); // expect:   Database 'directory:target/derby/mytestdb' shutdown.

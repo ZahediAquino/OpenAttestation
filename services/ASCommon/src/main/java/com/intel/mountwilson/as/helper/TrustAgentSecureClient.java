@@ -191,11 +191,12 @@ public class TrustAgentSecureClient {
             
             JAXBContext jc = JAXBContext.newInstance("com.intel.mountwilson.ta.host.data");
             log.debug("Created JAXBContext Instance {}", jc.toString());
-            assert jc != null;
+            //assert jc != null; Expression always true
             Unmarshaller u = jc.createUnmarshaller();
             log.debug("Created Unmarshaller Instance {}", u.toString());            
-            assert u != null;
-            assert new String(buf) != null;
+            //assert u != null; Expression always true
+            //assert new String(buf) != null; //Expresion always return null.
+            assert buf != null;
             log.debug("Unmarshalling");
             JAXBElement po =  (JAXBElement) u.unmarshal(new StringReader(new String(buf).trim()));
             log.debug("Unmarshalled");
