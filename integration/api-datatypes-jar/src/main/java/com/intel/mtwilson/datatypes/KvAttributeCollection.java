@@ -14,6 +14,7 @@ import com.intel.mtwilson.datatypes.DocumentCollection;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  *
@@ -28,6 +29,7 @@ public class KvAttributeCollection extends DocumentCollection<KvAttribute> {
 //    @JsonInclude(JsonInclude.Include.ALWAYS)                // jackson 2.0
 //    @JacksonXmlElementWrapper(localName="kv_attributes")
 //    @JacksonXmlProperty(localName="kv_attribute")    
+    @XmlElementWrapper(name="kv_attributes")
     public List<KvAttribute> getKvAttributes() { return kvAttributes; }
 
     @Override
