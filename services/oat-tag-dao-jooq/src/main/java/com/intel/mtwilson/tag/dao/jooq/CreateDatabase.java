@@ -80,9 +80,9 @@ public class CreateDatabase {
         DBI dbi = new DBI(ds);
         
         // tag
-        //KvAttributeDAO tagDao = dbi.open(KvAttributeDAO.class);
-        //if( !Derby.tableExists("mw_tag_kvattribute") ) { tagDao.create(); }        
-        //tagDao.close();
+        KvAttributeDAO tagDao = dbi.open(KvAttributeDAO.class);
+        if( !Derby.tableExists("mw_tag_kvattribute") ) { tagDao.create(); }        
+        tagDao.close();
         
         // tag value
         //SelectionKvAttributeDAO tagValueDao = dbi.open(SelectionKvAttributeDAO.class);

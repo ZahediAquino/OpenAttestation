@@ -136,13 +136,6 @@ INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (201304070
 
 
 -- ASSET TAGGING DB Changes
--- created 2013-08-14
-
--- This script creates the table to store the asset tag certificates. This would be initially populated
--- by the Tag Provisioning service. During host registration if an entry exists for the host (based on UUID),
--- then the mapping would be added. 
-
-
 CREATE TABLE `mw_asset_tag_certificate` (
   `ID` INT(11) NOT NULL AUTO_INCREMENT,
   `Host_ID` INT(11) DEFAULT NULL,
@@ -160,20 +153,11 @@ CREATE TABLE `mw_asset_tag_certificate` (
 INSERT INTO `mw_changelog` (`ID`, `APPLIED_AT`, `DESCRIPTION`) VALUES (20130814154300,NOW(),'Patch for creating the Asset Tag certificate table.');
 
 
--- created 2014-03-04
--- ssbangal
--- Adds the create_time column to the asset tag certificate table
-
 ALTER TABLE `mw_asset_tag_certificate` ADD COLUMN `uuid_hex` CHAR(36) NULL;
 UPDATE mw_asset_tag_certificate SET uuid_hex = (SELECT uuid());
 ALTER TABLE `mw_asset_tag_certificate` ADD COLUMN `create_time` BIGINT  DEFAULT NULL AFTER `uuid_hex` ;
 
 
-
--- created 2014-03-05
-
--- This script creates the tables required for integrating asset tag with mt wilson
-  
 CREATE  TABLE `mw_host_tpm_password` (
   `id` CHAR(36) NOT NULL ,
   `password` TEXT NOT NULL ,
@@ -219,40 +203,29 @@ CREATE  TABLE `mw_tag_certificate` (
   `contentType` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`) );
   
-  -- need to drop earlier version of table mw_configuration from 20120920085200
+  
   CREATE  TABLE `mw_configuration` (
   `id` CHAR(36) NOT NULL ,
   `name` VARCHAR(255) NOT NULL ,
   `content` TEXT NULL ,
   PRIMARY KEY (`id`) );
 
--- created 2013-12-18
--- This script adds the UUID field to the mw_hosts so that it can be tracked during host registration
-
 ALTER TABLE `mw_hosts` ADD `hardware_uuid` VARCHAR(254);
 
--- created 2014-01-17
--- ssbangal
--- Adds the uuid column to all the tables and updates the same with a unique uuid value
 
-
-
-
-
--- Updates for the OEM table
 ALTER TABLE `mw_oem` ADD COLUMN `uuid_hex` CHAR(36) NULL;
 UPDATE mw_oem SET uuid_hex = (SELECT uuid());
 
 
--- Updates for the OS table
+
 ALTER TABLE `mw_os` ADD COLUMN `uuid_hex` CHAR(36) NULL;
 UPDATE mw_os SET uuid_hex = (SELECT uuid());
 
 
--- Updates for the MLE table
+
 ALTER TABLE `mw_mle` ADD COLUMN `uuid_hex` CHAR(36) NULL;
 UPDATE mw_mle SET uuid_hex = (SELECT uuid());
--- Adds the reference to the OEM UUID column in the MLE table
+
 ALTER TABLE `mw_mle` ADD COLUMN `oem_uuid_hex` CHAR(36) NULL;
 UPDATE mw_mle mm SET oem_uuid_hex = (SELECT moem.uuid_hex FROM mw_oem moem WHERE moem.ID = mm.OEM_ID);
 -- Adds the reference to the OS UUID column in the MLE table
@@ -275,10 +248,6 @@ UPDATE mw_pcr_manifest SET uuid_hex = (SELECT uuid());
 ALTER TABLE `mw_pcr_manifest` ADD COLUMN `mle_uuid_hex` CHAR(36) NULL;
 UPDATE mw_pcr_manifest mpm SET mle_uuid_hex = (SELECT m.uuid_hex FROM mw_mle m WHERE m.ID = mpm.MLE_ID);
 
-
--- Updates for the Asset Tag Certificate table
--- ALTER TABLE `mw_asset_tag_certificate` ADD COLUMN `uuid_hex` CHAR(36) NULL;
--- UPDATE mw_asset_tag_certificate SET uuid_hex = (SELECT uuid());
 
 
 -- Updates for the Host table
@@ -424,8 +393,9 @@ INSERT INTO `mw_package_namespace` (`ID`, `Name`, `VendorName`) VALUES (1,'Stand
 
 INSERT INTO mw_changelog (ID, APPLIED_AT, DESCRIPTION) VALUES (20130430154900,NOW(),'patch for adding a new entry into the event type table for open source module attestation.');
 
-
-
-
-
-
+CREATE  TABLE `mw_tag_kvattribute` (
+  `id` CHAR(36) NOT NULL ,
+  `name` VARCHAR(255) NOT NULL ,
+  `value` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`id`), 
+  UNIQUE KEY (`name`, `value`));

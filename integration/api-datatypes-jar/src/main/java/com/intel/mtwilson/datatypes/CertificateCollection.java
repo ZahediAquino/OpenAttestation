@@ -8,7 +8,7 @@ package com.intel.mtwilson.datatypes;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
+//import javax.xml.bind.annotation.XmlType;
 //import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 //import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 //import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;

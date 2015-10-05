@@ -11,7 +11,7 @@ import com.intel.mtwilson.jpa.PersistenceManager;
 import com.intel.mtwilson.tag.dao.jdbi.CertificateRequestDAO;
 import com.intel.mtwilson.tag.dao.jdbi.CertificateDAO;
 //import com.intel.mtwilson.tag.dao.jdbi.TpmPasswordDAO;
-//import com.intel.mtwilson.tag.dao.jdbi.KvAttributeDAO;
+import com.intel.mtwilson.tag.dao.jdbi.KvAttributeDAO;
 import com.intel.mtwilson.tag.dao.jdbi.SelectionDAO;
 //import com.intel.mtwilson.tag.dao.jdbi.SelectionKvAttributeDAO;
 import com.intel.mtwilson.tag.dao.jdbi.ConfigurationDAO;
@@ -55,11 +55,11 @@ public class TagJdbi {
         }
         return ds;
     }
-//
-//    public static KvAttributeDAO kvAttributeDao() throws SQLException {
-//        DBI dbi = new DBI(getDataSource());
-//        return dbi.open(KvAttributeDAO.class);
-//    }
+
+    public static KvAttributeDAO kvAttributeDao() throws SQLException {
+        DBI dbi = new DBI(getDataSource());
+        return dbi.open(KvAttributeDAO.class);
+    }
 
     public static CertificateRequestDAO certificateRequestDao() throws SQLException {
         DBI dbi = new DBI(getDataSource());
