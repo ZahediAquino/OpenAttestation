@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import com.intel.mtwilson.util.configuration.Configuration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Provides common functionality for Configuration implementations.
@@ -53,12 +55,17 @@ public abstract class AbstractConfiguration implements Configuration {
      * @return
      * @throws Exception 
      */
-    public String get(String key, Callable<String> defaultValueCallback) throws Exception {
+    public String get(String key, Callable<String> defaultValueCallback) {
         String value = get(key);
         if (value != null) {
             return value;
         }
-        return defaultValueCallback.call();
+        try {
+            return defaultValueCallback.call();
+        } catch (Exception ex) {
+            Logger.getLogger(AbstractConfiguration.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
     /**

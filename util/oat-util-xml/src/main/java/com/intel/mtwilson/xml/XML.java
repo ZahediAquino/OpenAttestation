@@ -71,6 +71,7 @@ public class XML {
 //            if(in == null) log.debug("parseDocumentElement - InputStream is NULL");
 //            else           log.debug("parseDocumentElement - InputStream OK");
             schemaSources[i] = new StreamSource(in);
+            in.close();
             
             log.debug("parseDocumentElement - schemaSources[" + i + "] :" + schemaSources[i].getSystemId() );
             i++;

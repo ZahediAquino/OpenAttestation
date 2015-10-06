@@ -181,7 +181,8 @@ public class TblSamlAssertionJpaController implements Serializable {
     }
     
     public List<TblSamlAssertion> findListByHostAndExpiry(String host) {
-        List<TblSamlAssertion> tblSamlAssertionList = null;
+        //List<TblSamlAssertion> tblSamlAssertionList = null; //Variable was never read after null being assigned.
+        List<TblSamlAssertion> tblSamlAssertionList;
         EntityManager em = getEntityManager();
         try {
             Query query = em.createNamedQuery("TblSamlAssertion.findByHostAndExpiry");
