@@ -922,7 +922,7 @@ public class HostBO extends BaseBO {
 	 * @throws CryptographyException
 	 */
 	public TblHosts getHostByName(Hostname hostName) throws CryptographyException { // datatype.Hostname
-           TblHosts tblHosts = null;
+           TblHosts tblHosts = new TblHosts();
            try {
               InetAddress addr = InetAddress.getByName(hostName.toString());
               String hostname = addr.getHostName();

@@ -78,7 +78,7 @@ public class HostTrustBO extends BaseBO {
     private final int CACHE_VALIDITY_SECS = 3600;
     
     private Resource samlKeystoreResource = null;
-    private HostBO hostBO = new HostBO();
+    private HostBO hostBO;
     private HashMap<String, String> hostStatus = new HashMap<String, String>();
     
     public HostTrustBO() {
