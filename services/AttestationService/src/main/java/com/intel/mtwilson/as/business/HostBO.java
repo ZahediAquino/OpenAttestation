@@ -166,7 +166,7 @@ public class HostBO extends BaseBO {
                         List<TblHostSpecificManifest> tblHostSpecificManifests = null;
                         
                         if(vmmMleId.getRequiredManifestList().contains(MODULE_PCR)) {
-                            if (pcrs.get(MODULE_PCR) != null) {
+                            if (pcrs != null) {
                                 PcrManifest pcr19 = (PcrManifest) pcrs.get(MODULE_PCR);
                                 addModuleWhiteList(pcr19, tblHosts, host, hostUuidAttr);
 
