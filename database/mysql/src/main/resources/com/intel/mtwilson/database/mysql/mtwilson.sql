@@ -392,10 +392,3 @@ INSERT INTO `mw_event_type` (`ID`, `Name`, `FieldName`) VALUES (5,'OpenSource.Ev
 INSERT INTO `mw_package_namespace` (`ID`, `Name`, `VendorName`) VALUES (1,'Standard_Global_NS','VMware');
 
 INSERT INTO mw_changelog (ID, APPLIED_AT, DESCRIPTION) VALUES (20130430154900,NOW(),'patch for adding a new entry into the event type table for open source module attestation.');
-
-CREATE  TABLE `mw_tag_kvattribute` (
-  `id` CHAR(36) NOT NULL ,
-  `name` VARCHAR(255) NOT NULL ,
-  `value` VARCHAR(255) NOT NULL ,
-  PRIMARY KEY (`id`), 
-  UNIQUE KEY (`name`, `value`));
