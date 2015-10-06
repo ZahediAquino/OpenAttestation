@@ -67,6 +67,7 @@ public class IntelHostAgent implements HostAgent {
             }
             catch(Exception e) {
                 //throw new IOException(e);
+                log.error(e.getMessage());
             }
             return manifestMap;
         }
