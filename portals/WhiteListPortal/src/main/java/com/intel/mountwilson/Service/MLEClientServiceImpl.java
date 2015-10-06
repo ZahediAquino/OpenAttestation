@@ -94,10 +94,11 @@ public class MLEClientServiceImpl implements IMLEClientService {
 	@Override
 	public boolean updateMLEInfo(MLEDataVO dataVO,WhitelistService apiClientServices) throws WLMPortalException {
 		log.info("MLEClientServiceImpl.updateMLEInfo >>");
-		boolean result = false;
+		boolean result;
 		try {
 			result =apiClientServices.updateMLE(ConverterUtil.getMleApiClientObject(dataVO));
 		} catch (Exception e) {
+                    result = false;
 			log.error(e.getMessage());
 			throw ConnectionUtil.handleException(e);
 		}
