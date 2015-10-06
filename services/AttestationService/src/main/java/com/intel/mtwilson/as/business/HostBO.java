@@ -714,7 +714,8 @@ public class HostBO extends BaseBO {
 
             String eventName = "";
             String componentName = "";
-            String fullComponentName = "";
+//            String fullComponentName = "";
+            String fullComponentName;
             String digest = "";
             String packageName = "";
             String packageVendor = "";
@@ -727,7 +728,7 @@ public class HostBO extends BaseBO {
                     PcrEventLog pcrEventLog = pcr19.getPcrEventLog(19);
                     if (pcrEventLog != null) {
                         for (Measurement m : pcrEventLog.getEventLog()) {
-                            if (m.getInfo().get("ExtendedToPCR").equals("19")) {
+                            if (m.getInfo().get("ExtendedToPCR") != null && m.getInfo().get("ExtendedToPCR").equals("19")) {
                                 //tblEvent = tblEventJpa.findEventTypeByName(m.getInfo().get("EventName"));
                                 eventName = m.getInfo().get("EventName");
                                 componentName = m.getInfo().get("ComponentName");
