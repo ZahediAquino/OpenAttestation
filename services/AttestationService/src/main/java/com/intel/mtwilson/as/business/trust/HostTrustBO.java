@@ -285,10 +285,7 @@ public class HostTrustBO extends BaseBO {
              MwAssetTagCertificate atagCert) {
         
         String certSha1 = Sha1Digest.valueOf(atagCert.getPCREvent()).toString();
-//        if (gkvPcrManifestMap.size() <= 0) {
-//            throw new ASException(ErrorCode.AS_MISSING_MANIFEST, mle.getName(),
-//                    mle.getVersion());
-//        }
+
         log.debug("Cert Sha1: " + certSha1);
         IManifest pcrMf = pcrManifestMap.get("22");
         PcrManifest goodKnownValue = (PcrManifest) pcrManifestMap.get("22");
@@ -297,27 +294,11 @@ public class HostTrustBO extends BaseBO {
         log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
         boolean trustStatus = certSha1.toUpperCase().equalsIgnoreCase(goodKnownValue.getPcrValue().toUpperCase());
         log.info(String.format("PCR %s Host Trust status %s", pcr, String.valueOf(trustStatus)));
-        logTrustStatus(host, mle, pcrMf);
-             
-               
-//            if (pcrManifestMap.containsKey(pcr)) {
-//                IManifest pcrMf = pcrManifestMap.get(pcr);
-//                boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));
-//                log.info(String.format("PCR %s Host Trust status %s", pcr,
-//                        String.valueOf(trustStatus)));
-//                /*
-//                 * Log to database
-//                 */
-//                logTrustStatus(host, mle,  pcrMf);
-//
-//                if (!trustStatus) {
-//                    response = false;
-//                }
-//
-//            } else {
-//                log.info(String.format("PCR %s not found in manifest.", pcr));
-//                throw new ASException(ErrorCode.AS_PCR_NOT_FOUND,pcr);
-//            }
+        if(pcrMf != null)
+            logTrustStatus(host, mle, pcrMf);
+        else {
+            log.info("PCR Manifest is null, unable to log Trust Status");
+        }
             return trustStatus;
         
     }
@@ -1009,10 +990,10 @@ public String getTrustWithSamlForHostnames(Collection<String> hosts) throws IOEx
         String issuer = conf.getString("saml.issuer", defaultIssuer);
         SamlGenerator saml = new SamlGenerator(samlKeystoreResource, conf);
         
-        if(saml != null)
-            log.info("getSamlGenerator: saml is not null");
-        else
-            log.info("getSamlGenerator: saml is null");
+//        if(saml != null)
+//            log.info("getSamlGenerator: saml is not null");
+//        else
+//            log.info("getSamlGenerator: saml is null");
         
         saml.setIssuer(issuer);
         return saml;
