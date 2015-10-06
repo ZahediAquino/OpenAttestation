@@ -728,17 +728,20 @@ public class HostBO extends BaseBO {
                     PcrEventLog pcrEventLog = pcr19.getPcrEventLog(19);
                     if (pcrEventLog != null) {
                         for (Measurement m : pcrEventLog.getEventLog()) {
-                            if (m.getInfo().get("ExtendedToPCR") != null && m.getInfo().get("ExtendedToPCR").equals("19")) {
-                                //tblEvent = tblEventJpa.findEventTypeByName(m.getInfo().get("EventName"));
-                                eventName = m.getInfo().get("EventName");
-                                componentName = m.getInfo().get("ComponentName");
-                                packageName = String.valueOf(m.getInfo().get("PackageName"));
-                                packageVendor = String.valueOf(m.getInfo().get("PackageVendor"));
-                                packageVersion = String.valueOf(m.getInfo().get("PackageVersion"));
-                                extendedtoPCR = String.valueOf(m.getInfo().get("ExtendedToPCR"));
-                                digest = String.valueOf(m.getValue());
-                                useHostSpecificDigest = Boolean.valueOf(m.getInfo().get("UseHostSpecificDigest"));
-                                break;
+                            String extendedPcr = m.getInfo().get("ExtendedToPCR");
+                            if (extendedPcr != null){
+                                if (extendedtoPCR.equals("19")) {
+                                    //tblEvent = tblEventJpa.findEventTypeByName(m.getInfo().get("EventName"));
+                                    eventName = m.getInfo().get("EventName");
+                                    componentName = m.getInfo().get("ComponentName");
+                                    packageName = String.valueOf(m.getInfo().get("PackageName"));
+                                    packageVendor = String.valueOf(m.getInfo().get("PackageVendor"));
+                                    packageVersion = String.valueOf(m.getInfo().get("PackageVersion"));
+                                    extendedtoPCR = String.valueOf(m.getInfo().get("ExtendedToPCR"));
+                                    digest = String.valueOf(m.getValue());
+                                    useHostSpecificDigest = Boolean.valueOf(m.getInfo().get("UseHostSpecificDigest"));
+                                    break;
+                                }
                             }
                         }
                     }
