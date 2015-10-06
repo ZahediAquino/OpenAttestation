@@ -352,7 +352,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
         Set<Hostname> hostnames = new HashSet<Hostname>();
         hostnames.add(new Hostname(hostName));
         try{
-            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, true).toString());
+            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, true);
         }
         catch(IOException | ApiException | SignatureException e){
             log.error(e.getMessage());

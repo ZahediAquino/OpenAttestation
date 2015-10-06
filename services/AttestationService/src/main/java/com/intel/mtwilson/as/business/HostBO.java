@@ -166,13 +166,14 @@ public class HostBO extends BaseBO {
                         List<TblHostSpecificManifest> tblHostSpecificManifests = null;
                         
                         if(vmmMleId.getRequiredManifestList().contains(MODULE_PCR)) {
-                            
-                            PcrManifest pcr19 = (PcrManifest) pcrs.get(MODULE_PCR);
-                            addModuleWhiteList(pcr19, tblHosts, host, hostUuidAttr);
-                            
-                            log.info("Host specific modules would be retrieved from the host that extends into PCR 19.");
-                            String hostType = host.getVendor();
-                            tblHostSpecificManifests = createHostSpecificManifestRecords(vmmMleId, pcrs, hostType);
+                            if (pcrs.get(MODULE_PCR) != null) {
+                                PcrManifest pcr19 = (PcrManifest) pcrs.get(MODULE_PCR);
+                                addModuleWhiteList(pcr19, tblHosts, host, hostUuidAttr);
+
+                                log.info("Host specific modules would be retrieved from the host that extends into PCR 19.");
+                                String hostType = host.getVendor();
+                                tblHostSpecificManifests = createHostSpecificManifestRecords(vmmMleId, pcrs, hostType);
+                            }
                         }
                         else {
                             log.info("Host specific modules will not be configured since PCR 19 is not selected for attestation");
