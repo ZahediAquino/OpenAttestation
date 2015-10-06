@@ -24,8 +24,19 @@ import com.intel.mtwilson.datatypes.Certificate;
 import com.intel.mtwilson.datatypes.CertificateCollection;
 import com.intel.mtwilson.datatypes.CertificateFilterCriteria;
 import com.intel.mtwilson.datatypes.CertificateLocator;
+import com.intel.mtwilson.datatypes.KvAttribute;
+import com.intel.mtwilson.datatypes.KvAttributeCollection;
+import com.intel.mtwilson.datatypes.KvAttributeFilterCriteria;
+import com.intel.mtwilson.datatypes.UTF8NameValueMicroformat;
+import com.intel.mtwilson.datatypes.X509AttributeCertificate;
+import com.intel.mtwilson.tag.repository.KvAttributeRepository;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.DERUTF8String;
+import org.bouncycastle.asn1.x509.Attribute;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -179,7 +190,43 @@ public class CertificateRepository implements DocumentRepository<Certificate, Ce
         } catch (Exception ex) {
             log.error("Certificate:Create - Error during certificate creation.", ex);
             throw new RepositoryCreateException(ex, locator);
-        }        
+        }  
+        //Store tag values from Certificate
+        try{
+            log.info("Tags from certificate will now be stored");
+            KvAttributeRepository repository = new KvAttributeRepository();
+            KvAttribute kvAttrib = new KvAttribute();
+            if(kvAttrib == null || repository == null)
+                log.debug("kvAttrib or repository Obj is null, unable to store certificate tags");    
+            else{            
+                List<Attribute> certAttributes = X509AttributeCertificate.valueOf(item.getCertificate()).getAttribute();
+                for (Attribute attr : certAttributes) {
+                    for (ASN1Encodable value : attr.getAttributeValues()) {
+                        if( attr.getAttrType().toString().equals(UTF8NameValueMicroformat.OID)) {
+                            UTF8NameValueMicroformat microformat = new UTF8NameValueMicroformat(DERUTF8String.getInstance(value));
+                            // Check if that tag with same value already exists
+                            KvAttributeFilterCriteria criteria = new KvAttributeFilterCriteria();
+                            criteria.nameEqualTo=microformat.getName();
+                            criteria.valueEqualTo=microformat.getValue();
+                            KvAttributeCollection results = repository.search(criteria);
+                            
+                            if( results.getDocuments().isEmpty() ) {
+                                log.debug("Tag with Name:{} & Value:{} will now be stored.", microformat.getName(), microformat.getValue());
+                                kvAttrib.setId(new UUID());
+                                kvAttrib.setName(microformat.getName());
+                                kvAttrib.setValue(microformat.getValue());     
+                                repository.create(kvAttrib);
+                            }
+                            else
+                                log.debug("Tag with Name:{} & Value:{} is already stored.", microformat.getName(), microformat.getValue());
+                        }
+                    }
+                }
+            }
+        }
+        catch(Exception e ){
+            log.error("Certificate:Create - Error during attribute scan", e);
+        }
     }
 
     @Override
