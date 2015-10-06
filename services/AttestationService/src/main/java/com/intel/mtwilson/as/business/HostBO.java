@@ -958,43 +958,41 @@ public class HostBO extends BaseBO {
          * @return 
          */
 	public List<TxtHostRecord> queryForHosts(String searchCriteria) {
-		try {
-			TblHostsJpaController tblHostsJpaController = new TblHostsJpaController(
-					getEntityManagerFactory());
-			List<TxtHostRecord> txtHostList = new ArrayList<TxtHostRecord>();
-			List<TblHosts> tblHostList;
+		          try {
+                TblHostsJpaController tblHostsJpaController = new TblHostsJpaController(
+                        getEntityManagerFactory());
+                List<TxtHostRecord> txtHostList = new ArrayList<TxtHostRecord>();
+                List<TblHosts> tblHostList;
 
-			if (searchCriteria != null && !searchCriteria.isEmpty()) {
-                                log.info("searchCriteria is not null -- calling tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria)");
-				tblHostList = tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria);
-                                log.info(new Integer(tblHostList.size()).toString());
-                        }
-                        else {
-                                log.info("calling tblHostsJpaController.findTblHostsEntities()");
-				tblHostList = tblHostsJpaController.findTblHostsEntities();
-                                log.info(new Integer(tblHostList.size()).toString());
-                        }
+                if (searchCriteria != null && !searchCriteria.isEmpty()) {
+                    log.info("searchCriteria is not null -- calling tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria)");
+                    tblHostList = tblHostsJpaController.findHostsByNameSearchCriteria(searchCriteria);
+                    log.info(new Integer(tblHostList.size()).toString());
+                } else {
+                    log.info("calling tblHostsJpaController.findTblHostsEntities()");
+                    tblHostList = tblHostsJpaController.findTblHostsEntities();
+                    log.info(new Integer(tblHostList.size()).toString());
+                }
 
-			if (tblHostList != null) {
+//			if (tblHostList != null) {
+                log.info(String.format("Found [%d] host results for search criteria [%s]", tblHostList.size(), searchCriteria));
 
-				log.info(String.format("Found [%d] host results for search criteria [%s]",tblHostList.size(), searchCriteria));
+                for (TblHosts tblHosts : tblHostList) {
+                    TxtHostRecord hostObj = createTxtHostFromDatabaseRecord(tblHosts);
+                    txtHostList.add(hostObj);
+                }
+//			} else {
+//				log.info(String.format("Found no hosts for search criteria [%s]",searchCriteria));
+//			}
 
-				for (TblHosts tblHosts : tblHostList) {
-					TxtHostRecord hostObj = createTxtHostFromDatabaseRecord(tblHosts);
-					txtHostList.add(hostObj);
-				}
-			} else {
-				log.info(String.format("Found no hosts for search criteria [%s]",searchCriteria));
-			}
-
-			return txtHostList;
-		} catch (ASException e) {
-			throw e;
-		} catch (CryptographyException e) {
-			throw new ASException(e, ErrorCode.AS_ENCRYPTION_ERROR, e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
-		} catch (Exception e) {
-			throw new ASException(e);
-		}
+                return txtHostList;
+            } catch (ASException e) {
+                throw e;
+            } catch (CryptographyException e) {
+                throw new ASException(e, ErrorCode.AS_ENCRYPTION_ERROR, e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
+            } catch (Exception e) {
+                throw new ASException(e);
+            }
 
 	}
         
