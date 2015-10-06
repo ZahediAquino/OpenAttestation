@@ -168,7 +168,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
             HostTrustResponse hostTrustResponse = null;
             try {
                 log.info("Getting trust Information for Host " + hostName);
-		xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), true);
+		xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), false);
                 
                 TrustAssertion trustAssertion = new TrustAssertion(trustedCertificates, xmloutput);
                 HostTrustAssertion hostTrustAssertion = trustAssertion.getTrustAssertion(hostName);  
@@ -352,7 +352,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
         Set<Hostname> hostnames = new HashSet<Hostname>();
         hostnames.add(new Hostname(hostName));
         try{
-            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, false).toString());
+            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, true).toString());
         }
         catch(IOException | ApiException | SignatureException e){
             log.error(e.getMessage());
