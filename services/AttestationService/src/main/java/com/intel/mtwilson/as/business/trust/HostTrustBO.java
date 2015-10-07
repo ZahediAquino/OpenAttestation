@@ -503,7 +503,11 @@ public class HostTrustBO extends BaseBO {
         Boolean biostrust = false;
         Boolean vmmtrust = false;
         Boolean atagtrust = false;
-        String[] parts = hostTrustStatus.split(",");
+        String[] parts;
+        if(hostTrustStatus != null)
+            parts = hostTrustStatus.split(",");
+        else
+            parts = new String[1];
         //Sample Input: BIOS:1,VMM:1,ATag:0
         for (String part : parts) {
             String[] subParts = part.split(":");
