@@ -11,7 +11,6 @@ import com.intel.mountwilson.common.ICommand;
 import com.intel.mountwilson.common.TAException;
 import com.intel.mountwilson.trustagent.data.TADataContext;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
@@ -219,13 +218,7 @@ public class HostInfoCmd implements ICommand {
         CommandResult result = CommandUtil.runCommand2("dmidecode -s system-uuid");
         // sample output would look like: 4235D571-8542-FFD3-5BFE-6D9DAC874C84
         if(result != null){
-//            List<String> resultList = Arrays.asList(result.getStdout().split("\n"));
-            List<String> resultList = new ArrayList<>();
-            String resultStr = result.getStdout();
-            
-            if(resultStr != null)
-                resultList = Arrays.asList(resultStr.split("\n"));
-            
+            List<String> resultList = Arrays.asList(result.getStdout().split("\n"));
             if (resultList != null && resultList.size() > 0) {
                 for (String data : resultList) {
                     if (data.trim().startsWith("#")) { // ignore the comments
