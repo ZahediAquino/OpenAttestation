@@ -144,7 +144,7 @@ public class ConverterUtil {
 				hostVO.setAssetTagStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_FALSE));
                                 hostVO.setAssetTagDetails("Un-Trusted");
         }
-        if( hostTrustResponse.trust.bios && hostTrustResponse.trust.vmm && hostTrustResponse.trust.asset_tag) {
+        if( hostTrustResponse.trust.bios && hostTrustResponse.trust.vmm /*&& hostTrustResponse.trust.asset_tag*/) {
 				hostVO.setOverAllStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_TRUE));
 				hostVO.setOverAllStatusBoolean(true);
         }
