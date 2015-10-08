@@ -289,14 +289,18 @@ public class HostTrustBO extends BaseBO {
         log.debug("Cert Sha1: " + certSha1);
         IManifest pcrMf = pcrManifestMap.get("22");
         PcrManifest goodKnownValue = (PcrManifest) pcrManifestMap.get("22");
-        if(goodKnownValue != null)
+        boolean trustStatus;
+        if(goodKnownValue != null){
             log.debug("Checking PCR 22: {} - {}",certSha1, goodKnownValue.getPcrValue());
-        else
+            trustStatus = certSha1.toUpperCase().equalsIgnoreCase(goodKnownValue.getPcrValue().toUpperCase());
+        }
+        else{
             log.debug("goodKnownValue is null");
-        
+            trustStatus = false;
+        }
         String pcr = "22";
         log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
-        boolean trustStatus = certSha1.toUpperCase().equalsIgnoreCase(goodKnownValue.getPcrValue().toUpperCase());
+        
         log.info(String.format("PCR %s Host Trust status %s", pcr, String.valueOf(trustStatus)));
         if(pcrMf != null)
             logTrustStatus(host, mle, pcrMf);
@@ -499,7 +503,11 @@ public class HostTrustBO extends BaseBO {
         Boolean biostrust = false;
         Boolean vmmtrust = false;
         Boolean atagtrust = false;
-        String[] parts = hostTrustStatus.split(",");
+        String[] parts;
+        if(hostTrustStatus != null)
+            parts = hostTrustStatus.split(",");
+        else
+            parts = new String[1];
         //Sample Input: BIOS:1,VMM:1,ATag:0
         for (String part : parts) {
             String[] subParts = part.split(":");
