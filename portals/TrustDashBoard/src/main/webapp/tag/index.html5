@@ -182,14 +182,6 @@ function isNumber(n) {
                 
                 <div class="clear hideSkiplink">
                     <div id="NavigationMenu" class="menu" style="float: left;">
-                        <!--ul id="menubarItems" style="display: inline;">
-                             <li>
-                                <a>Asset Tag Management</a>
-                                <ul id="navtabs">
-                                    <li><a href="#tags">Tag Creation</a></li> 
-                                    <li><a href="#selections">Tag Selection</a></li>
-                                    <li><a href="#certificates">Certificate Management</a></li>
-                                    <!--<li><a href="#configure">Settings</a></li>-->
                                     <li><a href="#log">Log</a></li>
 
                                 </ul>
@@ -210,10 +202,8 @@ function isNumber(n) {
             <div id="notifications_container" style="clear: both; width: 840px; height: 20px; max-height: 50px;  margin-top: 0px;">
             </div>
            
-            <!-- <div class="singleDiv" style="height: 25px;"></div> -->
-                            <!--div id="nameOfPage" class="NameHeader">Search Certificates</div--> 
                             <div id="nameOfPage" class="NameHeader" style="margin-bottom: 6px;display:none;"><span data-i18n="header.certificate_browse">Browse Certificates</span>&nbsp;&nbsp; 
-                                <a href="javascript:toggleElementVisibility('certificate-search-form')" style='font-size: 0.8em'>(<span data-i18n="link.search">Search</span>)</a>
+                                <a  style='font-size: 0.8em'>(<span data-i18n="link.search">Search</span>)</a>
                             </div> 
 
                             <form id="certificate-search-form" action="#" onsubmit="return false;" style="display: none">
@@ -274,13 +264,6 @@ function isNumber(n) {
                                     </div>
                                 </div>
 
-                                <!--div class="singleDiv">
-                                    <div class="labelDiv" data-i18n="input.pcr_event">PCR Event:</div> 
-                                    <div class="valueDiv">
-                                        <input type="text" class="textBox_Border" style="width: 395px;" id="certificate-search-pcrEvent" name="pcrEvent" data-i18n="[placeholder]placeholder.hex_40_chars"/>
-                                    </div>
-                                </div-->
-
                                 <div class="singleDiv">
                                     <div class="labelDiv" data-i18n="input.status">Status:</div> 
                                     <div class="valueDiv">
@@ -292,7 +275,7 @@ function isNumber(n) {
                                         </select>
 
                                         <input type="submit" class="uploadButton" id="searchCertButton" value="Search" data-i18n="[value]button.search" onclick="ws.searchCertificates(this); return false;"/>
-                                        <input type="button" class="uploadButton" id="searchCertButton" value="Cancel" data-i18n="[value]button.cancel" onclick="$('certificate-search-form').reset(); toggleElementVisibility('certificate-search-form'); ws.searchCertificates(this); return false;"/>
+                                        <input type="button" class="uploadButton" id="searchCertButton" value="Cancel" data-i18n="[value]button.cancel" onclick="$('certificate-search-form').reset(); ws.searchCertificates(this); return false;"/>
                                     </div>
                                 </div>
                             <div class="singleDiv" style="height: 8px;"></div>
@@ -326,13 +309,6 @@ function isNumber(n) {
                         </div>
                         </div>                                              
 
-
-                    <!--div id="log">
-                        <h1>Application Log</h1>
-                        <div id="logwindow" style="height: 400px; max-height: 400px; overflow: scroll; border: 2px solid #555555; margin-top: 15px; padding: 4px;">
-                        </div>
-                    </div-->
-                    <!-- content-wrap ends-->	
                 </div>
             </div>
             <div>
@@ -350,142 +326,29 @@ function isNumber(n) {
             <!-- footer ends-->	
 
 
-        <!-- configure javascript logging -->								
-        <!--script>
-            log.attach("logwindow");
-        </script-->
-
-        <!-- script must be at the end of the markup so it can reference any element -->
-        <script>
-            // this section initializes the user interface   
-//            var navTabs = new Control.Tabs('navtabs', {
-//                activeClassName: 'current',
-//                setClassOnContainer: true,
-//                afterChange: function(new_container) {
-//                    if(new_container.id == 'tags') {
-//                        //                        onUpdateVoterIssues();
-//                    }
-//                    if(new_container.id == 'certificates') {
-//                        //                        onDisplayTally();
-//                    }
-//                }
-//            });
-//            
-//            
-//            navTabs.setActiveTab( (""+document.location).toQueryParams().tab );
-//
-//            $('certificate-provision-form').hide();
-
-	/*function provisionTags() {
-		alert('IN here');
- $.ajaxFileUpload({
-        url: 'getData/getUploadedFileContents.html',
-        secureuri: false,
-        fileElementId: 'fileToUpload',
-        dataType: 'jsonp',
-        headers: {
-            "AuthorizationToken": authorizationToken // part of fix for issue #1038, see commonUtils.js
-        },
-        success: function(data, status) {
-            fnuploadSuccess(data);
-        },
-        error: function(data, status, e) {
-            $('#successMessage').html('<div class="errorMessage">* Error authenticating the user.</div>');
-        }
-    });
-  }*/
-
-
-        </script>
+       
 
 
         <script>
-            //log.debug("adapter: "+rivets_watch_findx_adapter);
-            //rivets-test
-            //var taglist = [ {name:"tag1",oid:"1.1"}, {name:"tag2",oid:"2.2" } ];
-            //var taglist = [ "hello", "world" ];
-            //var taglist = [ [{name:"hello"}, {name:"world"}] ];
-            //var myview = rivets.bind(document.getElementById('rivets-test'), { tags: [ {item:"hello"},{item:"world"}] }); // instead of sampledata.tags
-            // *** these were enabled ***
+            
             var alertView, tagview, rdfview, selectionview, tagviewCertificateRequests, certificateView /*, appview */, configurationView;
-            //
-            //taglist.push("test");
-            //myview.build();
-            //mybindings.update({filter: mytags});
-            //sampledata.tags.push({"name":"new tag","oid":"1.2.3.4","values":["hello","world"]});
-            // make sure all dom elements are loaded before initializing the web layer
-	    /*$('certificates').show(function() {
-	    });*/
+      
             document.observe('dom:loaded', function() {
                 ws.initialize({
                     options: {
                         baseurl: 'http://localhost:8080'
                     }
-                    //views: { 'tags': tagview, 'rdf-triples': rdfview }
-    //                data: sampledata, // optional: if not provided will start empty and then we can load it from server
-    /*
-                    view: { 'update': function(data) {
-                            var i = mtwilson.rivets.views.length; // until they respond we don't know what these tags are;  
-                            while(i--) {
-                                mtwilson.rivets.views[i].update(data);
-                            }
-    // //                     appview.update(data); 
-    //                        tagview.update(data);
-    //                        rdfview.update(data);
-    //                        selectionview.update(data);
-    //  //                      tagviewCertificateRequests.update(data);
-    //                        certificateView.update(data); 
-    //                        configurationView.update(data);
-                        },
-                        'sync': function() {
-                            var i = mtwilson.rivets.views.length; // until they respond we don't know what these tags are;  
-                            while(i--) {
-                                mtwilson.rivets.views[i].sync();
-                            }
-    ////                        appview.sync(); 
-    //                        tagview.sync();
-    //                        rdfview.sync();
-    //                        selectionview.sync();
-    // //                       tagviewCertificateRequests.sync();
-    //                        certificateView.sync(); 
-    //                        configurationView.sync();
-                        }
-                    }*/
+                    
                 });
                 console.log("Getting certificates list");
-//                document.getElementById("searchCertButton").click();
-//		ws.searchCertificates(this);
                 log.debug("done initializing ws");
             });
 
-	    function toggleElementVisibility(element_id) {
-		$(element_id).toggle();
-	    }
-            
-            //alertView = rivets.bind(document.getElementById('notifications'), ws.data);
-
-//            appview = rivets.bind(document.getElementById('main'), ws.data); 
-//            tagview = rivets.bind(document.getElementById('tag-browse-table'), ws.data); 
-//            rdfview = rivets.bind(document.getElementById('rdf-triple-browse-table'), ws.data); 
-//            selectionview = rivets.bind(document.getElementById('selection-browse-table'), ws.data); 
-////            tagviewCertificateRequests = rivets.bind(document.getElementById('certificate-request-create-form'), ws.data); 
             certificateView = rivets.bind(document.getElementById('certificate-browse-table'), ws.data); 
-//            configurationView = rivets.bind(document.getElementById('config-form'), ws.data.currentConfiguration); 
-
-            // wait for the webservice library to initialize, then populate the UI with some data from the server. 
             document.observe('mtwilson:ready', function() {
                 log.debug("after init (mtwilson:ready), data: "+Object.toJSON(ws.data));
                 console.log("Getting certificates list1");
                 document.getElementById("searchCertButton").click();
-		//ws.searchCertificates(this);
-                //ws.searchTags('tag-search-form');
-                // ws.searchRdfTriples('rdf-triple-search-form');
-               // ws.searchSelections('selection-search-form');
-//                ws.searchConfigurations('configuration-search-form');
-                //ws.loadCaCerts();
-		//ws.loadHostsForProvisioning();
-//                ws.retrieveMainConfiguration();
-                //i18nInit();
             });
             
         </script>
