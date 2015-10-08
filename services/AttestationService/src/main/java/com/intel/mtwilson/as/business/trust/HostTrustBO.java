@@ -522,7 +522,7 @@ public class HostTrustBO extends BaseBO {
 
         }
 
-        if (biostrust && vmmtrust && atagtrust) {
+        if (biostrust && vmmtrust) {
             result = "trusted";
         }
 
