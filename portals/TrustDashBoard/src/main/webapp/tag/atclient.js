@@ -1839,8 +1839,7 @@ function populateCertsInfoToTable(certsInfo) {
                     "<td align='center'>"+certsInfo[item].status+"</td>"+
                     "<td align='center'>"+certsInfo[item].sha1+"</td>"+
                     "<td align='center'>"+certsInfo[item].sha256+"</td>"+
-                    "<td align='center'><a filename='"+certsInfo[item].id+"' href='' onmouseover='$(this).download = $(this).getAttribute('filename') + '.crt';$(this).href='data:application/octet-stream;base64,'+($(this).next('span').innerHTML);'  data-bind-filename='item.subject'>Download</a><span style='display:none;' data-bind-text='item.certificate'></span> <br /><br />\n\
-                                        <a filename='"+certsInfo[item].id+"' href='#' onclick=ws.revokeCertificate('"+certsInfo[item].id+"');>Revoke</a></td></tr>"+
+                    "<td align='center'><a filename='"+certsInfo[item].id+"' href='#' onclick=ws.revokeCertificate('"+certsInfo[item].id+"');>Revoke</a></td></tr>"+
                     "";
 //           <a href='' onmouseover='$(this).download = $(this).getAttribute('filename') + '.crt';$(this).href='data:application/octet-stream;base64,'+($(this).next('span').innerHTML);'  data-bind-filename='item.subject'>Download</a><span style='display:none;' data-bind-text='item.certificate'></span> <br /><br />
 //                                            <a data-bind-uuid='item.id' href='#' data-i18n='link.import' onclick='javascript:ws.deployCertificate(this.getAttribute('uuid')); return false;'>Import</a>&nbsp;
