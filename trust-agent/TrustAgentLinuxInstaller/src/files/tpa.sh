@@ -76,7 +76,7 @@ if [ -n "$xml" ]; then
     wget --no-proxy $xml -O $XML_FILE_LOCATION
 fi
 
-WGET="wget --no-proxy --auth-no-challenge --secure-protocol=TLSv1"
+WGET="wget --no-proxy --auth-no-challenge"
 UUID=`dmidecode |grep UUID | awk '{print $2}'`
 tagChoice=""
 tagFile=""
@@ -194,22 +194,21 @@ function provisionCert() {
    server=$(dialog --stdout --backtitle "$TITLE" --inputbox "Enter URL to Asset Certificate Authority:" 8 50)
  fi
 
-export restCall=${server/8181/8080}
 
  rm "$tpaDir/tempStatus"
- echo "$WGET -q -O $tpaDir/tempStatus $server/version" >> $cmdFile
- $WGET -q -O "$tpaDir/tempStatus" "$server/version"
- if [ ! -s "$tpaDir/tempStatus" ]; then
-   echo "$WGET -q -O $tpaDir/tempStatus $server/version" >> $cmdFile
-   $WGET -q -O "$tpaDir/tempStatus" "$server/version"
-   if [ -s "$tpaDir/tempStatus" ]; then
-     echo "Connected to server"
-   else
-    dialog --stdout --backtitle "$TITLE" --msgbox 'A SSL/TLS connection could not be established with the server. Please verify settings and try again.' 10 60
-    echo "A SSL/TLS connection could not be established with the server. Please verify settings and try again." > "$tpaDir/completion"
-    exit -1;
-   fi
- fi
+ #echo "$WGET -q -O $tpaDir/tempStatus $server/version" >> $cmdFile
+ #$WGET -q -O "$tpaDir/tempStatus" "$server/version"
+ #if [ ! -s "$tpaDir/tempStatus" ]; then
+ #  echo "$WGET -q -O $tpaDir/tempStatus $server/version" >> $cmdFile
+ #  $WGET -q -O "$tpaDir/tempStatus" "$server/version"
+ #  if [ -s "$tpaDir/tempStatus" ]; then
+ #    echo "Connected to server"
+ #  else
+ #   dialog --stdout --backtitle "$TITLE" --msgbox 'A SSL/TLS connection could not be established with the server. Please verify settings and try again.' 10 60
+ #   echo "A SSL/TLS connection could not be established with the server. Please verify settings and try again." > "$tpaDir/completion"
+ #   exit -1;
+ #  fi
+ #fi
  
  if [ $isUsingXml == 0 ]; then
    # if [ $autoSelect != 1 ]; then
@@ -219,21 +218,21 @@ export restCall=${server/8181/8080}
 #    json='{"selections":[{"name":"'$selectionName'"}]}'
     json='{"options":{"cache":{"mode":"off"}},"default":{"selections":[{"name":"'"$selectionName"'"}]}}'
    # fi
-   echo "$WGET --header=\"Content-Type: application/json\" --header=\"Accept: application/pkix-cert\" --post-data=\"$json\" $restCall/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile" >> $cmdFile
-   $WGET --header="Content-Type: application/json" --header="Accept: application/pkix-cert" --post-data="$json" $restCall/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile 2>&1 | awk '/[.] +[0-9][0-9]?[0-9]?%/ { print substr($0,63,3) }'
+   echo "$WGET --header=\"Content-Type: application/json\" --header=\"Accept: application/pkix-cert\" --post-data=\"$json\" $server/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile" >> $cmdFile
+   $WGET --header="Content-Type: application/json" --header="Accept: application/pkix-cert" --post-data="$json" $server/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile 2>&1 | awk '/[.] +[0-9][0-9]?[0-9]?%/ { print substr($0,63,3) }'
  else
    #here we need to read the xml from the file, escape the " with \ then build our string to send via wget
    encrypted=`head -n 1 $tagFile | grep "Content-Type: encrypted"`
    if [[ -z "$encrypted" ]]; then   # NOT encrypted
      #xmlData=`cat $tagFile | tr -d '\n'`
      #json='[{ "subject": "'$UUID'", "selection": "xml", "xml": "'$xmlData'"}]'
-     echo "$WGET --header=\"Content-Type: application/xml\" --header=\"Accept: application/pkix-cert\" --post-file=\"$tagFile\" $restCall/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile" >> $cmdFile
-     $WGET --header="Content-Type: application/xml" --header="Accept: application/pkix-cert" --post-file="$tagFile" $restCall/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile 2>&1 | awk '/[.] +[0-9][0-9]?[0-9]?%/ { print substr($0,63,3) }'
+     echo "$WGET --header=\"Content-Type: application/xml\" --header=\"Accept: application/pkix-cert\" --post-file=\"$tagFile\" $server/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile" >> $cmdFile
+     $WGET --header="Content-Type: application/xml" --header="Accept: application/pkix-cert" --post-file="$tagFile" $server/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile 2>&1 | awk '/[.] +[0-9][0-9]?[0-9]?%/ { print substr($0,63,3) }'
    else   #encrypted
      #xmlData=`cat $tagFile | tr -d '\n'`
      #json='[{ "subject": "'$UUID'", "selection": "xml", "xml": "'$xmlData'"}]'
-     echo "$WGET --header=\"Content-Type: message/rfc822\" --header=\"Accept: application/pkix-cert\" --post-file=\"$tagFile\" $restCall/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile" >> $cmdFile
-     $WGET --header="Content-Type: message/rfc822" --header="Accept: application/pkix-cert" --post-file="$tagFile" $restCall/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile 2>&1 | awk '/[.] +[0-9][0-9]?[0-9]?%/ { print substr($0,63,3) }'
+     echo "$WGET --header=\"Content-Type: message/rfc822\" --header=\"Accept: application/pkix-cert\" --post-file=\"$tagFile\" $server/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile" >> $cmdFile
+     $WGET --header="Content-Type: message/rfc822" --header="Accept: application/pkix-cert" --post-file="$tagFile" $server/tag-certificate-requests-rpc/provision?subject=$UUID -O $certFile 2>&1 | awk '/[.] +[0-9][0-9]?[0-9]?%/ { print substr($0,63,3) }'
    fi
  fi
 
@@ -264,10 +263,10 @@ export restCall=${server/8181/8080}
   if [ -n "$TPM_OWNER_SECRET" ]; then
 	export ownerPass="$TPM_OWNER_SECRET"
   else
-	echo "$WGET $server/host-tpm-passwords/$UUID.json -q -O $tpaDir/tpmPassword" >> $cmdFile
-	$WGET $server/host-tpm-passwords/$UUID.json -q -O $tpaDir/tpmPassword
+	echo "TPM_OWNER_SECRET Variable is not set, must set it"
+	#$WGET $server/host-tpm-passwords/$UUID.json -q -O $tpaDir/tpmPassword
 	#export ownerPass=`cat /tmp/tpmPassword | cut -d':' -f2 | sed -e 's/\"//g'| sed -e 's/}//g'`
-	export ownerPass=`cat $tpaDir/tpmPassword | awk -F'"password":' '{print $2}' | awk -F'"' '{print $2}'`
+	#export ownerPass=`cat $tpaDir/tpmPassword | awk -F'"password":' '{print $2}' | awk -F'"' '{print $2}'`
   fi
   if [ -z $ownerPass ]; then
     mode="VMWARE"
