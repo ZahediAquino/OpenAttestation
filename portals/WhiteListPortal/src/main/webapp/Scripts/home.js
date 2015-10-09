@@ -218,9 +218,11 @@ function resetDataTable(elementID) {
 	$('#'+elementID).find('tr:not(:last-child)').each(function() {
 		if ($(this).find(':input(:text)').html() != null) {
 			$(this).find(':input(:text)').val('');
-			if (!$(this).find("td:eq(1)").html().contains('osDescription')){
-				$(this).find('td:last-child').html('<span class="requiredField">*</span>');
-			}
+		}
+	});
+        $('#'+divID).find('input:text').each(function() {
+		if ($(this).attr('disabled') != 'disabled') {
+			$(this).val('');
 		}
 	});
 }
