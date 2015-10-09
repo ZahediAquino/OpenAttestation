@@ -729,8 +729,8 @@ public class HostBO extends BaseBO {
                     PcrEventLog pcrEventLog = pcr19.getPcrEventLog(19);
                     if (pcrEventLog != null) {
                         for (Measurement m : pcrEventLog.getEventLog()) {
-                            String extendedPcr = m.getInfo().get("ExtendedToPCR");
-                            if (extendedPcr != null){
+                            extendedtoPCR = m.getInfo().get("ExtendedToPCR");
+                            if (extendedtoPCR != null){
                                 if (extendedtoPCR.equals("19")) {
                                     //tblEvent = tblEventJpa.findEventTypeByName(m.getInfo().get("EventName"));
                                     eventName = m.getInfo().get("EventName");
