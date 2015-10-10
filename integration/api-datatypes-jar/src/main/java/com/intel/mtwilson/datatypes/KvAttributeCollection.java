@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  *
@@ -26,10 +27,11 @@ public class KvAttributeCollection extends DocumentCollection<KvAttribute> {
     private final ArrayList<KvAttribute> kvAttributes = new ArrayList<KvAttribute>();
     
     @JsonSerialize(include=JsonSerialize.Inclusion.ALWAYS) // jackson 1.9
+    @XmlElementWrapper(name="kv_attributes")
 //    @JsonInclude(JsonInclude.Include.ALWAYS)                // jackson 2.0
 //    @JacksonXmlElementWrapper(localName="kv_attributes")
 //    @JacksonXmlProperty(localName="kv_attribute")    
-    @XmlElementWrapper(name="kv_attributes")
+    @JsonProperty("kv_attributes")
     public List<KvAttribute> getKvAttributes() { return kvAttributes; }
 
     @Override
