@@ -66,11 +66,12 @@ public class XML {
 
         Source[] schemaSources = new Source[schemaLocations.size()];
         int i = 0;
+        InputStream inStream = null;
         for (String schemaLocation : schemaLocations) {
-            InputStream in = resolver.findResource(schemaLocation);
+            inStream = resolver.findResource(schemaLocation);
 //            if(in == null) log.debug("parseDocumentElement - InputStream is NULL");
 //            else           log.debug("parseDocumentElement - InputStream OK");
-            schemaSources[i] = new StreamSource(in);
+            schemaSources[i] = new StreamSource(inStream);
             
             log.debug("parseDocumentElement - schemaSources[" + i + "] :" + schemaSources[i].getSystemId() );
             i++;
@@ -79,7 +80,8 @@ public class XML {
 //        else                    log.debug("parseDocumentElement - schemaSources is null");
         
         Schema schema = schemaFactory.newSchema(schemaSources);
-        
+        if(inStream != null)
+            inStream.close();
 //        Validator validator = schema.newValidator();
 //        validator.validate(new StreamSource(new ByteArrayInputStream(xml.getBytes())));
         
