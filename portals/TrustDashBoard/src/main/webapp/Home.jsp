@@ -8,7 +8,8 @@
 	<link rel="stylesheet" type="text/css" href="CSS/home.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/jquery.ui.menubar.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/style.css" />
-	
+	<link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/prettify.css" />
+        
 	<script type="text/javascript" src="Scripts/JQuery/jquery-1.7.2.js"></script>
 	<script type="text/javascript" src="Scripts/JQuery/jquery.json-1.3.min.js"></script>
 	<script type="text/javascript" src="Scripts/JQuery/jquery.ui.core.js"></script>
@@ -20,6 +21,9 @@
 	<script type="text/javascript" src="Scripts/JQuery/jquery.ui.menubar.js"></script>
 	<script type="text/javascript" src="Scripts/JQuery/jquery.paginate.js"></script>
         <script type="text/javascript" src="Scripts/JQuery/jquery.popupWindow.js"></script>
+       
+
+        <script type="text/javascript" src="Scripts/JQuery/prettify.js"></script>
 	
     <script type="text/javascript" src="Scripts/commonUtils.js"></script>
 	<script type="text/javascript" src="Scripts/home.js"></script>
