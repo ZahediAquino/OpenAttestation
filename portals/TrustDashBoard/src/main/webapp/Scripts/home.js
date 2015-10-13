@@ -145,13 +145,13 @@ function fnDeleteHostInfo(element) {
 function fnDeleteHostInfoSuccess(response,element) {
 	$('#disabledDiv').remove();
 	if (response.result) {
+                $('#mleMessage').html('<div class="successMessage">Host has been successfully deleted.</div>');
 		if (selectedPageNo > (response.noOfPages)) {
 			selectedPageNo = response.noOfPages;
 		}
 		populateEditHostDataIntoTable(response.hostVo);
 		applyPagination('editHostPaginationDiv',response.noOfPages,fngetEditHostNextPage,selectedPageNo);
-		//$(element).parent().parent().remove();
-		$('#mleMessage').html('<div class="successMessage">Host has been successfully deleted.</div>');
+		//$(element).parent().parent().remove();		
 	}else {
 		$('#mleMessage').html('<div class="errorMessage">'+getHTMLEscapedMessage(response.message)+'</div>');
 	}
