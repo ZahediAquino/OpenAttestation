@@ -502,7 +502,7 @@ public class HostTrustBO extends BaseBO {
 
         Boolean biostrust = false;
         Boolean vmmtrust = false;
-        Boolean atagtrust = false;
+//        Boolean atagtrust = false;
         String[] parts;
         if(hostTrustStatus != null)
             parts = hostTrustStatus.split(",");
@@ -516,9 +516,9 @@ public class HostTrustBO extends BaseBO {
             } else if(subParts[0].equals("VMM")) {
                 vmmtrust = subParts[1].equals("1");
             }
-            else {
-                atagtrust = subParts[1].equals("1");
-            }
+//            else {
+//                atagtrust = subParts[1].equals("1");
+//            }
 
         }
 
