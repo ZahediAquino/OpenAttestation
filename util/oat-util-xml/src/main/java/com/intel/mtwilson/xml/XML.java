@@ -67,21 +67,25 @@ public class XML {
         Source[] schemaSources = new Source[schemaLocations.size()];
         int i = 0;
         InputStream inStream = null;
-        for (String schemaLocation : schemaLocations) {
-            inStream = resolver.findResource(schemaLocation);
-//            if(in == null) log.debug("parseDocumentElement - InputStream is NULL");
-//            else           log.debug("parseDocumentElement - InputStream OK");
-            schemaSources[i] = new StreamSource(inStream);
-            
-            log.debug("parseDocumentElement - schemaSources[" + i + "] :" + schemaSources[i].getSystemId() );
-            i++;
+        try{
+            for (String schemaLocation : schemaLocations) {
+                inStream = resolver.findResource(schemaLocation);
+    //            if(in == null) log.debug("parseDocumentElement - InputStream is NULL");
+    //            else           log.debug("parseDocumentElement - InputStream OK");
+                schemaSources[i] = new StreamSource(inStream);
+
+                log.debug("parseDocumentElement - schemaSources[" + i + "] :" + schemaSources[i].getSystemId() );
+                i++;
+            }
+    //        if(schemaSources!=null) log.debug("parseDocumentElement - schemaSources.length: " + schemaSources.length); 
+    //        else                    log.debug("parseDocumentElement - schemaSources is null");
+
+            Schema schema = schemaFactory.newSchema(schemaSources);
         }
-//        if(schemaSources!=null) log.debug("parseDocumentElement - schemaSources.length: " + schemaSources.length); 
-//        else                    log.debug("parseDocumentElement - schemaSources is null");
-        
-        Schema schema = schemaFactory.newSchema(schemaSources);
-        if(inStream != null)
-            inStream.close();
+        finally{
+            if(inStream != null)
+                inStream.close();
+        }
 //        Validator validator = schema.newValidator();
 //        validator.validate(new StreamSource(new ByteArrayInputStream(xml.getBytes())));
         
