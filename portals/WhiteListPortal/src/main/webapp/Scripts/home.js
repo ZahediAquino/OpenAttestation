@@ -132,6 +132,7 @@ function fnDeleteOSInfoSuccess(response,element,dataName,isOS) {
 	$('#disabledDiv').remove();
 	if (response.result) {
 		//$(element).parent().parent().remove();
+                $('#messageSpace').html('<div class="successMessage">* '+dataName+' has been successfully deleted.</div>');
 		if (selectedPageNo > (response.noOfPages)) {
 			selectedPageNo = response.noOfPages;
 		}
@@ -142,7 +143,6 @@ function fnDeleteOSInfoSuccess(response,element,dataName,isOS) {
 			fuCreateEditOEMTable(response.OEMDataVo);
 			applyPagination('editOEMPaginationDiv',response.noOfPages,fngetOEMNextPageForEdit,selectedPageNo);
 		}
-		$('#messageSpace').html('<div class="successMessage">* '+dataName+' has been successfully deleted.</div>');
 	}else{
 		$('#messageSpace').html('<div class="errorMessage">* '+dataName+' is not deleted, '+response.message+'.</div>');
 	}
