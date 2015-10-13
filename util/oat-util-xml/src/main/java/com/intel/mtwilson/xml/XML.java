@@ -67,6 +67,7 @@ public class XML {
         Source[] schemaSources = new Source[schemaLocations.size()];
         int i = 0;
         InputStream inStream = null;
+        Schema schema = null;
         try{
             for (String schemaLocation : schemaLocations) {
                 inStream = resolver.findResource(schemaLocation);
@@ -80,7 +81,7 @@ public class XML {
     //        if(schemaSources!=null) log.debug("parseDocumentElement - schemaSources.length: " + schemaSources.length); 
     //        else                    log.debug("parseDocumentElement - schemaSources is null");
 
-            Schema schema = schemaFactory.newSchema(schemaSources);
+            schema = schemaFactory.newSchema(schemaSources);
         }
         finally{
             if(inStream != null)
