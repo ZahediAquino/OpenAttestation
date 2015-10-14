@@ -300,6 +300,8 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 		try {
 			//Call to Services to Update pre-configure host information.
 			apiClientServices.updateHost(ConverterUtil.getTxtHostFromHostVO(dataVO));
+                        // Updating the SAML host report
+                        apiClientServices.getSamlForHost(new Hostname(dataVO.getHostName()), true);
 			result = true;
 		} catch (Exception e) {
 			log.error("Errror While Updating Host.");
@@ -354,7 +356,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
         Set<Hostname> hostnames = new HashSet<Hostname>();
         hostnames.add(new Hostname(hostName));
         try{
-            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, false));
+            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, true));
         }
         catch(IOException | ApiException | SignatureException e){
             log.error(e.getMessage());

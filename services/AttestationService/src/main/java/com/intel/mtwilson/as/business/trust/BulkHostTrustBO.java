@@ -53,8 +53,6 @@ public class BulkHostTrustBO {
             for(String host : hosts) {
                 HostQuoteSaml task = new HostQuoteSaml(hostTrustBO, host, forceVerify);
                 task.getTrustWithSaml();
-                
-                //log.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<< " + task.getResult());
                 tasks.add(task);
                // Future<?> status = scheduler.submit(task);
                 //taskStatus.add(status);
@@ -184,14 +182,11 @@ public class BulkHostTrustBO {
                 result = dao.getTrustWithSaml(hostname, forceVerify);
                 //result = String.format("<Host><Name>%s</Name><ErrorCode>%s</ErrorCode><Assertion><![CDATA[%s]]></Assertion></Host>", hostname, ErrorCode.OK.toString(), saml);
                 
-//                log.info("______________________________________________________________________________________________________________");
-//                log.info("(BulkHostTrustBO.java line:178)SAML: " + result);
-//                log.info("______________________________________________________________________________________________________________");
             } catch (IOException ex) {
-//                java.util.logging.Logger.getLogger(BulkHostTrustBO.class.getName()).log(Level.SEVERE, null, ex);
                 log.info(ex.getMessage());
             } 
         }
+        
         /*
         @Override
         public void run() {
@@ -217,7 +212,7 @@ public class BulkHostTrustBO {
 //                result = String.format("<Host><Name>%s</Name><ErrorCode>%s</ErrorCode><ErrorMessage>%s</ErrorMessage></Host>", 
 //                        hostname, ErrorCode.AS_HOST_TRUST_ERROR.toString(), String.format(ErrorCode.AS_HOST_TRUST_ERROR.getMessage(), e.getClass().getSimpleName()));
 //            }
-        } */
+        }*/
         
         public boolean isError() { return isError; }
         public String getResult() { return result; }
