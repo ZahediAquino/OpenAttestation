@@ -12,6 +12,9 @@ import com.intel.mtwilson.util.io.Iso8601Date;
 //import com.intel.mtwilson.My;
 //import com.intel.mtwilson.MyFilesystem;
 import com.intel.mtwilson.ApiException;
+import com.intel.mtwilson.as.business.AssetTagCertBO;
+import com.intel.mtwilson.crypto.CryptographyException;
+import com.intel.mtwilson.datatypes.AssetTagCertAssociateRequest;
 //import com.intel.mtwilson.datatypes.TxtHostRecord;
 //import com.intel.mtwilson.jaxrs2.mediatype.CryptoMediaType;
 //import com.intel.mtwilson.launcher.ws.ext.V2;
@@ -43,6 +46,7 @@ import com.intel.mtwilson.launcher.ws.ext.RPC;
 //import com.intel.mtwilson.datatypes.Util;
 import com.intel.mtwilson.tag.common.Global;
 import com.intel.mtwilson.tag.rest.repository.CertificateRepository;
+import com.intel.mtwilson.util.crypto.Sha1Digest;
 import com.sun.jersey.api.core.InjectParam;
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +61,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 //import javax.ws.rs.BeanParam;
@@ -227,6 +232,16 @@ public class ProvisionTagCertificate  {
         }
         // Check if a valid certificate was found during the search.
         if (latestCert != null) {
+            X509AttributeCertificate attributeCertificate = X509AttributeCertificate.valueOf(latestCert.getCertificate());
+            AssetTagCertAssociateRequest atca = new AssetTagCertAssociateRequest();
+            atca.setSha1OfAssetCert(Sha1Digest.digestOf(attributeCertificate.getEncoded()).toByteArray());
+            AssetTagCertBO object = new AssetTagCertBO();
+              try {                  
+                  object.mapAssetTagCertToHost(atca);
+              } catch (CryptographyException ex) {
+                  java.util.logging.Logger.getLogger(ProvisionTagCertificate.class.getName()).log(Level.SEVERE, null, ex);
+              }
+//            ca.mapTagCertificate(UUID.valueOf(subject), attributeCertificate.);
             return latestCert;
         }
         
