@@ -77,14 +77,14 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	 * @throws DemoPortalException
 	 */
 	@Override
-	public List<TrustedHostVO> getTrustStatusForHost(List<HostDetailsEntityVO> hostList, AttestationService apiClientServices,X509Certificate[] trustedCertificates) throws DemoPortalException {
+	public List<TrustedHostVO> getTrustStatusForHost(List<HostDetailsEntityVO> hostList, AttestationService apiClientServices,X509Certificate[] trustedCertificates, boolean forceVerify) throws DemoPortalException {
                                 //List contains data to be return.
                                 List<TrustedHostVO> hostVOs = new ArrayList<TrustedHostVO>();
 
                                 //check size of List of Host for which Trust is required if its empty Throw Exception with specific message to Controller.
                                 if (hostList!=null && hostList.size() > 0) {
                                         for (HostDetailsEntityVO hostDetailsEntityVO : hostList) {
-                                            hostVOs.add(getSingleHostTrust(hostDetailsEntityVO.getHostName(), apiClientServices, trustedCertificates));
+                                            hostVOs.add(getSingleHostTrust(hostDetailsEntityVO.getHostName(), apiClientServices, trustedCertificates, forceVerify));
                                         }
 			
                                 } else {
@@ -158,7 +158,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	 * @throws DemoPortalException
 	 */
 	@Override
-	public TrustedHostVO getSingleHostTrust(String hostName, AttestationService apiClientServices,X509Certificate[] trustedCertificates)throws DemoPortalException {
+	public TrustedHostVO getSingleHostTrust(String hostName, AttestationService apiClientServices,X509Certificate[] trustedCertificates, boolean forceVerify)throws DemoPortalException {
 		
 		TrustedHostVO hostVO = null;
 	           HostDetailsEntityVO hostDetailsEntityVO = new HostDetailsEntityVO();
@@ -168,7 +168,9 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
             HostTrustResponse hostTrustResponse = null;
             try {
                 log.info("Getting trust Information for Host " + hostName);
-		xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), false);
+		//xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), false);
+                // forceVerify=false when loading dashboard, it is true when refreshing host (Refresh button)
+                xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), forceVerify);
                 
                 TrustAssertion trustAssertion = new TrustAssertion(trustedCertificates, xmloutput);
                 HostTrustAssertion hostTrustAssertion = trustAssertion.getTrustAssertion(hostName);  
@@ -352,7 +354,7 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
         Set<Hostname> hostnames = new HashSet<Hostname>();
         hostnames.add(new Hostname(hostName));
         try{
-            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, true));
+            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, false));
         }
         catch(IOException | ApiException | SignatureException e){
             log.error(e.getMessage());

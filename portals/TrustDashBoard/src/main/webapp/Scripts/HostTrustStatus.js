@@ -7,7 +7,8 @@ var VMWareHostLocation = [];
 //Called on load of HostTrustStatus..jsp
 $(function() {
 	$('#mainTrustDetailsDiv').prepend(disabledDiv);
-	sendJSONAjaxRequest(false, 'getData/getDashBoardData.html', null, populateHostTrustDetails, null);
+	//sendJSONAjaxRequest(false, 'getData/getDashBoardData.html', null, populateHostTrustDetails, null);
+        sendJSONAjaxRequest(false, 'getData/getDashBoardData.html', "force_verify=false", populateHostTrustDetails, null);
 	
 });
 
@@ -93,7 +94,7 @@ function fnGetTrustSamlDetails(hostName) {
 function fngetHostTrustNextPage(pageNo) {
 	$('#errorMessage').html('');
 	$('#mainTrustDetailsDiv').prepend(disabledDiv);
-	sendJSONAjaxRequest(false, 'getData/getHostTrustSatusForPageNo.html', "pageNo="+pageNo, fnUpdateTableForPage, null);
+	sendJSONAjaxRequest(false, 'getData/getHostTrustSatusForPageNo.html', "pageNo="+pageNo+"&force_verify=false", fnUpdateTableForPage, null);
 }
 
 function fnUpdateTableForPage(responseJSON) {
@@ -232,7 +233,9 @@ function fnUpdateTrustForHost(element) {
 	var hostName = $.trim($(row).find('td:eq(1)').text());
 	$(element).attr('value','Updating');
 	row.find('td:eq(12)').html('<img border="0" src="images/ajax-loader.gif">');
-	sendJSONAjaxRequest(false, 'getData/getHostTrustStatus.html', "hostName="+hostName, updateTrustStatusSuccess, null,element,hostName);
+	//sendJSONAjaxRequest(false, 'getData/getHostTrustStatus.html', "hostName="+hostName, updateTrustStatusSuccess, null,element,hostName);
+        sendJSONAjaxRequest(false, 'getData/getHostTrustStatus.html', "hostName="+hostName+"&force_verify=true", updateTrustStatusSuccess, null,element,hostName);
+      
 }
 
 function updateTrustStatusSuccess(response,element,host) {

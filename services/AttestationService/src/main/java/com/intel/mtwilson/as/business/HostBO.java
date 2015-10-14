@@ -180,7 +180,9 @@ public class HostBO extends BaseBO {
                         }
                         
 			//saveHostInDatabase(tblHosts, host, certificate, location, pcrMap);
-                        saveHostInDatabase(tblHosts, host, certificate, location, pcrMap, tblHostSpecificManifests);
+                        biosMleId = findBiosMleForHost(host); 
+                        vmmMleId = findVmmMleForHost(host); 
+                        saveHostInDatabase(tblHosts, host, certificate, location, pcrMap, tblHostSpecificManifests, biosMleId, vmmMleId);
                         
                          // Now that the host has been registered successfully, let us see if there is an asset tag certificated configured for the host
                         // to which the host has to be associated
@@ -364,6 +366,9 @@ public class HostBO extends BaseBO {
                                 log.debug("Host specific modules will not be configured since PCR 19 is not selected for attestation");
                             }
                         }
+                        
+                        biosMleId = findBiosMleForHost(host); 
+                        vmmMleId = findVmmMleForHost(host); 
 
 			log.info("Saving Host in database");
 			tblHosts.setBiosMleId(biosMleId);
@@ -373,6 +378,10 @@ public class HostBO extends BaseBO {
 				tblHosts.setIPAddress(host.getIPAddress().toString()); // datatype.IPAddress
 			tblHosts.setPort(host.getPort());
 			tblHosts.setVmmMleId(vmmMleId);
+                        
+                        tblHosts.setBios_mle_uuid_hex(biosMleId.getUuid_hex());
+                        tblHosts.setVmm_mle_uuid_hex(vmmMleId.getUuid_hex());
+                        
 
 			log.info("Updating Host in database");
 			getHostsJpaController().edit(tblHosts);
@@ -577,8 +586,29 @@ public class HostBO extends BaseBO {
                        throw new ASException(ErrorCode.AS_VMM_INCORRECT, host.getVmm().getName(),host.getVmm().getVersion(),host.getVmm().getOsName(),host.getVmm().getOsVersion());
 		}
 	}
+        
+        private TblMle findBiosMleForHost(TxtHost host) throws IOException {
+            
+                TblMleJpaController tblMleJpaController  = getMleJpaController();
+                TblMle biosMleId = tblMleJpaController.findBiosMle(host.getBios().getName(),host.getBios().getVersion(), host.getBios().getOem());
+		if (biosMleId == null) {
+			throw new ASException(ErrorCode.AS_BIOS_INCORRECT, host.getBios().getName(),host.getBios().getVersion());
+		}
+                return biosMleId;
+	}
+        
+	private TblMle findVmmMleForHost(TxtHost host) throws IOException {
+            
+                TblMleJpaController tblMleJpaController  = getMleJpaController();
+		TblMle vmmMleId = tblMleJpaController.findVmmMle(host.getVmm().getName(), host.getVmm().getVersion(), host.getVmm().getOsName(), host.getVmm().getOsVersion());
+		if (vmmMleId == null) {
+			throw new ASException(ErrorCode.AS_VMM_INCORRECT, host.getVmm().getName(),host.getVmm().getVersion());
+		}
+        return vmmMleId;
+	}
 
-	private void saveHostInDatabase(TblHosts newRecordWithTlsPolicyAndKeystore,TxtHost host, String certificate, String location, HashMap<String, ? extends IManifest> pcrMap, List<TblHostSpecificManifest> tblHostSpecificManifests) throws CryptographyException, IOException {
+        
+	private void saveHostInDatabase(TblHosts newRecordWithTlsPolicyAndKeystore,TxtHost host, String certificate, String location, HashMap<String, ? extends IManifest> pcrMap, List<TblHostSpecificManifest> tblHostSpecificManifests, TblMle biosMleId, TblMle vmmMleId) throws CryptographyException, IOException {
 
 		// Building objects and validating that manifests are created ahead of create of host
 		TblHosts tblHosts = newRecordWithTlsPolicyAndKeystore; // new TblHosts();
@@ -612,6 +642,10 @@ public class HostBO extends BaseBO {
 		if (location != null) {
 			tblHosts.setLocation(location);
 		}
+                
+                tblHosts.setBios_mle_uuid_hex(biosMleId.getUuid_hex());
+                tblHosts.setVmm_mle_uuid_hex(vmmMleId.getUuid_hex());
+                tblHosts.setUuid_hex(new UUID().toString());
 
 		// create the host
 		log.debug("COMMITING NEW HOST DO DATABASE");
@@ -931,7 +965,7 @@ public class HostBO extends BaseBO {
            try {
               InetAddress addr = InetAddress.getByName(hostName.toString());
               String hostname = addr.getHostName();
-              log.debug("hostname:" +hostname);
+              log.debug("" +hostname);
               String ip =  addr.getHostAddress();
               log.debug("ip:" +ip);
               tblHosts = new TblHostsJpaController(getEntityManagerFactory()).findByName(hostname);
