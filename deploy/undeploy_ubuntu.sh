@@ -18,7 +18,7 @@ else
 fi
 
 conf_dir=${conf_dir:-/etc/intel/cloudsecurity}
-tomcat_dir=${tomcat_dir:-/var/lib/tomcat6}
+tomcat_dir=${tomcat_dir:-/var/lib/tomcat7}
 oat_home_dir=${oat_home_dir:-$HOME/.oat}
 
 delete()

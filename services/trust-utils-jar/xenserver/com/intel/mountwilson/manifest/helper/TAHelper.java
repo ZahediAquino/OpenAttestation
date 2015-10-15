@@ -453,8 +453,10 @@ public class TAHelper {
                 String fileLocation = setUpFile.substring(0, setUpFile.indexOf("attestation-service.properties"));
                 String PrivacyCaCertFileName = "PrivacyCA.cer";
                 //X509Certificate machineCertificate = pemToX509Certificate(certFileName);
-                X509Certificate machineCertificate = certFromFile(certFileName);
-                X509Certificate pcaCert = certFromFile(fileLocation + PrivacyCaCertFileName);
+                //X509Certificate machineCertificate = certFromFile(certFileName);
+                certFromFile(certFileName);
+                //X509Certificate pcaCert = certFromFile(fileLocation + PrivacyCaCertFileName);
+                certFromFile(fileLocation + PrivacyCaCertFileName);
                 log.info("passed the verification");
                
         } catch (Exception e){

@@ -9,7 +9,7 @@ mysql_port=${mysql_port:-3306}
 saml_password=${saml_password:-samlpasswd2}
 portal_password=${portal_password:-portalpasswd2}
 p12_password=${p12_password:-p2}
-log_dir=${log_dir:-/var/log/tomcat6}
+log_dir=${log_dir:-/var/log/tomcat7}
 
 example()
 {
@@ -70,13 +70,13 @@ TOP_DIR=$(cd .. && pwd)
 conf_dir=${conf_dir:-/etc/intel/cloudsecurity}
 [ -d $conf_dir ] && rm -rf $csonf_dir
 install -d  $conf_dir
-chown -R tomcat6:tomcat6 $conf_dir
+chown -R tomcat7:tomcat7 $conf_dir
 
-tomcat_dir=${tomcat_dir:-/var/lib/tomcat6}
+tomcat_dir=${tomcat_dir:-/var/lib/tomcat7}
 oat_home_dir=${oat_home_dir:-$HOME/.oat}
 [ -d $oat_home_dir ] && rm -rf $oat_home_dir
 install -d  $oat_home_dir
-chown -R tomcat6:tomcat6 $oat_home_dir
+chown -R tomcat7:tomcat7 $oat_home_dir
 
 ###MySQL ### 
 mysql_status="`netstat -vulntp |grep -i mysql`"
@@ -251,11 +251,11 @@ if [ -n "$ha_master" ]; then
         done
 
         # set permissions
-        chown -R tomcat6:tomcat6 $conf_dir
-        chown -R tomcat6:tomcat6 $tomcat_dir/Certificate
-        chown -R tomcat6:tomcat6 /var/opt        
+        chown -R tomcat7:tomcat7 $conf_dir
+        chown -R tomcat7:tomcat7 $tomcat_dir/Certificate
+        chown -R tomcat7:tomcat7 /var/opt        
 
-        service tomcat6 restart
+        service tomcat7 restart
         exit 0
         fi
 fi
@@ -314,7 +314,7 @@ popd
 cp $conf_dir/clientfiles/PrivacyCA.cer $conf_dir
 
 ### change the configuration folder user group to tomcat:tomcat ###
-chown -R tomcat6:tomcat6 $conf_dir
+chown -R tomcat7:tomcat7 $conf_dir
 
 ### aikqverify install ###
 install_aikverify
@@ -332,8 +332,8 @@ install_aikverify
 ### Create Attestation Server Certificate ###
 privacyca_server="`att_parse "privacyca.server"`"
 install -d $tomcat_dir/Certificate
-chown -R tomcat6:tomcat6 $tomcat_dir/Certificate
-chown -R tomcat6:tomcat6 /var/opt
+chown -R tomcat7:tomcat7 $tomcat_dir/Certificate
+chown -R tomcat7:tomcat7 /var/opt
 
 [ -e $tomcat_dir/Certificate/keystore.jks ] && \
      rm -f $tomcat_dir/Certificate/keystore.jks
@@ -384,13 +384,13 @@ copy_war_package "AttestationService"
 copy_war_package "TrustDashBoard"
 
 #Create cacert and key
-export javaCmd="'$TOP_DIR/services/AttestationService/target/AttestationService-2.2/WEB-INF/lib/AttestationService-2.2.jar:$TOP_DIR/services/AttestationService/target/AttestationService-2.2/WEB-INF/lib/*' com.intel.mtwilson.tag.setup.cmd.TagCreateCaKey 'CN=asset-tag-service,OU=oat'"
+export javaCmd="'$TOP_DIR/services/AttestationService/target/AttestationService-2.3/WEB-INF/lib/AttestationService-2.3.jar:$TOP_DIR/services/AttestationService/target/AttestationService-2.3/WEB-INF/lib/*' com.intel.mtwilson.tag.setup.cmd.TagCreateCaKey 'CN=asset-tag-service,OU=oat'"
 echo "#!/bin/bash
 java -cp $javaCmd" > javaCmdScript.sh
 chmod +x javaCmdScript.sh
 ./javaCmdScript.sh
 rm javaCmdScript.sh
 
-### tomcat6 restart ###
-service tomcat6 restart
+### tomcat7 restart ###
+service tomcat7 restart
 

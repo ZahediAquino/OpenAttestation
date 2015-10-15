@@ -291,13 +291,13 @@ copy_war_package "AttestationService"
 copy_war_package "TrustDashBoard"
 
 #Create cacert and key
-export javaCmd="'$TOP_DIR/services/AttestationService/target/AttestationService-2.2/WEB-INF/lib/AttestationService-2.2.jar:$TOP_DIR/services/AttestationService/target/AttestationService-2.2/WEB-INF/lib/*' com.intel.mtwilson.tag.setup.cmd.TagCreateCaKey 'CN=asset-tag-service,OU=oat'"
+export javaCmd="'$TOP_DIR/services/AttestationService/target/AttestationService-2.3/WEB-INF/lib/AttestationService-2.3.jar:$TOP_DIR/services/AttestationService/target/AttestationService-2.3/WEB-INF/lib/*' com.intel.mtwilson.tag.setup.cmd.TagCreateCaKey 'CN=asset-tag-service,OU=oat'"
 echo "#!/bin/bash
 java -cp $javaCmd" > javaCmdScript.sh
 chmod +x javaCmdScript.sh
 ./javaCmdScript.sh
 rm javaCmdScript.sh
 
-### tomcat6 restart ###
+### tomcat restart ###
 service tomcat restart
 

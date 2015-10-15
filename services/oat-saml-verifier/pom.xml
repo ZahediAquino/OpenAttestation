@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.intel.mtwilson.core.services</groupId>
         <artifactId>oat-services</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </parent>
     <artifactId>oat-saml-verifier</artifactId>
     <build>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.intel.mtwilson.core.services</groupId>
             <artifactId>oat-saml</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
@@ -78,7 +78,7 @@
         <dependency>
             <groupId>com.intel.mtwilson.core.common</groupId>
             <artifactId>oat-crypto</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
         </dependency>
 
         <!-- end saml verification -->

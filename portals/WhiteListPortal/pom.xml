@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.intel.mtwilson.core.portals</groupId>
         <artifactId>oat-portals</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </parent>
 
     <dependencies>
@@ -124,17 +124,17 @@
         <dependency>
             <groupId>com.intel.mtwilson.core.services</groupId>
             <artifactId>webservice-util</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
         </dependency>
         <dependency>
             <groupId>com.intel.mtwilson.core.services</groupId>
             <artifactId>ASCommon</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
         </dependency>
         <dependency>
             <groupId>com.intel.mtwilson.core.services</groupId>
             <artifactId>ASData</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
         </dependency>
         
              

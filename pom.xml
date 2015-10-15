@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.intel.mtwilson.core</groupId>
 	<artifactId>oat</artifactId>
-	<version>2.2</version>
+	<version>2.3</version>
 	<packaging>pom</packaging>
 	<name>Open Attestation</name>
 
@@ -271,17 +271,17 @@
                 <dependency>
                     <groupId>com.intel.mtwilson.core.common</groupId>
                     <artifactId>oat-validation</artifactId>
-                    <version>2.2</version>
+                    <version>2.3</version>
                 </dependency>
                 <dependency>
                     <groupId>com.intel.mtwilson.core.integration</groupId>
                     <artifactId>oat-tag-selection-json</artifactId>
-                    <version>2.2</version>
+                    <version>2.3</version>
                 </dependency>
                 <dependency>
                     <groupId>com.intel.mtwilson.core.integration</groupId>
                     <artifactId>http-authorization</artifactId>
-                    <version>2.2</version>
+                    <version>2.3</version>
                 </dependency>
                 <dependency>
                     <groupId>com.intel.mtwilson.core.util</groupId>
@@ -291,7 +291,7 @@
                 <dependency>
                     <groupId>com.intel.mtwilson.core.util</groupId>
                     <artifactId>oat-util-cpg</artifactId>
-                    <version>2.2</version>
+                    <version>2.3</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.commons</groupId>

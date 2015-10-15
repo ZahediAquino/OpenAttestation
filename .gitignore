@@ -22,3 +22,5 @@
 /services/WLMService/target/
 /portals/TrustDashBoard/target/
 /services/oat-tag-jdbi/target/
+/services/oat-saml-verifier/target/
+/util/oat-util-jaxrs2-server/target/
