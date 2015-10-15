@@ -60,7 +60,6 @@ public class RevokeTagCertificate{
     public void revokeCert(@QueryParam("certId")String certId) {
         log.debug("RPC: RevokeTagCertificate - Got request to revocation of certificate: {}",certId);
         setCertificateId(UUID.valueOf(certId));
-        log.info("UUID set to be processed: {} ++ {}", certificateId.toString(),certificateId.uuidValue());
         try (CertificateDAO dao = TagJdbi.certificateDao()) {
             CertificateLocator locator = new CertificateLocator();
             locator.id = certificateId;

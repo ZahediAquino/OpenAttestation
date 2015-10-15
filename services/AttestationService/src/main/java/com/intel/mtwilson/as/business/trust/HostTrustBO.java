@@ -243,9 +243,7 @@ public class HostTrustBO extends BaseBO {
         MwAssetTagCertificate atagCert = verifyAssetTagCert(host);
         if(atagCert != null){
             trust.asset_tag = verifyAssetTagTrust(host, host.getVmmMleId(), pcrManifestMap, atagCert);
-            log.debug("Asset Tag Status Answer: {}", trust.asset_tag);
         }
-        log.debug("LogTrustToString: {}", toString(trust));
         logOverallTrustStatus(host, toString(trust));
          
         return trust;
@@ -286,7 +284,6 @@ public class HostTrustBO extends BaseBO {
         
         String certSha1 = Sha1Digest.valueOf(atagCert.getPCREvent()).toString();
 
-        log.debug("Cert Sha1: " + certSha1);
         IManifest pcrMf = pcrManifestMap.get("22");
         PcrManifest goodKnownValue = (PcrManifest) pcrManifestMap.get("22");
         boolean trustStatus;
@@ -299,7 +296,6 @@ public class HostTrustBO extends BaseBO {
             trustStatus = false;
         }
         String pcr = "22";
-        log.debug("PCR to be checked: {} - {}",pcr, pcrManifestMap.get(pcr));
         
         log.info(String.format("PCR %s Host Trust status %s", pcr, String.valueOf(trustStatus)));
         if(pcrMf != null)
@@ -322,7 +318,6 @@ public class HostTrustBO extends BaseBO {
         }
 
         for (String pcr : gkvPcrManifestMap.keySet()) {
-            log.debug("PCR to be checked: {}",pcr);
             if (pcrManifestMap.containsKey(pcr)) {
                 IManifest pcrMf = pcrManifestMap.get(pcr);
                 boolean trustStatus = pcrMf.verify(gkvPcrManifestMap.get(pcr));

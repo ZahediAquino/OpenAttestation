@@ -276,7 +276,6 @@ public class TagCertificateAuthority {
             if (configuration.isTagProvisionAutoImport()) {
                 //String url = My.configuration().getAssetTagMtWilsonBaseUrl();
                 String url = ASConfig.getMtWilsonURL().toString();
-                log.debug("Mt Wilson URL: {}", url);
                 if (url != null && !url.isEmpty()) {
                     AssetTagCertCreateRequest request = new AssetTagCertCreateRequest();
                     request.setCertificate(attributeCertificateBytes);

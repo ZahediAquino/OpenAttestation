@@ -197,7 +197,6 @@ public class TblHosts implements Serializable {
 
     
     public byte[] getTlsKeystore() { 
-        log.debug("getTlsKeystore called on TblHosts for hostname: {}", name);
         return tlsKeystore; 
     }
     public void setTlsKeystore(byte[] tlsKeystoreBytes) {        

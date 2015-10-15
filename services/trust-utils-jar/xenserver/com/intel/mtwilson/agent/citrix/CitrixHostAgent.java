@@ -151,7 +151,6 @@ public class CitrixHostAgent implements HostAgent{
     public Map<String, String> getHostAttributes() throws IOException {
        HashMap<String,String> hm = new HashMap<String, String>();
         // Retrieve the data from the host and add it into the hashmap
-       log.debug("This is where I supposedly call the TAgent for HWUUID info...");
       // trustAgentClient.getHostAttributes();
        
 //        HostInfo hostInfo = client.getHostInfo();

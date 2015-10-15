@@ -320,8 +320,7 @@ public class ProvisionTagCertificate  {
     @Produces(CryptoMediaType.APPLICATION_PKIX_CERT)
     //@RequiresPermissions("tag_certificates:create")         
     public byte[] createOneFromJsonToBytes(@InjectParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
-            throws IOException, ApiException, SignatureException, SQLException, CertificateException  { 
-        log.debug("Got request to create atag certificate json -> cert");
+            throws IOException, ApiException, SignatureException, SQLException, CertificateException  {
         Certificate certificate = createOneJson(locator, json, request, response);
         if (certificate != null)
             return certificate.getCertificate();
@@ -338,7 +337,6 @@ public class ProvisionTagCertificate  {
     public Certificate createOneJson(@InjectParam CertificateRequestLocator locator, String json, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException {        
         SelectionsType selections = null;
-        log.debug("Got request to create atag certificate json -> json");
         if( json != null ) {
             selections = Util.fromJson(json);
         }
@@ -367,7 +365,6 @@ public class ProvisionTagCertificate  {
     //@RequiresPermissions("tag_certificates:create")         
     public byte[] createOneFromXmlToBytes(@InjectParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, CertificateException {
-        log.debug("Got request to create atag certificate xml -> cert");
         Certificate certificate = createOneXml(locator, xml, request, response);
         if (certificate != null)
             return certificate.getCertificate();
@@ -383,7 +380,6 @@ public class ProvisionTagCertificate  {
     //@RequiresPermissions("tag_certificates:create")         
     public Certificate createOneXml(@InjectParam CertificateRequestLocator locator, String xml, @Context HttpServletRequest request, @Context HttpServletResponse response) 
             throws IOException, ApiException, SignatureException, SQLException, IllegalArgumentException, com.intel.mtwilson.ApiException  {
-        log.debug("Got request to create atag certificate");
          //TagConfiguration configuration = new TagConfiguration(My.configuration().getConfiguration());
         //TagConfiguration configuration = new TagConfiguration(ASConfig.getConfiguration()); //Variable never used
         SelectionsType selections = null;

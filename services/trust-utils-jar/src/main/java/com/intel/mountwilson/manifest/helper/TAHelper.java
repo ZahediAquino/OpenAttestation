@@ -215,8 +215,6 @@ public class TAHelper {
             
 
             log.info( "created RSA key file for session id: "+sessionId);
-            
-            log.debug("Event log: " + clientRequestType.getEventLog());
             byte[] eventLogBytes = Base64.decodeBase64(clientRequestType.getEventLog());// issue #879
             HashMap<String, PcrManifest> pcrMap;
             if(eventLogBytes != null) {
@@ -528,9 +526,7 @@ public class TAHelper {
                         // Get the Module hash value 
                         if (reader.getLocalName().equalsIgnoreCase("value")) {
                             digestValue = reader.getElementText();
-                        }
-
-                        log.debug("Process module " + componentName + " getting extended to " + extendedToPCR);                      
+                        }                 
                         
                         boolean useHostSpecificDigest = false;
                         if (ArrayUtils.contains(openSourceHostSpecificModules, componentName)) {

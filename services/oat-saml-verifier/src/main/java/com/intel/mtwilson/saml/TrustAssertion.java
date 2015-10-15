@@ -346,7 +346,6 @@ public class TrustAssertion {
                             attributeValue = (((XSString) value).getValue());
                         }
                     }
-                    log.debug("assertionMap.put(name, value) "+ attribute.getName() + ", " + attributeValue );
                     assertionMap.put(attribute.getName(), attributeValue);
                 }
                 hostAssertionMap.put(assertionMap.get("Host_Name"), hostTrustAssertion);

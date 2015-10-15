@@ -291,7 +291,6 @@ public class ApacheHttpClient implements java.io.Closeable {
     private MediaType createMediaType(HttpResponse response) {
         if( response.getFirstHeader("Content-Type") != null ) {
             String contentType = response.getFirstHeader("Content-Type").getValue();
-            log.debug("We got Content-Type: "+contentType );
             if( "text/plain".equals(contentType) ) {
                 return MediaType.TEXT_PLAIN_TYPE;
             }
@@ -327,10 +326,6 @@ public class ApacheHttpClient implements java.io.Closeable {
                 content = IOUtils.toByteArray(contentStream);
                 contentStream.close();
             }
-            log.debug("HttpEntity Content Length = {}", entity.getContentLength());
-            log.debug("HttpEntity is chunked? {}", entity.isChunked());
-            log.debug("HttpEntity is streaming? {}", entity.isStreaming());
-            log.debug("HttpEntity is repeatable? {}", entity.isRepeatable());
         }
         return new ApiResponse(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), contentType, content);
     }

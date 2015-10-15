@@ -76,7 +76,6 @@ public class CitrixClient {
      public CitrixClient(TlsConnection tlsConnection){
         this.tlsConnection = tlsConnection;
         this.connectionString = tlsConnection.getConnectionString();
-        log.debug("stdalex init cs == " + this.connectionString );
 //      log.info("CitrixClient connectionString == " + connectionString);
         // connectionString == citrix:https://xenserver:port;username;password  or citrix:https://xenserver:port;u=username;p=password  or the same w/o the citrix prefix
         String[] parts = this.connectionString.split(";");
@@ -205,7 +204,6 @@ public class CitrixClient {
             int endP   = aik.indexOf("</xentxt:TPM_Attestation_KEY_PEM>");
             // 32 is the size of the opening tag  <xentxt:TPM_Attestation_KEY_PEM>
             String cert = aik.substring(startP + "<xentxt:TPM_Attestation_KEY_PEM>".length(),endP);
-            log.debug("aikCert == " + cert);
             
             keys key = new keys();
             
@@ -214,7 +212,6 @@ public class CitrixClient {
 			
             String aikCertificate = key.tpmAttKeyPEM;
             
-            log.debug( "extracted aik cert from response: " + aikCertificate);
             
             myMap = new HashMap<String, String>();
             myMap.put("nonce",nonce);
@@ -489,7 +486,6 @@ public class CitrixClient {
        int endP   = aik.indexOf("</xentxt:TPM_Attestation_KEY_PEM>");
        // 32 is the size of the opening tag  <xentxt:TPM_Attestation_KEY_PEM>
        String cert = aik.substring(startP + "<xentxt:TPM_Attestation_KEY_PEM>".length(),endP);
-       log.debug("aikCert == " + cert);
       
             
        keys key = new keys();

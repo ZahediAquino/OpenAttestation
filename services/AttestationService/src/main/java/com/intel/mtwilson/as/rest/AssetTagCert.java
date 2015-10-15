@@ -44,7 +44,6 @@ public class AssetTagCert {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public String importAssetTagCertificate(AssetTagCertCreateRequest atagObj)  {
-        log.debug(("assetTagDemo are we landing in here instead?"));
         AssetTagCertBO object = new AssetTagCertBO();
         boolean result = object.importAssetTagCertificate(atagObj, null);
         return Boolean.toString(result);

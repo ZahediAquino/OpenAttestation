@@ -421,19 +421,16 @@ public class SamlGenerator {
                 // add the asset tag attestation status and if the status is trusted, then add all the attributes. In order to uniquely
                 // identify all the asset tags on the client side, we will just append the text ATAG for all of them.
                 attrStatement.getAttributes().add(createBooleanAttribute("Asset_Tag", host.isAssetTagTrusted()));
-                log.debug("Host.isAssetTagTrusted "  + host.isAssetTagTrusted());
                 attrStatement.getAttributes().add(createStringAttribute("Asset_Tag_Certificate_Sha1", Sha1Digest.digestOf(tagCertificate.getEncoded()).toString()));
                 if( host.isAssetTagTrusted()) {
                     // get all microformat attributes
                     List<UTF8NameValueMicroformat> microformatAttributes = tagCertificate.getAttributes(UTF8NameValueMicroformat.class);
                     for(UTF8NameValueMicroformat microformatAttribute : microformatAttributes) {
-                        log.debug("microformat attribute OID {} name {} value {}", UTF8NameValueMicroformat.OID, microformatAttribute.getName(), microformatAttribute.getValue());
                         attrStatement.getAttributes().add(createStringAttribute(String.format("TAG[" + microformatAttribute.getName() + "]"),microformatAttribute.getValue()));
                     }
                     // get all name-valuesequence attributes
                     List<UTF8NameValueSequence> nameValueSequenceAttributes = tagCertificate.getAttributes(UTF8NameValueSequence.class);
                     for(UTF8NameValueSequence nameValueSequenceAttribute : nameValueSequenceAttributes) {
-                        log.debug("namevaluesequence attribute OID {} name {} values {}", UTF8NameValueSequence.OID, nameValueSequenceAttribute.getName(), nameValueSequenceAttribute.getValues());
                         attrStatement.getAttributes().add(createStringAttribute(String.format("TAG[" + nameValueSequenceAttribute.getName() + "]"), StringUtils.join(nameValueSequenceAttribute.getValues(), ",")));
                     }
                     // all attributes including above and any other custom attributes will be available directly via the certificate

@@ -97,7 +97,6 @@ public class HostBO extends BaseBO {
 		String location = null;
 		String ipAddress = null;
 		HashMap<String, ? extends IManifest> pcrMap = null;
-		log.debug("About the add the host to the DB");
 		try {
             ipAddress = InetAddress.getByName(host.getHostName().toString()).getHostAddress();
 			if (!ipAddress.equalsIgnoreCase(host.getIPAddress().toString())) {
@@ -109,7 +108,6 @@ public class HostBO extends BaseBO {
 			TblHosts tblHosts = new TblHosts();
 			tblHosts.setTlsPolicyName("TRUST_FIRST_CERTIFICATE");
 			tblHosts.setTlsKeystore(null);
-			log.debug("stdalex addHost cs == " + host.getAddOn_Connection_String());
 			tblHosts.setAddOnConnectionInfo(host.getAddOn_Connection_String());
 			if (host.getHostName() != null) {
 				tblHosts.setName(host.getHostName().toString());
@@ -864,7 +862,6 @@ public class HostBO extends BaseBO {
         */
         private TblMle getMleDetails(String mleName, String mleVersion, String osName, String osVersion, String oemName) {
             TblMle tblMle;
-            log.debug(String.format("Mle name '%s' version '%s' os '%s' os version '%s' oem '%s'. ",mleName, mleVersion, osName, osVersion, oemName));
             validateNull("mleName", mleName);
             validateNull("mleVersion", mleVersion);
             validateMleExtraAttributes(osName, osVersion, oemName);
@@ -965,9 +962,7 @@ public class HostBO extends BaseBO {
            try {
               InetAddress addr = InetAddress.getByName(hostName.toString());
               String hostname = addr.getHostName();
-              log.debug("" +hostname);
               String ip =  addr.getHostAddress();
-              log.debug("ip:" +ip);
               tblHosts = new TblHostsJpaController(getEntityManagerFactory()).findByName(hostname);
               tblHosts = tblHosts!=null? tblHosts :new TblHostsJpaController(getEntityManagerFactory()).findByName(ip);
            } catch (UnknownHostException e) {
@@ -1120,10 +1115,8 @@ public class HostBO extends BaseBO {
                 hostObj.VMM_OSName = tblHost.getVmmMleId().getOsId().getName();
                 hostObj.VMM_OSVersion = tblHost.getVmmMleId().getOsId().getVersion();
                 if(includeHardwareUuid){
-                    //log.debug("adding in hardware uuid field["+tblHost.getHardwareUuid()+"]");
                     hostObj.Hardware_Uuid = tblHost.getHardwareUuid();
                 }else{
-                    log.debug("not adding in hardware uuid");
                     hostObj.Hardware_Uuid = null;
                 }
                 

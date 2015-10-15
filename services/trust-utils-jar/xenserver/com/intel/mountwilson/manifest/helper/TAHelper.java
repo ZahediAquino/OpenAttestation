@@ -153,11 +153,9 @@ public class TAHelper {
         if( connectionString == null || connectionString.isEmpty() ) {
             if( tblHosts.getIPAddress() != null  ) {
                 connectionString = String.format("https://%s:%d", tblHosts.getIPAddress(), tblHosts.getPort()); // without vendor scheme because we are passing directly to TrustAgentSEcureClient  (instead of to HOstAgentFactory)
-                log.debug("getQuoteInformationForHost called with ip address and port {}", connectionString);
             }
         }
         else if( connectionString.startsWith("intel:") ) {
-            log.debug("getQuoteInformationForHost called with intel connection string: {}", connectionString);
             connectionString = connectionString.substring(6);
         }        
               
@@ -215,8 +213,6 @@ public class TAHelper {
             
 
             log.info( "created RSA key file for session id: "+sessionId);
-            
-            log.debug("Event log: " + clientRequestType.getEventLog());
             byte[] eventLogBytes = Base64.decodeBase64(clientRequestType.getEventLog());// issue #879
             HashMap<String, PcrManifest> pcrMap;
             if(eventLogBytes != null) {
@@ -529,9 +525,6 @@ public class TAHelper {
                         if (reader.getLocalName().equalsIgnoreCase("value")) {
                             digestValue = reader.getElementText();
                         }
-
-                        log.debug("Process module " + componentName + " getting extended to " + extendedToPCR);                      
-                        
                         boolean useHostSpecificDigest = false;
                         if (ArrayUtils.contains(openSourceHostSpecificModules, componentName)) {
                             useHostSpecificDigest = true;

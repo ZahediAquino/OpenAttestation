@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Trust DashBoard</title>
+<title>Trust Dashboard</title>
 	<link rel="stylesheet" type="text/css" href="CSS/home.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/jquery.ui.menubar.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/style.css" />
@@ -31,7 +31,7 @@
 </head>
 <body>
 	<div class="header">
-            <div class="title"><h1>OAT Reference Cloud Portal</h1></div>
+            <div class="title"><h1>OAT Trust Dashboard</h1></div>
             <!-- remove auth tdb/wlp stdalex 2/26
             <div class="loginDisplay">
                 <span id="loginStatusValue" style="margin-right:40px">Welcome <%=session.getAttribute("username") %></span>
@@ -66,7 +66,7 @@
         	
         </div>
         <div class="footer">
-        	<h4>@ Intel Corp | 2015</h4>
+        	<h4>© Intel Corp | 2015</h4>
         </div>
 </body>
 </html>

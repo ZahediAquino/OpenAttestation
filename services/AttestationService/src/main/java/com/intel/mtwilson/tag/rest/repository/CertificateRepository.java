@@ -211,7 +211,6 @@ public class CertificateRepository implements DocumentRepository<Certificate, Ce
                             KvAttributeCollection results = repository.search(criteria);
                             
                             if( results.getDocuments().isEmpty() ) {
-                                log.debug("Tag with Name:{} & Value:{} will now be stored.", microformat.getName(), microformat.getValue());
                                 kvAttrib.setId(new UUID());
                                 kvAttrib.setName(microformat.getName());
                                 kvAttrib.setValue(microformat.getValue());     
