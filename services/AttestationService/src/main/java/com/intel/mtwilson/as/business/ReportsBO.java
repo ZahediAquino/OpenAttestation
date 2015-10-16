@@ -154,7 +154,7 @@ public class ReportsBO extends BaseBO {
             String[] subParts = sub.split(":");
             if (subParts[0].equals("BIOS")) {
                 bios = Integer.parseInt(subParts[1]);
-            } else {
+            } else if(subParts[0].equals("VMM")) {
                 vmm = Integer.parseInt(subParts[1]);
             }
         }
