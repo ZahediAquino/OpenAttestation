@@ -118,6 +118,10 @@ public class HostBO extends BaseBO {
 			if (host.getPort() != null) {
 				tblHosts.setPort(host.getPort());
 			}
+                        else{
+                            throw new ASException(ErrorCode.PORT_MISSING, host.getHostName().toString(),host.getIPAddress().toString());
+			}
+                        
 
 			if (canFetchAIKCertificateForHost(host.getVmm().getName())) { // datatype.Vmm
 				if (!host.getAddOn_Connection_String().toLowerCase().contains("citrix")) {

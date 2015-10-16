@@ -43,7 +43,7 @@ public enum ErrorCode {
 //    VMW_TPM_NOT_SUPPORTED(3000,"VMWare - Host does not support TXT"), 
 //    VMWARE_ERROR(3001, "VMWare Error"),
 //    DUPLICATE_ENTITY_ERROR(4001,"Entity already configured in the system."),
-    
+    PORT_MISSING(100,"You must proved a port number when adding a host"),
     // HTTP error codes
     HTTP_INVALID_REQUEST(400, "HTTP 400 INVALID REQUEST"),
     HTTP_UNAUTHORIZED(401, "HTTP 401 UNAUTHORIZED"),
