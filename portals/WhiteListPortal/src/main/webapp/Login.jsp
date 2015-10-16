@@ -25,7 +25,7 @@
         <div class="main" id="mainContainer">
 	        <div class="container">
 				<div id="nameOfPage" class="NameHeader">Login</div>
-                                <div class="registerUser">Press login to continue</div>
+                                <div class="registerUser">Please login to continue</div>
 				
 				<form id="loginForm" action="checkLogin.htm" method="post" style="margin-left: 60px;font-size: 16px;">
 					<table cellpadding="3" cellspacing="5">
