@@ -675,7 +675,6 @@ public class HostBO extends BaseBO {
                                
                                String mEventName = m.getInfo().get("EventName");
                                String mComponentName = m.getInfo().get("ComponentName");
-                               log.debug("Checking host specific manifest for event '"   + mEventName + "' field '" + m.getLabel() + "' component '" + mComponentName + "'");
                                
                                if(hostType.equals("intel") && m.getInfo().get("EventName") != null) {
                                    log.debug("Adding host specific manifest for event " + m.getInfo().get("EventName") + ": field=" + m.getLabel() + " component=" + m.getInfo().get("ComponentName"));
@@ -777,7 +776,59 @@ public class HostBO extends BaseBO {
                                     extendedtoPCR = String.valueOf(m.getInfo().get("ExtendedToPCR"));
                                     digest = String.valueOf(m.getValue());
                                     useHostSpecificDigest = Boolean.valueOf(m.getInfo().get("UseHostSpecificDigest"));
-                                    break;
+                                    try {
+                                        // Before we insert the record, we need the identity for the event name
+                                        tblEvent = tblEventJpa.findEventTypeByName(eventName);
+
+                                    } catch (NoResultException nre) {
+                                        throw new ASException(nre, ErrorCode.WS_EVENT_TYPE_DOES_NOT_EXIST, eventName);
+                                    }
+                                    validateNull("EventName", eventName);
+                                    validateNull("ComponentName", componentName);
+                                    // For Open Source hypervisors, we do not want to prefix the event type field name. So, we need to check if the event name
+                                    // corresponds to VMware, then we will append the event type fieldName to the component name. Otherwise we won't
+                                    if (eventName.contains("Vim25")) {
+                                        fullComponentName = tblEvent.getFieldName() + "." + componentName;
+                                    } else {
+                                        fullComponentName = componentName;
+                                    }
+                                    Integer componentID = tblModuleManifestJpa.findByMleIdEventId(tblMle.getId(), fullComponentName, tblEvent.getId());
+                                    if (componentID != null && componentID != 0) {
+                                        throw new ASException(ErrorCode.WS_MODULE_WHITELIST_ALREADY_EXISTS, componentName);
+                                    }
+
+                                    try {
+
+                                        // Since there will be only one entry for now, we will just hardcode it for now.
+                                        // TO-DO: See if we can change this.
+                                        // Nov-12,2013: Changed to use the function that accepts the ID instead of the name for better
+                                        // performance.
+                                        nsPackNS = tblPackageJpa.findByName("Standard_Global_NS");
+
+                                    } catch (NoResultException nre) {
+                                        throw new ASException(ErrorCode.WS_NAME_SPACE_DOES_NOT_EXIST);
+                                    }
+
+                                    TblModuleManifest newModuleRecord = new TblModuleManifest();
+                                    if (uuid != null && !uuid.isEmpty()) {
+                                        newModuleRecord.setUuid_hex(uuid);
+                                    } else {
+                                        newModuleRecord.setUuid_hex(new UUID().toString());
+                                    }
+                                    newModuleRecord.setMleId(tblMle);
+                                    newModuleRecord.setMle_uuid_hex(tblMle.getUuid_hex());
+                                    newModuleRecord.setEventID(tblEvent);
+                                    newModuleRecord.setNameSpaceID(nsPackNS);
+                                    newModuleRecord.setComponentName(fullComponentName);
+                                    newModuleRecord.setDigestValue(digest);
+                                    newModuleRecord.setPackageName(packageName);
+                                    newModuleRecord.setPackageVendor(packageVendor);
+                                    newModuleRecord.setPackageVersion(packageVersion);
+                                    newModuleRecord.setUseHostSpecificDigestValue(useHostSpecificDigest);
+                                    newModuleRecord.setExtendedToPCR(extendedtoPCR);
+                                    newModuleRecord.setDescription("");
+                                    tblModuleManifestJpa.create(newModuleRecord);
+//                                    break;
                                 }
                             }
                         }
@@ -787,63 +838,7 @@ public class HostBO extends BaseBO {
                 throw new ASException(nre, ErrorCode.WS_EVENT_TYPE_DOES_NOT_EXIST);
             }
 
-            try {
-                // Before we insert the record, we need the identity for the event name
-                tblEvent = tblEventJpa.findEventTypeByName(eventName);
-
-            } catch (NoResultException nre) {
-                throw new ASException(nre, ErrorCode.WS_EVENT_TYPE_DOES_NOT_EXIST, eventName);
-            }
-            validateNull("EventName", eventName);
-            validateNull("ComponentName", componentName);
-
-            // For Open Source hypervisors, we do not want to prefix the event type field name. So, we need to check if the event name
-            // corresponds to VMware, then we will append the event type fieldName to the component name. Otherwise we won't
-            if (eventName.contains("Vim25")) {
-                fullComponentName = tblEvent.getFieldName() + "." + componentName;
-            } else {
-                fullComponentName = componentName;
-            }
-
-            Integer componentID = tblModuleManifestJpa.findByMleIdEventId(tblMle.getId(), fullComponentName, tblEvent.getId());
-
-            if (componentID != null && componentID != 0) {
-                throw new ASException(ErrorCode.WS_MODULE_WHITELIST_ALREADY_EXISTS, componentName);
-            }
-
-            try {
-
-                // Since there will be only one entry for now, we will just hardcode it for now.
-                // TO-DO: See if we can change this.
-                // Nov-12,2013: Changed to use the function that accepts the ID instead of the name for better
-                // performance.
-                nsPackNS = tblPackageJpa.findByName("Standard_Global_NS");
-
-            } catch (NoResultException nre) {
-                throw new ASException(ErrorCode.WS_NAME_SPACE_DOES_NOT_EXIST);
-            }
-
-            TblModuleManifest newModuleRecord = new TblModuleManifest();
-            if (uuid != null && !uuid.isEmpty()) {
-                newModuleRecord.setUuid_hex(uuid);
-            } else {
-                newModuleRecord.setUuid_hex(new UUID().toString());
-            }
-
-            newModuleRecord.setMleId(tblMle);
-            newModuleRecord.setMle_uuid_hex(tblMle.getUuid_hex());
-            newModuleRecord.setEventID(tblEvent);
-            newModuleRecord.setNameSpaceID(nsPackNS);
-            newModuleRecord.setComponentName(fullComponentName);
-            newModuleRecord.setDigestValue(digest);
-            newModuleRecord.setPackageName(packageName);
-            newModuleRecord.setPackageVendor(packageVendor);
-            newModuleRecord.setPackageVersion(packageVersion);
-            newModuleRecord.setUseHostSpecificDigestValue(useHostSpecificDigest);
-            newModuleRecord.setExtendedToPCR(extendedtoPCR);
-            newModuleRecord.setDescription("");
-
-            tblModuleManifestJpa.create(newModuleRecord);
+            
         } catch (ASException ase) {
             throw ase;
         } catch (Exception e) {
