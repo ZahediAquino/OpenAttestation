@@ -59,7 +59,7 @@ public class ConverterUtil {
 	
     
 	public static String getOSAndVMMInfoString(MleDetailsEntityVO mleObject){
-		return mleObject.getOsName()+" "+mleObject.getOsVersion()+HelperConstant.OS_VMM_INFORMATION_SEPERATOR+mleObject.getMleName()+":"+mleObject.getMleVersion();
+		return mleObject.getOsName()+HelperConstant.OS_VERSION_INFORMATION_SEPERATOR+mleObject.getOsVersion()+HelperConstant.OS_VMM_INFORMATION_SEPERATOR+mleObject.getMleName()+":"+mleObject.getMleVersion();
 	}
 
 	public static TxtHost getTxtHostFromHostVO(HostDetailsEntityVO dataVO) {
@@ -76,7 +76,7 @@ public class ConverterUtil {
 		
 		String[] osVMMInfo = dataVO.getVmmName().split(Pattern.quote(HelperConstant.OS_VMM_INFORMATION_SEPERATOR));
 		String osNameWithVer = osVMMInfo[0];
-                String[] s = osNameWithVer.split(" ");
+                String[] s = osNameWithVer.split(HelperConstant.OS_VERSION_INFORMATION_SEPERATOR);
 		String osName =  s[0];
 		String osVer = "";
 		
