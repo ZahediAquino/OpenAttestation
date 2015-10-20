@@ -1,0 +1,73 @@
+#!/bin/bash
+#create kv script
+ADD_PARM="-a"
+EDIT_PARM="-e"
+DEL_PARM="-d"
+HOST_PARM="-h"
+HOST_NAME=""
+INFO=""
+PORT=8080
+ShowExample()
+{
+  echo -e "Add  kv attributes example:\033[31;49;5;1m bash oat_kv -a -h HOSTNAME_OF_OAT-APPRAISER '{"kv_attributes":[{"name":"test-mx","value":"mx"}]}'\033[0m"
+  #echo -e  "Edit oem example:\033[31;49;5;1m bash oat_oem -e -h HOSTNAME_OF_OAT-APPRAISER '{"Name":"OEM_NAME","Description":"DESCRIPTION"}'\033[0m"
+  #echo -e "Del  oem example:\033[31;49;5;1m bash oat_oem -d -h HOSTNAME_OF_OAT-APPRAISER '{"Name":"OEM_NAME"}'\033[0m"
+}
+
+if [ $# -lt 4 ];then
+  echo "parm num error!"
+  ShowExample
+  exit 0
+fi
+
+if [ $2 != $HOST_PARM ];then
+  echo "-h parm error!"
+  ShowExample
+  exit 1
+else
+  HOST_NAME="$3"
+fi
+
+if [ $1 == $DEL_PARM ];then
+  INFO="`echo "$4" | awk -F{ '{print $2}'| awk -F} '{print $1}'\
+        | sed 's/\"//g' | sed 's/:/=/g' | sed 's/ /%20/g'`"
+else
+  INFO="$4"
+fi
+
+addKV() 
+{
+  curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d "$INFO" "http://$HOST_NAME:$PORT/AttestationService/resources/tag-kv-attributes"
+}
+
+editKV()
+{
+  curl --cacert certfile.cer -H "Content-Type: application/json" \
+        -X PUT -d "$INFO" "https://$HOST_NAME:$PORT/WLMService/resources/oem" 
+}
+
+delKV()
+{
+  curl --cacert certfile.cer \
+        -X DELETE  "https://$HOST_NAME:$PORT/WLMService/resources/oem?$INFO"  
+}
+
+case $1 in
+      $ADD_PARM)
+           echo "add KV:"
+           addKV
+      ;;
+      $EDIT_PARM)
+           echo "edit KV:"
+           #editKV
+      ;;
+      $DEL_PARM)
+           echo "del KV:"
+           #delKV
+      ;;
+      *)
+      echo "Usage oat_kv {-a|-e|-d}"
+      ShowExample
+      exit 3
+esac
+echo -e "\n"

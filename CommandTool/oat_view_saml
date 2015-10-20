@@ -1,0 +1,59 @@
+#!/bin/bash
+#view saml script
+ADD_PARM="-a"
+EDIT_PARM="-e"
+DEL_PARM="-d"
+HOST_PARM="-h"
+FILE_PARM="-f"
+HOST_NAME=""
+IP_ADDRESS=""
+INFO=""
+PORT=8080
+ShowExample()
+{
+  echo -e "View SAML example:\033[31;49;5;1m bash oat_saml -a <HOST_TO_VIEW_SAML_FOR_IP_ADDRESS> -h <HOSTNAME_OF_OAT-APPRAISER>\033[0m"
+  #echo -e "Del asset tag example:\033[31;49;5;1m bash oat_atag -d <CERTID_TO_BE_DELETED> -h <HOSTNAME_OF_OAT-APPRAISER>\033[0m"
+}
+
+if [ $# -lt 3 ];then
+  echo "view"
+  echo "parm num error!"
+  ShowExample
+  exit 0
+fi
+
+if [ $2 != $HOST_PARM ];then
+  echo "-f parm error! 2"
+  ShowExample
+  exit 1
+else
+  HOST_NAME="$3"
+  IP_ADDRESS="$1"
+fi
+
+
+#if [ $1 == $DEL_PARM ] && [ $# -lt 4 ];then
+#  echo "add"
+#  echo "parm num error!"
+#  ShowExample
+#  exit 0
+#fi
+
+#if [ $1 == $DEL_PARM ];then
+#  if [ $3 != $HOST_PARM ];then
+#    echo "-f parm error! 1"
+#    ShowExample
+#    exit 1
+#  else
+#    HOST_NAME="$4"
+#  fi
+#  CERTID="$2"
+#fi
+
+viewSAML() 
+{
+  curl -H "Content-Type: application/json" -X GET "http://$HOST_NAME:$PORT/AttestationService/resources/saml/assertions/host?hostName=$IP_ADDRESS&force_verify=false"
+}
+
+viewSAML
+echo -e "\n"
