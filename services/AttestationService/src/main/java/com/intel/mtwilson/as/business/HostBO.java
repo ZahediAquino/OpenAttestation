@@ -748,16 +748,16 @@ public class HostBO extends BaseBO {
                 throw new ASException(ErrorCode.WS_MLE_RETRIEVAL_ERROR, this.getClass().getSimpleName());
             }
 
-            String eventName = "";
-            String componentName = "";
+            String eventName;
+            String componentName;
 //            String fullComponentName = "";
             String fullComponentName;
-            String digest = "";
-            String packageName = "";
-            String packageVendor = "";
-            String packageVersion = "";
-            String extendedtoPCR = "";
-            boolean useHostSpecificDigest = false;
+            String digest;
+            String packageName;
+            String packageVendor;
+            String packageVersion;
+            String extendedtoPCR;
+            boolean useHostSpecificDigest;
             try {
                 // Before we insert the record, we need the identity for the event name               
                 if (pcr19.containsPcrEventLog(19)) {
