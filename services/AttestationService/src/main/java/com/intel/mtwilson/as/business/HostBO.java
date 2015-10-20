@@ -673,8 +673,8 @@ public class HostBO extends BaseBO {
                        for(Measurement m : pcrEventLog.getEventLog()) {
                            if(m != null && m.getInfo() != null && (!m.getInfo().isEmpty())) {
                                
-                               String mEventName = m.getInfo().get("EventName");
-                               String mComponentName = m.getInfo().get("ComponentName");
+                               m.getInfo().get("EventName");
+                               m.getInfo().get("ComponentName");
                                
                                if(hostType.equals("intel") && m.getInfo().get("EventName") != null) {
                                    log.debug("Adding host specific manifest for event " + m.getInfo().get("EventName") + ": field=" + m.getLabel() + " component=" + m.getInfo().get("ComponentName"));
