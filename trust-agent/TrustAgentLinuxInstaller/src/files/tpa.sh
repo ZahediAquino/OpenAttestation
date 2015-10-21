@@ -5,7 +5,7 @@ TITLE="Asset tag provisioning Agent"
 #=====================================
 
 #Test variables from OAT Dev so we can run the script manually for now
-export TPM_OWNER_SECRET=31313131313131313131313131313131313131313131313131313131313131313131313131313131
+export TPM_OWNER_SECRET=1111111111111111111111111111111111111111
 
 tpaDir=/var/tpa
 if [ ! -d "$tpaDir" ]; then 

@@ -52,6 +52,7 @@ import java.util.logging.Logger;
 
 //import com.intel.mountwilson.as.common.ResourceFinder;
 import com.intel.mtwilson.util.ResourceFinder;
+import org.apache.commons.codec.binary.Hex;
 
 /**
  * <p>This is part 1 of 3 for fully provisioning HIS on a Windows client. This class does the initial provisioning of the TPM.</p>
@@ -123,8 +124,7 @@ public class ProvisionTPM {
 			EcValidityDays = Integer.parseInt(HisProvisionerProperties.getProperty(EC_VALIDITY, ""));
 			tpmOwnerAuth = HisProvisionerProperties.getProperty(OWNER_AUTH, "");
 			if (tpmOwnerAuth != null) {
-			//    log.info("owner authentication is char formatted");
-			    TpmOwnerAuth = tpmOwnerAuth.getBytes("UTF-8");
+                            TpmOwnerAuth = Hex.decodeHex(tpmOwnerAuth.toCharArray());
 			} 
                         //else if (tpmOwnerAuth.length() == 40) {
 			//    log.info("owner authentication is hex code formatted");
