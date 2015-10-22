@@ -1,11 +1,16 @@
 #!/bin/bash
-# VERSION 1.0.0     last-edited-by: rksavinx     date: 2014-02-01
+# VERSION 1.0.0     last-edited-by: zaaquino     date: 2015-10-01
+# NOTE:
+# This is a reference script and is provided as-is.
+# This particular file will not receive any enhancements/modifications in any way
+# by the external community.
+
 TITLE="Asset tag provisioning Agent"
 
 #=====================================
 
-#Test variables from OAT Dev so we can run the script manually for now
-export TPM_OWNER_SECRET=1111111111111111111111111111111111111111
+#TPM Password set upon Trust Agent Installation
+#export TPM_OWNER_SECRET=1111111111111111111111111111111111111111
 
 tpaDir=/var/tpa
 if [ ! -d "$tpaDir" ]; then 
