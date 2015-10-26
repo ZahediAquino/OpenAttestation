@@ -10,7 +10,7 @@ TITLE="Asset tag provisioning Agent"
 #=====================================
 
 #TPM Password set upon Trust Agent Installation
-#export TPM_OWNER_SECRET=1111111111111111111111111111111111111111
+export TPM_OWNER_SECRET=1111111111111111111111111111111111111111
 
 tpaDir=/var/tpa
 if [ ! -d "$tpaDir" ]; then 
