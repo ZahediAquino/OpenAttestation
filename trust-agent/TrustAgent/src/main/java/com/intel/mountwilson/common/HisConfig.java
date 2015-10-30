@@ -16,6 +16,7 @@
 package com.intel.mountwilson.common;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -48,8 +49,27 @@ public class HisConfig {
     
     private HisConfig() {
         Properties defaults = new Properties();
-        defaults.setProperty("HisIdentityAuth", "1111111111111111111111111111111111111111");
-
+        String propertiesFilename = "hisprovisioner.properties";
+        try{
+            InputStream in = new FileInputStream(Config.getHomeFolder()+"/"+propertiesFilename);		
+            if (in != null) {
+                    try {
+                            Properties properties = new Properties();
+                            properties.load(in);
+                            defaults.setProperty("HisIdentityAuth", properties.get("HisIdentityAuth").toString());
+                    } finally {
+                            in.close();
+                    }
+            }
+            else
+                defaults.setProperty("HisIdentityAuth", "1212121212121212121212121212121212121212");
+        }
+        catch(IOException e)
+        {
+            log.info("Error encountered while loading HisIdentityAuth, will use default value instead. Error: {}",e);        
+            defaults.setProperty("HisIdentityAuth", "1212121212121212121212121212121212121212");
+        }
+        log.info("HisIdentityAuth was set to: "+defaults.get("HisIdentityAuth").toString());        
         config = gatherConfiguration("hisprovisioner.properties", defaults);
     }
     
