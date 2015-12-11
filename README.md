@@ -23,12 +23,12 @@ Key features include:
 
 ![OpenAttestation Process](Images/picture1-750x357.jpg)
 
-**What is Asset Tag**
+**What is Asset Tag?**
 
 The Asset Tag Management service leverages Intel TXT-enabled processors to securely write Administrator-defined descriptors to the hardware. These values can be made visible in the datacenter by using the Open Attestation and can then be used to provide workload verification, remediation, reporting, and compliance in both public and private cloud environments.
 
 
-**Which is the workflow of asset tag**
+**Which is the workflow of asset tag?**
 
 The following image shows an overview of how to asset tag a host:
 ![OpenAttestation Process](Images/Diagram2.jpg)
@@ -40,7 +40,7 @@ There is also an extension of Open Attestation that shows if a host that exists 
 ![OpenAttestation Process](Images/Diagram1.jpg)
 
 
-**Who it’s for**
+**Who it’s for?**
 
 This toolkit is available for cloud distributing OEMs, operating system vendors, and system builders. OpenAttestation is used by OpenStack, oVirt, Fedora, Ubuntu, and Red Hat Enterprise Linux.
 
