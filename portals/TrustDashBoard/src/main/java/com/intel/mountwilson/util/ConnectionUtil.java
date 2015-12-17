@@ -23,6 +23,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import com.intel.mountwilson.common.DemoPortalException;
 import com.intel.mtwilson.ApiException;
 import com.sun.jersey.api.client.ClientHandlerException;
+import javax.ws.rs.client.ResponseProcessingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,5 +65,33 @@ public class ConnectionUtil {
 		// Bug: 445 - To remove the "Error Cause" from the exception information.		
 		return new DemoPortalException(exceptionObject.getMessage(),exceptionObject);
 	}
-	
+	// method to take a common Exception and return specific error based on Exception type.
+	public static DemoPortalException handleDemoPortalException(Exception exceptionObject) throws DemoPortalException{
+		exceptionObject.printStackTrace();
+		//if(exceptionObject.getClass().equals(ClientHandlerException.class)){
+                if(exceptionObject.getClass().equals(ResponseProcessingException.class)){
+			return new DemoPortalException("Could not able to Connect to Server. Error Connection Refused.",exceptionObject);
+		}
+		if (exceptionObject.getClass().equals(JsonParseException.class)) {
+			log.error("Error While Parsing Data. "+exceptionObject.getMessage());
+			return new DemoPortalException("Error While parsing Data Using Jackson.",exceptionObject);
+		}
+		if (exceptionObject.getClass().equals(JsonMappingException.class)) {
+			log.error("Error While Mapping Data. "+exceptionObject.getMessage());
+			return new DemoPortalException("Error While Mapping Data Using Jackson.",exceptionObject);
+		}
+		if (exceptionObject.getClass().equals(IOException.class)) {
+			return new DemoPortalException("IOEception."+exceptionObject.getMessage(),exceptionObject);
+		}
+		if (exceptionObject.getClass().equals(ApiException.class)) {
+			ApiException ae=(ApiException) exceptionObject;
+                                                                        // Added the error code to the display of the message                        
+                                                                        return new DemoPortalException(ae.getMessage() + "[" + ae.getErrorCode() + "]");
+		}
+		if (exceptionObject.getClass().equals(IllegalArgumentException.class)) {
+			return new DemoPortalException("IllegalArgumentException: "+exceptionObject.getMessage(),exceptionObject);
+		}
+		
+		return new DemoPortalException(exceptionObject.getMessage(),exceptionObject);
+	}    
 }

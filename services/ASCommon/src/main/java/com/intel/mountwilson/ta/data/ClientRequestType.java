@@ -60,7 +60,8 @@ import javax.xml.bind.annotation.XmlType;
     "errorCode",
     "errorMessage",
     "aikcert",
-    "quote"
+    "quote",
+    "event_log"
 })
 public class ClientRequestType {
 
@@ -76,6 +77,8 @@ public class ClientRequestType {
     protected String aikcert;
     @XmlElement(required = true)
     protected String quote;
+    @XmlElement(required = true)
+    protected String event_log;
 
     /**
      * Gets the value of the timestamp property.
@@ -212,5 +215,29 @@ public class ClientRequestType {
     public void setQuote(String value) {
         this.quote = value;
     }
+    
+    /**
+     * Gets the value of the event_log property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+     public String getEventLog() {
+        return event_log;
+     }
+ 
+     /**
+      * Sets the value of the event_log property.
+      * 
+      * @param value
+      *     allowed object is
+      *     {@link String }
+      *     
+      */
+     public void setEventLog(String value) {
+         this.event_log = value;
+     }
 
 }

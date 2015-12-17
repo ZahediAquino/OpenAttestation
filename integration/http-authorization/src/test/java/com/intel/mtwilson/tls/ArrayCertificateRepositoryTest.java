@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import com.intel.mtwilson.datatypes.InternetAddress;
+import com.intel.mtwilson.util.net.InternetAddress;
 
 public class ArrayCertificateRepositoryTest {
 	

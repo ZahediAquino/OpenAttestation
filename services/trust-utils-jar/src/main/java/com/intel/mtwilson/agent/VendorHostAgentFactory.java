@@ -15,7 +15,7 @@
 
 package com.intel.mtwilson.agent;
 
-import com.intel.mtwilson.datatypes.InternetAddress;
+import com.intel.mtwilson.util.net.InternetAddress;
 import com.intel.mtwilson.tls.TlsPolicy;
 import java.io.IOException;
 

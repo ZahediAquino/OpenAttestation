@@ -22,6 +22,7 @@ package com.intel.mountwilson.trustagent;
 import com.intel.mountwilson.common.*;
 import com.intel.mountwilson.trustagent.commands.*;
 import com.intel.mountwilson.trustagent.data.TADataContext;
+import com.intel.mountwilson.trustagent.hostinfo.HostInfoCmd;
 import java.io.File;
 import java.util.Date;
 import java.util.HashSet;
@@ -74,8 +75,40 @@ public class TrustAgent {
             return processQuoteRequestInput(xmlInput);
         } else if (xmlInput.contains("identity_request")) {
             return processIdentityRequestInput(xmlInput);
-        } else {
+        } else if(xmlInput.contains("host_info_request")){
+            log.debug("Got host info request");
+            return processHostInfoRequestInput(xmlInput);
+        }
+        else{
             return generateErrorResponse(ErrorCode.BAD_REQUEST);
+        }
+    }
+    
+    private String processHostInfoRequestInput(String xmlInput) {
+        try {
+            log.info("processHostInfoRequestInput, got xmlInput: "+ xmlInput);
+            TADataContext context = new TADataContext();
+//
+//            context.setNonce(getNonce(xmlInput));
+//            context.setSelectedPCRs(getSelectedPCRs(xmlInput));
+////
+//            validateCertFile();
+//
+//            new CreateNonceFileCmd(context).execute();
+//            new GenerateModulesCmd(context).execute(); 
+            log.info("About to run the HostInfoCmd");
+            new HostInfoCmd(context).execute();
+//            new ReadIdentityCmd(context).execute();
+//            new GenerateQuoteCmd(context).execute();
+            //new BuildQuoteXMLCmd(context).execute();
+            new BuildHostXMLCmd(context).execute();
+            log.info("getResponseXML: " + context.getResponseXML());
+
+            return context.getResponseXML();
+
+        } catch (TAException ex) {
+            log.error( null, ex);
+            return generateErrorResponse(ex.getErrorCode(), ex.getMessage());
         }
     }
 
@@ -89,9 +122,11 @@ public class TrustAgent {
             validateCertFile();
 
             new CreateNonceFileCmd(context).execute();
+            new GenerateModulesCmd(context).execute(); 
             new ReadIdentityCmd(context).execute();
             new GenerateQuoteCmd(context).execute();
             new BuildQuoteXMLCmd(context).execute();
+            log.info("getResponseXML: " + context.getResponseXML());
 
             return context.getResponseXML();
 

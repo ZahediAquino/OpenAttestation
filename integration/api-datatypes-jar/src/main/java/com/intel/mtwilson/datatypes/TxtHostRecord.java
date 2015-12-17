@@ -15,8 +15,10 @@
 
 package com.intel.mtwilson.datatypes;
 
+import com.intel.mtwilson.util.net.Hostname;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * A data transfer object. The TxtHost object is validated on construction
@@ -56,6 +58,13 @@ public class TxtHostRecord {
     public String Location;
     @JsonProperty
     public String AIK_Certificate;
+//    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+    public String Hardware_Uuid;
+    @JsonProperty
+    public String AIK_PublicKey;
+    @JsonProperty
+    public String AIK_SHA1;
     
     public TxtHostRecord() {
         
@@ -80,5 +89,8 @@ public class TxtHostRecord {
         Email = input.getEmail();
         Location = input.getLocation();
         AIK_Certificate = input.getAikCertificate();
+        Hardware_Uuid = null;
+//        AIK_PublicKey = input.getAikPublicKey();
+//        AIK_SHA1 = input.getAikSha1();
     }
 }

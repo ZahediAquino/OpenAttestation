@@ -10,6 +10,7 @@ package_dir=/opt/intel/cloudsecurity/${package_name}
 package_config_filename=${intel_conf_dir}/${package_name}.properties
 package_env_filename=${package_dir}/${package_name}.env
 package_install_filename=${package_dir}/${package_name}.install
+tpa_dir=/var/tpa
 
 #java_required_version=1.6.0_29
 # commented out from yum packages: tpm-tools-devel curl-devel (not required because we're using NIARL Privacy CA and we don't need the identity command which used libcurl
@@ -79,10 +80,15 @@ mkdir -p /usr/local/bin
 cp tagent pcakey /usr/local/bin
 
 #rc3Begin skaja
-#chmod 700 module_analysis.sh
-#cp module_analysis.sh "${package_dir}"/bin
-#echo "module_script=${package_dir}/bin/module_analysis.sh" >> "${intel_conf_dir}/${package_name}.properties"
+chmod 700 module_analysis.sh
+cp module_analysis.sh "${package_dir}"
 #rc3End
+
+#Copy tpa.sh script
+mkdir -p "${tpa_dir}"
+chmod +x tpa.sh
+cp tpa.sh "${tpa_dir}"
+echo "To Asset Tag use tpa.sh found in ${tpa_dir}"
 
 java_install $JAVA_PACKAGE
 

@@ -204,11 +204,11 @@ function fnDeleteMleInfoSuccess(response,element,mleName) {
 	$('#disabledDiv').remove();
 	if (response.result) {
 		fuCreateEditMleTable(response.MLEDataVo);
+                $('#messageSpace').html('<div class="successMessage">* MLE "'+mleName+'" has been successfully deleted.</div>');
 		if (selectedPageNo > (response.noOfPages)) {
 			selectedPageNo = response.noOfPages;
 		}
-		applyPagination('editMlePaginationDiv',response.noOfPages,fngetMleNextPageForEdit,selectedPageNo);
-		$('#messageSpace').html('<div class="successMessage">* MLE "'+mleName+'" has been successfully deleted.</div>');
+		applyPagination('editMlePaginationDiv',response.noOfPages,fngetMleNextPageForEdit,selectedPageNo);		
 	}else{
 		$('#messageSpace').html('<div class="errorMessage">'+response.message+'</div>');
 	}

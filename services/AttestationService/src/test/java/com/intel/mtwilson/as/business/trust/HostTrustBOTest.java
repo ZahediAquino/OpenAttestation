@@ -35,7 +35,7 @@ import com.intel.mtwilson.as.data.TblOs;
 import com.intel.mtwilson.as.data.TblPcrManifest;
 import com.intel.mtwilson.as.data.TblTaLog;
 import com.intel.mtwilson.datatypes.HostTrustStatus;
-import com.intel.mtwilson.datatypes.Hostname;
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mtwilson.datatypes.OpenStackHostTrustLevelQuery;
 import com.intel.mtwilson.datatypes.OpenStackHostTrustLevelReport;
 

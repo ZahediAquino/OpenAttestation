@@ -67,6 +67,8 @@ public class TAConfig {
         defaults.setProperty("data.folder", "data");
         defaults.setProperty("secure.port", "9999");
         defaults.setProperty("nonsecure.port", "9998");
+        defaults.setProperty("modulesScript.filename", "module_analysis.sh");        
+        defaults.setProperty("modulesXml.filename", "measureLog.xml");        
         config = gatherConfiguration("trustagent.properties", defaults);
     }
     

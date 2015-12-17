@@ -24,6 +24,7 @@ package com.intel.mountwilson.as.helper;
 import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mountwilson.as.common.ASException;
 import com.intel.mountwilson.ta.data.ClientRequestType;
+import com.intel.mountwilson.ta.host.data.HostRequestType;
 
 import com.intel.mountwilson.ta.data.quoterequest.QuoteRequest;
 
@@ -58,6 +59,7 @@ import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import org.apache.commons.codec.binary.Base64;
 
 public class TrustAgentSecureClient {
     public static final int DEFAULT_TRUST_AGENT_PORT = 9999;
@@ -170,6 +172,48 @@ public class TrustAgentSecureClient {
         }
     }
     
+    /**
+     * 
+     * @return an object representing the RESPONSE from the Trust Agent
+     * @throws UnknownHostException if the IP address of the host could not be determined from local hosts file or DNS
+     * @throws IOException if there was an error connecting to the host, such as it is not reachable on the network or it dropped the connection
+     * @throws JAXBException when the response from the host cannot be interpreted properly
+     * @throws NoSuchAlgorithmException 
+     * @throws KeyManagementException 
+     */
+    synchronized public HostRequestType sendHostRequest() throws UnknownHostException, IOException, JAXBException, KeyManagementException, NoSuchAlgorithmException  {
+
+
+        try {
+            byte buf[] = sendRequestWithSSLSocket();
+
+            log.info("Unmarshalling to Jaxb object.");
+            
+            JAXBContext jc = JAXBContext.newInstance("com.intel.mountwilson.ta.host.data");
+            log.debug("Created JAXBContext Instance {}", jc.toString());
+            //assert jc != null; Expression always true
+            Unmarshaller u = jc.createUnmarshaller();
+            log.debug("Created Unmarshaller Instance {}", u.toString());            
+            //assert u != null; Expression always true
+            //assert new String(buf) != null; //Expresion always return null.
+            assert buf != null;
+            log.debug("Unmarshalling");
+            JAXBElement po =  (JAXBElement) u.unmarshal(new StringReader(new String(buf).trim()));
+            log.debug("Unmarshalled");
+            assert po != null;
+            
+            HostRequestType response = (HostRequestType)po.getValue();
+            
+            assert response != null;
+            
+            checkHostError(response);
+
+            log.info("Done reading/writing to/from socket, closing socket.");
+            return response;
+        } finally {
+        }
+
+    }
     
     /**
      * 
@@ -278,13 +322,38 @@ public class TrustAgentSecureClient {
         }
     }
     
+    public String getHostAttributes() {
+        try {
+
+            log.info("Sending Generate Identity");
+            byte[] identityInput = "<host_info_request></host_info_request>".getBytes();
+            this.data = identityInput;
+
+            HostRequestType response = sendHostRequest();
+            //ClientRequestType response = sendQuoteRequest();
+
+            String hardware_uuid = response.getHardware_uuid();
+            // TODO:  ensure certificate is propertly formatted.  If missing a line after the header, insert it.  Or decode it, and re-encode as base-64 blob with no line endings.
+            return hardware_uuid;
+            //return certificate;
+        }catch(ASException ase){
+            throw ase;
+        }catch(UnknownHostException e) {
+            throw new ASException(e,ErrorCode.AS_HOST_COMMUNICATION_ERROR, this.serverHostname);
+        }catch (Exception e) {
+            throw new ASException(e);
+        }
+    }
+    
     public ClientRequestType getQuote(String nonce, String pcrList) throws PropertyException, JAXBException, UnknownHostException, IOException, KeyManagementException, NoSuchAlgorithmException {
         QuoteRequest quoteRequest = new QuoteRequest();
-        quoteRequest.setPcrList(pcrList);
+        quoteRequest.setPcrList(pcrList+",22,22");
         quoteRequest.setNonce(nonce);
         this.data = getXml(quoteRequest).getBytes();
         ClientRequestType clientRequestType = sendQuoteRequest();
         log.info("Got quote from server");
+        log.info("+++++++++++++++++++++++++++clientRequestType.getQuote(): " + clientRequestType.getQuote());
+        log.info("+++++++++++++++++++++++++++clientRequestType.getEventLog(): " + new String(Base64.decodeBase64(clientRequestType.getEventLog())));
         return clientRequestType;
     }
 
@@ -310,7 +379,15 @@ public class TrustAgentSecureClient {
         }
 
     }
+    private void checkHostError(HostRequestType response) {
+        int errorCode = response.getErrorCode();
+        
+        log.warn(String.format("Trust Agent Error %d [%s]: %s", response.getErrorCode(), response.getClientIp(), response.getErrorMessage()));
+        if (errorCode != 0) {
+            throw new ASException(ErrorCode.AS_TRUST_AGENT_ERROR, response.getErrorCode(),response.getErrorMessage());
+        }
 
+    }
 
 
     

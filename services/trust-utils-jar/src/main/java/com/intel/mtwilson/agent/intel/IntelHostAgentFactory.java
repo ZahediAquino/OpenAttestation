@@ -18,7 +18,7 @@ package com.intel.mtwilson.agent.intel;
 import com.intel.mountwilson.as.helper.TrustAgentSecureClient;
 import com.intel.mtwilson.agent.HostAgent;
 import com.intel.mtwilson.agent.VendorHostAgentFactory;
-import com.intel.mtwilson.datatypes.InternetAddress;
+import com.intel.mtwilson.util.net.InternetAddress;
 import com.intel.mtwilson.tls.TlsConnection;
 import com.intel.mtwilson.tls.TlsPolicy;
 import java.io.IOException;
@@ -37,7 +37,6 @@ public class IntelHostAgentFactory implements VendorHostAgentFactory {
     public IntelHostAgent getHostAgent(InternetAddress hostAddress, String vendorConnectionString, TlsPolicy tlsPolicy) throws IOException {
         try {
             TrustAgentSecureClient client = new TrustAgentSecureClient(new TlsConnection(vendorConnectionString, tlsPolicy));
-            log.debug("Creating IntelHostAgent for host {} with connection string {}", hostAddress, vendorConnectionString);
             return new IntelHostAgent(client, hostAddress);
         }
         catch(Exception e) {

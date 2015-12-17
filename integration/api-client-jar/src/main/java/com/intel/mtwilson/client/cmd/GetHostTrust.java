@@ -18,7 +18,7 @@ package com.intel.mtwilson.client.cmd;
 import com.intel.mtwilson.ApiClient;
 import com.intel.mtwilson.client.AbstractCommand;
 import com.intel.mtwilson.datatypes.HostTrustResponse;
-import com.intel.mtwilson.datatypes.Hostname;
+import com.intel.mtwilson.util.net.Hostname;
 
 /**
  *     HostTrustResponse getHostTrust(Hostname hostname) throws IOException, ApiException, SignatureException;

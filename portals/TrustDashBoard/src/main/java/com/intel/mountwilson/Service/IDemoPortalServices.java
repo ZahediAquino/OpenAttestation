@@ -44,7 +44,7 @@ public interface IDemoPortalServices {
 	 * @return
 	 * @throws DemoPortalException
 	 */
-	public List<TrustedHostVO> getTrustStatusForHost(List<HostDetailsEntityVO> hostList,AttestationService apiClientServices,X509Certificate[] trustedCertificates) throws DemoPortalException;
+	public List<TrustedHostVO> getTrustStatusForHost(List<HostDetailsEntityVO> hostList,AttestationService apiClientServices,X509Certificate[] trustedCertificates, boolean forceVerify) throws DemoPortalException;
 
 	/**
 	 * @param hostName
@@ -53,7 +53,7 @@ public interface IDemoPortalServices {
 	 * @return
 	 * @throws DemoPortalException
 	 */
-	public TrustedHostVO getSingleHostTrust(String hostName,AttestationService apiClientServices, X509Certificate[] trustedCertificates) throws DemoPortalException;
+	public TrustedHostVO getSingleHostTrust(String hostName,AttestationService apiClientServices, X509Certificate[] trustedCertificates, boolean forceVerify) throws DemoPortalException;
 
 	/**
 	 * @param client

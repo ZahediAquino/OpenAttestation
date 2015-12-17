@@ -36,6 +36,11 @@ public class PcrLogReport {
     private Date verifiedOn;
     private String whiteListValue;
     
+    
+    
+    private List<ModuleLogReport> moduleLogs = new ArrayList<ModuleLogReport>();
+    
+    
     @JsonProperty("Name")
     public Integer getName() {
         return name;
@@ -74,6 +79,16 @@ public class PcrLogReport {
     @JsonProperty("Verified_On")
     public void setVerifiedOn(Date verifiedOn) {
         this.verifiedOn = verifiedOn;
+    }
+    
+    @JsonProperty("ModuleLogs")
+    public List<ModuleLogReport> getModuleLogs() {
+        return moduleLogs;
+    }
+
+    @JsonProperty("ModuleLogs")
+    public void setModuleLogs(List<ModuleLogReport> moduleLogs) {
+        this.moduleLogs = moduleLogs;
     }
 
 

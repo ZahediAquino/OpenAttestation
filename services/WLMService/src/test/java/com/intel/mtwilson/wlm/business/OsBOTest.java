@@ -38,7 +38,7 @@ public class OsBOTest {
     @Before
     public void setUp() throws Exception {
         doReturn(emf).when(osBO).getEntityManagerFactory();
-        doReturn(tblOsJpaController).when(osBO).getTblOsJpaController();
+        //doReturn(tblOsJpaController).when(osBO).getTblOsJpaController();
     }
 
     @After

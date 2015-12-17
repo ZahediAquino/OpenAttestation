@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container">
-        		<div class="mainHeader"><span class="labelPageTitle" id="MainContent_lblPageTitle">Trust Status Dash Board</span></div>
+        		<div class="mainHeader"><span class="labelPageTitle" id="MainContent_lblPageTitle">Trust Status Dashboard</span></div>
         		<div class="mainTableDiv" id="mainTrustDetailsDiv">
         		<div id="mainTrustDetailsDivHidden" style="display: none;" class="mainTableDisplayDiv">
         			<div class="tableDisplay">
@@ -19,7 +19,7 @@
 								<th class="row2">Host Name</th>
 								<th class="row3">&nbsp;</th>
 								<th class="row4">&nbsp;</th>
-								<th class="row5">Location</th>
+								<th class="row5">Asset Tag</th>
 								<!-- Soni_Begin_03/10/2012_added one nbsp in below line for bug 455 -->
 								<th class="row6">&nbsp;BIOS Trust Status</th>
 								<!--/* Soni_End_03/10/2012_added one nbsp in below line for bug 455 -->

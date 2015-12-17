@@ -132,6 +132,7 @@ function fnDeleteOSInfoSuccess(response,element,dataName,isOS) {
 	$('#disabledDiv').remove();
 	if (response.result) {
 		//$(element).parent().parent().remove();
+                $('#messageSpace').html('<div class="successMessage">* '+dataName+' has been successfully deleted.</div>');
 		if (selectedPageNo > (response.noOfPages)) {
 			selectedPageNo = response.noOfPages;
 		}
@@ -142,7 +143,6 @@ function fnDeleteOSInfoSuccess(response,element,dataName,isOS) {
 			fuCreateEditOEMTable(response.OEMDataVo);
 			applyPagination('editOEMPaginationDiv',response.noOfPages,fngetOEMNextPageForEdit,selectedPageNo);
 		}
-		$('#messageSpace').html('<div class="successMessage">* '+dataName+' has been successfully deleted.</div>');
 	}else{
 		$('#messageSpace').html('<div class="errorMessage">* '+dataName+' is not deleted, '+response.message+'.</div>');
 	}
@@ -218,9 +218,11 @@ function resetDataTable(elementID) {
 	$('#'+elementID).find('tr:not(:last-child)').each(function() {
 		if ($(this).find(':input(:text)').html() != null) {
 			$(this).find(':input(:text)').val('');
-			if (!$(this).find("td:eq(1)").html().contains('osDescription')){
-				$(this).find('td:last-child').html('<span class="requiredField">*</span>');
-			}
+		}
+	});
+        $('#'+divID).find('input:text').each(function() {
+		if ($(this).attr('disabled') != 'disabled') {
+			$(this).val('');
 		}
 	});
 }

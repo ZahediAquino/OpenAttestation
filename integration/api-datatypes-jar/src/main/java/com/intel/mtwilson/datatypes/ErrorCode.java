@@ -43,7 +43,7 @@ public enum ErrorCode {
 //    VMW_TPM_NOT_SUPPORTED(3000,"VMWare - Host does not support TXT"), 
 //    VMWARE_ERROR(3001, "VMWare Error"),
 //    DUPLICATE_ENTITY_ERROR(4001,"Entity already configured in the system."),
-    
+    PORT_MISSING(100,"You must proved a port number when adding a host"),
     // HTTP error codes
     HTTP_INVALID_REQUEST(400, "HTTP 400 INVALID REQUEST"),
     HTTP_UNAUTHORIZED(401, "HTTP 401 UNAUTHORIZED"),
@@ -79,6 +79,15 @@ public enum ErrorCode {
     AS_INTEL_TXT_NOT_ENABLED(1026, "Host does not have Intel TXT enabled: %s"),
     AS_CITRIX_ERROR(1027, "Citrix error"),
     AS_HOST_IPADDRESS_NOT_MATCHED(1028, "HOST '%s' is not matched with IPADDRESS '%s'"),
+    // This was copied from mtwilson, ERROR code = 1204
+    AS_QUERY_HOST_ERROR(1029, "Error during querying for registered hosts: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
+    // This was copied from mtwilson
+    AS_INVALID_ASSET_TAG_CERTIFICATE_HASH(1030, "Invalid asset tag certificate hash specified."),
+    AS_INVALID_ASSET_TAG_CERTIFICATE(1031, "Invalid asset tag certificate specified."),
+    AS_HOST_SPECIFIED_IS_CURRENTLY_NOT_MAPPED_TO_ASSET_TAG_CERTIFICATE(1032, "Host specified is currently not mapped to any asset tag certificate."),
+    AS_TPM_NOT_SUPPORTED(1033,"Host '%s' does not support TXT."),
+    AS_BULK_HOST_TRUST_ERROR(1034, "Error during bulk host trust retrieval: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
+    AS_HOST_TRUST_ERROR(1035, "Error during retrieval of host trust status: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
 
     // Error codes for White List Service
     WS_OEM_DOES_NOT_EXIST(2001, "OEM '%s' is not configured in the system."),
@@ -104,6 +113,9 @@ public enum ErrorCode {
     WS_MLE_OEM_DOES_NOT_EXIST(2021, "MLE name '%s' version '%s' oem '%s' is not configured in the system."),
     WS_MLE_OS_DOES_NOT_EXIST(2022, "MLE name '%s' version '%s' os '%s' os version '%s' is not configured in the system."),
     WS_MLE_PCR_NOT_VALID(2023, "White list for the PCR '%s' is not a valid value"),
+    WS_MLE_RETRIEVAL_ERROR(2024, "Error during retrieval of MLE information: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
+    WS_MODULE_WHITELIST_CREATE_ERROR(2025, "Error during Module whitelist creation: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
+    WS_MODULE_WHITELIST_DELETE_ERROR(2026, "Error during Module whitelist deletion: %s. More information is available in the server log"),  // argument should be  e.getClass().getSimpleName()
     
     // Below are error codes for the Management service
     // 3000 to 3100 General Management Service errors

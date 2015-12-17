@@ -149,7 +149,7 @@ com.intel.mountwilson.as.attestation.hostTimeout=60
 com.intel.mountwilson.as.home=/var/opt/intel/aikverifyhome
 com.intel.mountwilson.as.aikqverify.cmd=aikqverify
 com.intel.mountwilson.as.openssl.cmd=openssl.sh
-saml.key.aslias=samlkey1
+saml.key.alias=samlkey1
 saml.keystore.file=SAML.jks
 saml.keystore.password=SAML_KEYSTORE_PASSWD
 saml.validity.seconds=3600
@@ -287,7 +287,7 @@ trust_tdb_parse()
       grep "$1" | awk -F= '{print $2}'
 }
 
-saml_key_aslias="`att_parse "saml.key.aslias"`"
+saml_key_alias="`att_parse "saml.key.alias"`"
 saml_keystore_file="`att_parse "saml.keystore.file"`"
 saml_keystore_password="`att_parse "saml.keystore.password"`"
 saml_key_password="`att_parse "saml.key.password"`"
@@ -295,12 +295,12 @@ server_keystore_password="`date  +%s%N`"
 server_key_password=$server_keystore_password
 
 ### Create SAML Signing Key ###
-keytool -genkey -alias $saml_key_aslias -keyalg RSA -keysize 2048 \
+keytool -genkey -alias $saml_key_alias -keyalg RSA -keysize 2048 \
         -keystore $saml_keystore_file -storepass $saml_keystore_password \
         -dname "CN=AttestationService, OU=MtWilson, O=MyOrg, C=US" \
         -validity 3650 -keypass $saml_key_password
 
-keytool -export -alias $saml_key_aslias -keystore $saml_keystore_file \
+keytool -export -alias $saml_key_alias -keystore $saml_keystore_file \
         -storepass $saml_keystore_password -file $oat_home_dir/saml.crt
 
 ### Create EK Signing Certificate ###
@@ -378,6 +378,15 @@ copy_war_package "WhiteListPortal"
 copy_war_package "AttestationService"
 copy_war_package "TrustDashBoard"
 
-### tomcat6 restart ###
+#Create cacert and key
+export javaCmd="'$TOP_DIR/services/AttestationService/target/AttestationService-2.3/WEB-INF/lib/AttestationService-2.3.jar:$TOP_DIR/services/AttestationService/target/AttestationService-2.3/WEB-INF/lib/*' com.intel.mtwilson.tag.setup.cmd.TagCreateCaKey 'CN=asset-tag-service,OU=oat'"
+echo "#!/bin/bash
+java -cp $javaCmd" > javaCmdScript.sh
+chmod +x javaCmdScript.sh
+./javaCmdScript.sh
+rm javaCmdScript.sh
+
+
+### tomcat restart ###
 service tomcat restart
 

@@ -45,6 +45,7 @@ import org.bouncycastle.util.encoders.Base64;
 //import com.intel.mountwilson.as.common.ResourceFinder;
 import com.intel.mtwilson.util.ResourceFinder;
 import javax.net.ssl.HttpsURLConnection;
+import org.apache.commons.codec.binary.Hex;
 
 
 /**
@@ -133,8 +134,7 @@ public class CreateIdentity  {
 			log.info("Home folder : " + homeFolder);
 			tpmOwnerAuth = HisProvisionerProperties.getProperty(OWNER_AUTH, "");
 			if (tpmOwnerAuth != null) {
-			//    log.info("owner authentication is char formatted");
-			    TpmOwnerAuth = tpmOwnerAuth.getBytes("UTF-8");
+                            TpmOwnerAuth = Hex.decodeHex(tpmOwnerAuth.toCharArray());
 			} 
                         // else if (tpmOwnerAuth.length() == 40) {
 			//    log.info("owner authentication is hex code formatted");
@@ -254,9 +254,9 @@ public class CreateIdentity  {
 			    ecFileIn.read(ekCert);
 			    log.info("--read EC from file--");
 			    ecFileIn.close();
-			    } else {
-			        ekCert = TpmModule.getCredential(TpmOwnerAuth, "EC");
-			    }
+                        } else {
+                            ekCert = TpmModule.getCredential(TpmOwnerAuth, "EC");
+                        }
 			TpmIdentityRequest encryptedEkCert = new TpmIdentityRequest(ekCert, (RSAPublicKey)pcaCert.getPublicKey(), false); 
 			
 	

@@ -22,7 +22,7 @@ import com.intel.mtwilson.as.business.trust.Util;
 import com.intel.mountwilson.as.common.ASException;
 import com.intel.mtwilson.as.helper.BaseBO;
 import com.intel.mtwilson.datatypes.ErrorCode;
-import com.intel.mtwilson.datatypes.Hostname;
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mtwilson.as.controller.TblHostsJpaController;
 import com.intel.mtwilson.as.controller.TblTaLogJpaController;
 import com.intel.mountwilson.as.hostmanifestreport.data.HostManifestReportType;
@@ -34,8 +34,14 @@ import com.intel.mountwilson.manifest.IManifestStrategyFactory;
 import com.intel.mountwilson.manifest.data.IManifest;
 import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mountwilson.manifest.factory.DefaultManifestStrategyFactory;
+import com.intel.mtwilson.as.controller.TblHostSpecificManifestJpaController;
+import com.intel.mtwilson.as.data.MwAssetTagCertificate;
+import com.intel.mtwilson.as.data.TblModuleManifest;
+import com.intel.mtwilson.as.data.TblModuleManifestLog;
 import com.intel.mtwilson.crypto.CryptographyException;
 import com.intel.mtwilson.datatypes.*;
+import com.intel.mtwilson.util.crypto.Sha1Digest;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 
@@ -51,6 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReportsBO extends BaseBO {
     Logger logger = LoggerFactory.getLogger(getClass().getName());
+    private static String ASSET_TAG_PCR = "22";
     
     public HostsTrustReportType getTrustReport(Collection<Hostname> hostNames) { // datatype.Hostname
         try {
@@ -147,7 +154,7 @@ public class ReportsBO extends BaseBO {
             String[] subParts = sub.split(":");
             if (subParts[0].equals("BIOS")) {
                 bios = Integer.parseInt(subParts[1]);
-            } else {
+            } else if(subParts[0].equals("VMM")) {
                 vmm = Integer.parseInt(subParts[1]);
             }
         }
@@ -250,7 +257,7 @@ public class ReportsBO extends BaseBO {
         return attestationReport;
     }
 
-    public AttestationReport getAttestationReport(Hostname hostName, Boolean failureOnly) {
+    public AttestationReport getAttestationReport(Hostname hostName, Boolean failureOnly) throws NumberFormatException, IOException {
 
         AttestationReport attestationReport = new AttestationReport();
 
@@ -278,7 +285,13 @@ public class ReportsBO extends BaseBO {
                 for (TblTaLog log : logs) {
                     boolean value = (failureOnly && log.getTrustStatus() == false);
                     if (!failureOnly || value) {
-                        attestationReport.getPcrLogs().add(getPcrManifestLog(tblHosts, log, failureOnly));
+                        if (log.getManifestName().equalsIgnoreCase(ASSET_TAG_PCR)) {
+                           attestationReport.getPcrLogs().add(getPcrLogReportForAssetTag(log, tblHosts.getId()));
+                        }
+                        else {
+                           attestationReport.getPcrLogs().add(getPcrManifestLog(tblHosts, log, failureOnly));
+                        }
+                        
                     }
                 }
             }
@@ -287,7 +300,7 @@ public class ReportsBO extends BaseBO {
         return attestationReport;
     }
     
-    public PcrLogReport getPcrManifestLog(TblHosts tblHosts, TblTaLog log, Boolean failureOnly) throws NumberFormatException {
+    public PcrLogReport getPcrManifestLog(TblHosts tblHosts, TblTaLog log, Boolean failureOnly) throws NumberFormatException, IOException {
         TblPcrManifest tblPcrManifest = getPcrModuleManifest(tblHosts,log.getMleId(),log.getManifestName());
         PcrLogReport manifest = new PcrLogReport();
         manifest.setName(Integer.parseInt(log.getManifestName()));
@@ -295,7 +308,48 @@ public class ReportsBO extends BaseBO {
         manifest.setVerifiedOn(log.getUpdatedOn());
         manifest.setTrustStatus(getTrustStatus(log.getTrustStatus()));
         manifest.setWhiteListValue(tblPcrManifest.getValue());
+        addManifestLogs(tblHosts.getId(), manifest, log, failureOnly,tblPcrManifest);
         return manifest;
+    }
+    
+     private void addManifestLogs(Integer hostId, PcrLogReport manifest, TblTaLog log, Boolean failureOnly,TblPcrManifest tblPcrManifest) throws IOException {
+        HashMap<String,ModuleLogReport> moduleReports = new HashMap<>();
+        
+        if(log.getTblModuleManifestLogCollection() != null){
+            logger.debug("addManifestLogs - This is module based attestation with {} of modules.", log.getTblModuleManifestLogCollection().size());
+            for (TblModuleManifestLog moduleManifestLog : log.getTblModuleManifestLogCollection()) {
+                moduleReports.put(moduleManifestLog.getName(), new ModuleLogReport(moduleManifestLog.getName(),
+                        moduleManifestLog.getValue(), moduleManifestLog.getWhitelistValue(),0));
+            }
+        }
+        
+        if(!failureOnly){
+            logger.debug("FailureOnly flag is false. Adding all manifests.");
+            for(TblModuleManifest moduleManifest : tblPcrManifest.getMleId().getTblModuleManifestCollection()){
+                if(moduleManifest.getExtendedToPCR().equalsIgnoreCase(tblPcrManifest.getName()) && 
+                        !moduleReports.containsKey(moduleManifest.getComponentName())){
+                    
+                    if( moduleManifest.getUseHostSpecificDigestValue() != null && moduleManifest.getUseHostSpecificDigestValue().booleanValue() ) {
+                        // For open source we used to have multiple module manifests for the same hosts. So, the below query by hostID was returning multiple results.
+                        //String hostSpecificDigestValue = new TblHostSpecificManifestJpaController(getEntityManagerFactory()).findByHostID(hostId).getDigestValue();
+                        
+                        //String hostSpecificDigestValue = My.jpa().mwHostSpecificManifest().findByModuleAndHostID(hostId, moduleManifest.getId()).getDigestValue();
+                        TblHostSpecificManifestJpaController tblHostSpecificManifestJpaController = getTblHostSpecificManifestJpaController();
+                        String hostSpecificDigestValue = tblHostSpecificManifestJpaController.findByModuleAndHostID(hostId, moduleManifest.getId()).getDigestValue();
+                                
+                        moduleReports.put(moduleManifest.getComponentName(), new ModuleLogReport(moduleManifest.getComponentName(),
+                                hostSpecificDigestValue, hostSpecificDigestValue, 1));
+                    }
+                    else {
+                        moduleReports.put(moduleManifest.getComponentName(), new ModuleLogReport(moduleManifest.getComponentName(),
+                                moduleManifest.getDigestValue(), moduleManifest.getDigestValue(),1)); 
+                    }
+                }
+            }
+        }
+        
+        manifest.getModuleLogs().addAll(moduleReports.values());
+
     }
 
     private TblPcrManifest getPcrModuleManifest(TblHosts tblHosts, Integer mleId, String manifestName) {
@@ -334,4 +388,31 @@ public class ReportsBO extends BaseBO {
     public IManifestStrategyFactory getManifestStrategyFactory() {
     	return new DefaultManifestStrategyFactory();
     }
+    
+    public TblHostSpecificManifestJpaController getTblHostSpecificManifestJpaController() {
+	return new TblHostSpecificManifestJpaController(getEntityManagerFactory());
+    }
+    
+    private PcrLogReport getPcrLogReportForAssetTag(TblTaLog taLog, Integer hostId) {
+        logger.debug("getPcrLogReportForAssetTag : Creating pcr log report for asset tag verification for host with uuid {}.", hostId);
+        AssetTagCertBO atagCertBO = new AssetTagCertBO();
+        MwAssetTagCertificate atagCert = atagCertBO.findValidAssetTagCertForHost(hostId);
+        if (atagCert != null) {  
+            logger.debug("getPcrLogReportForAssetTag : Found a valid asset tag certificate for the host with white list value {}", atagCert.getPCREvent().toString());
+            PcrLogReport manifest = new PcrLogReport();
+            manifest.setName(Integer.parseInt(ASSET_TAG_PCR));
+            manifest.setValue(taLog.getManifestValue());
+            manifest.setWhiteListValue(new  Sha1Digest(atagCert.getPCREvent()).toString());
+            if(manifest.getValue().equalsIgnoreCase(manifest.getWhiteListValue())) {
+                manifest.setTrustStatus(1);
+            }else{
+                manifest.setTrustStatus(0);
+            }
+            manifest.setVerifiedOn(new Date());
+            return manifest;
+        }
+        return null;
+    }
+    
+    
 }

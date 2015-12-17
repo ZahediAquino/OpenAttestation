@@ -34,6 +34,8 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,6 +43,9 @@ import javax.persistence.EntityManagerFactory;
  * @author dsmagadx
  */
 public class TblTaLogJpaController implements Serializable {
+    
+    private Logger log = LoggerFactory.getLogger(getClass());
+    
     public TblTaLogJpaController( EntityManagerFactory emf) {
         this.emf = emf;
     }
@@ -68,7 +73,7 @@ public class TblTaLogJpaController implements Serializable {
             // commenting out unused variable for klocwork scans
             // stdalex 3/4
             //TblTaLog persistentTblTaLog = em.find(TblTaLog.class, tblTaLog.getId());
-            tblTaLog = em.merge(tblTaLog);
+            em.merge(tblTaLog);
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -174,6 +179,7 @@ public class TblTaLogJpaController implements Serializable {
         EntityManager em = getEntityManager();
         try {
             Query query = em.createNamedQuery("TblTaLog.findLogsByHostId");
+            
             query.setParameter("hostID", hostId);
             query.setParameter("updatedOn", lastUpdatedTs);
             

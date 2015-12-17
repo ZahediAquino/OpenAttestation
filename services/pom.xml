@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.intel.mtwilson.core</groupId>
     <artifactId>oat</artifactId>
-    <version>2.2</version>
+    <version>2.3</version>
   </parent>
   
  <profiles>
@@ -35,6 +35,13 @@
     <module>trust-utils-jar</module>
     <module>AttestationService</module>
     <module>WLMService</module>
+    <module>oat-tag-jdbi</module>
+    <module>oat-tag-dao-jooq</module>
+    <module>oat-saml-verifier</module>
+    <module>oat-trust-policy</module>
+    <module>oat-tag-model</module>
+    <module>oat-audit-api</module>
+    <module>oat-saml</module>
   </modules>
 
 </project>

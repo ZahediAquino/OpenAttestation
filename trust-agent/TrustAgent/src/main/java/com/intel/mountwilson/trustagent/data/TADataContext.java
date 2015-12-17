@@ -43,6 +43,9 @@ public class TADataContext {
     private String biosVersion;
     private String vmmName;
     private String vmmVersion;
+    private String modulesStr;
+    private String hostUUID;
+    private String assetTagHash;
 
     public String getBiosOem() {
         return biosOem;
@@ -171,6 +174,45 @@ public class TADataContext {
 
     public String getOsVersion() {
         return osVersion;
+    }
+    
+    public File getMeasureLogLaunchScript() {
+        if(Config.getInstance().getProperty("modulesScript.filename") != null)
+            return new File(Config.getInstance().getProperty("modulesScript.filename"));
+        //return new File(Folders.application() + File.separator + "bin" + File.separator + "module_analysis.sh"); // Config.getInstance().getProperty("modulesScript.filename"));
+        else
+            return new File("");
+    }
+    
+    public File getMeasureLogXmlFile() {
+        if(Config.getInstance().getProperty("modulesXml.filename") != null)
+            return new File (Config.getInstance().getProperty("modulesXml.filename"));
+        //return new File(Folders.repository() + File.separator + "measureLog.xml"); // Config.getInstance().getProperty("modulesXml.filename"));
+        else 
+            return new File("");
+    }
+    
+    public void setModules(String allModules) {
+        this.modulesStr = allModules;
+    }
+
+    public String getModules() {
+        return modulesStr;
+    }
+    
+     public String getHostUUID() {
+     return hostUUID;
+    }
+    public void setHostUUID(String hostUUID) {
+        this.hostUUID = hostUUID;
+    }
+    
+    public String getAssetTagHash() {
+        return assetTagHash;
+    }
+    
+    public void setAssetTagHash(String assetTagHash) {
+        this.assetTagHash = assetTagHash;
     }
 
 }

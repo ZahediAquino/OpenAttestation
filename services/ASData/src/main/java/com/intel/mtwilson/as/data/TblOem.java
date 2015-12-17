@@ -46,6 +46,8 @@ import org.eclipse.persistence.annotations.Customizer;
     @NamedQuery(name = "TblOem.findAll", query = "SELECT t FROM TblOem t"),
     @NamedQuery(name = "TblOem.findById", query = "SELECT t FROM TblOem t WHERE t.id = :id"),
     @NamedQuery(name = "TblOem.findByName", query = "SELECT t FROM TblOem t WHERE t.name = :name"),
+    @NamedQuery(name = "TblOem.findByNameLike", query = "SELECT t FROM TblOem t WHERE t.name LIKE :name"), // it's the caller's responsibility to add "%" before and/or after the name value    
+    @NamedQuery(name = "TblOem.findByUUID_Hex", query = "SELECT t FROM TblOem t WHERE t.uuid_hex = :uuid_hex"),
     @NamedQuery(name = "TblOem.findByDescription", query = "SELECT t FROM TblOem t WHERE t.description = :description")})
 public class TblOem implements Serializable {
     @OneToMany(mappedBy = "oemId")
@@ -60,6 +62,8 @@ public class TblOem implements Serializable {
     private String name;
     @Column(name = "DESCRIPTION")
     private String description;
+    @Column(name = "uuid_hex")
+    private String uuid_hex;
 
     public TblOem() {
     }
@@ -86,6 +90,14 @@ public class TblOem implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+    
+    public String getUuid_hex() {
+        return uuid_hex;
+    }
+
+    public void setUuid_hex(String uuid_hex) {
+        this.uuid_hex = uuid_hex;
     }
 
     public void setDescription(String description) {

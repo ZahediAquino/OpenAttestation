@@ -46,7 +46,7 @@
     <servlet>
         <servlet-name>ServletAdaptor</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-        <init-param>
+        <!--init-param>
             <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
             <param-value>com.intel.mtwilson.as.helper.ASAuthenticationFilter,com.intel.mtwilson.audit.helper.AuditJerseyRequestFilter</param-value>
         </init-param>
@@ -58,6 +58,10 @@
             <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
             <param-value>com.intel.mtwilson.security.jersey.RolesAllowedResourceFilterFactory</param-value>
         </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
+            <param-value>com.intel.mtwilson.security.jersey.RolesAllowedResourceFilterFactory</param-value>
+        </init-param-->
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

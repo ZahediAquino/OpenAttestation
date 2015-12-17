@@ -15,6 +15,7 @@
 
 package com.intel.mtwilson.datatypes;
 
+import com.intel.mtwilson.util.net.Hostname;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -106,6 +107,14 @@ public class TxtHost {
         }
         return connectionString;
     }
+    
+    public String getVendor() {
+        // We assume connectionString starts with either "intel:", "vmware:" or "citrix" prefixes
+        String vendor  = getAddOn_Connection_String().substring(0, getAddOn_Connection_String().indexOf(":"));
+        log.debug("Vendor calculated :" + vendor);
+        return vendor;
+        
+    }
 
     public String getDescription() {
         return description;
@@ -135,5 +144,5 @@ public class TxtHost {
     final public boolean isBiosTrusted() { return trustStatus.bios; }
     final public boolean isVmmTrusted() { return trustStatus.vmm; }
     final public boolean isLocationTrusted() { return trustStatus.location; }
-    
+    final public boolean isAssetTagTrusted() { return trustStatus.asset_tag; }
 }

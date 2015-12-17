@@ -27,6 +27,7 @@ public class HostType {
         UBUNTU("ubuntu","ubuntu.png","true"),
         SUSE("suse","suse.png","true"),
         RHEL("rhel","rhel.png","true"),
+        FEDORA("fedora","fedora.png","true"),
         RED_HAT("redhat","rhel.png","true"),
         CITRIX_XENSERVER("xenserver","citrix.png","false");
         

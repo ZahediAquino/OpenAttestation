@@ -20,12 +20,16 @@ import com.intel.mountwilson.manifest.data.IManifest;
 import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mountwilson.manifest.helper.TAHelper;
 import com.intel.mtwilson.agent.HostAgent;
-import com.intel.mtwilson.crypto.X509Util;
-import com.intel.mtwilson.datatypes.InternetAddress;
+import com.intel.mtwilson.util.model.Measurement;
+//import com.intel.mtwilson.crypto.X509Util;
+import com.intel.mtwilson.util.x509.X509Util;
+import com.intel.mtwilson.util.net.InternetAddress;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +55,22 @@ public class IntelHostAgent implements HostAgent {
     
     @Override
     public HashMap<String, ? extends IManifest> getManifest() {
-        // XXX TODO  obtain the manifest map  using existing code in one of the trust agent helper classes
-        return manifestMap;
+        
+        if(manifestMap !=null ) {
+            return manifestMap;
+        }
+        else {
+            try {
+                TAHelper helper = new TAHelper();
+                HashMap<String, PcrManifest> pcrMap = helper.getQuoteInformationForHost(hostAddress.toString(), trustAgentClient, "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23");
+                manifestMap = pcrMap;
+            }
+            catch(Exception e) {
+                //throw new IOException(e);
+                log.error(e.getMessage());
+            }
+            return manifestMap;
+        }
     }
     
     
@@ -92,7 +110,7 @@ public class IntelHostAgent implements HostAgent {
     public X509Certificate getAikCertificate() {
         String pem = trustAgentClient.getAIKCertificate();
         try {
-            X509Certificate aikCert = X509Util.decodePemCertificate(pem);
+            X509Certificate aikCert = X509Util.decodePemCertificate_OnlyOne(pem);
             isTpmAvailable = true;
             return aikCert;
         }
@@ -118,6 +136,19 @@ public class IntelHostAgent implements HostAgent {
         catch(Exception e) {
             throw new IOException(e);
         }
+    }
+    
+     @Override
+    public Map<String, String> getHostAttributes() throws IOException {
+       HashMap<String,String> hm = new HashMap<String, String>();
+        // Retrieve the data from the host and add it into the hashmap
+       hm.put("Host_UUID", trustAgentClient.getHostAttributes().trim());
+//        HostInfo hostInfo = client.getHostInfo();
+//        // Currently we are just adding the UUID of th host. Going ahead we can add additional details
+//        if (hostInfo != null)
+//            hm.put("Host_UUID", hostInfo.getHardwareUuid().trim());
+        
+        return hm;
     }
 
     @Override

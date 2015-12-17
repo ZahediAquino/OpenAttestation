@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.intel.mtwilson.core.services</groupId>
         <artifactId>oat-services</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </parent>
    <properties>
         <src.dir>${basedir}/src/main/java</src.dir>
@@ -71,11 +71,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <inherited>true</inherited>
 		<version>2.3.2</version>     
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <skip>false</skip>
-                </configuration>
             </plugin>
         </plugins>
 
@@ -150,6 +145,10 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15</artifactId>
       <version>1.46</version>
+    </dependency>
+    <dependency>
+        <groupId>com.intel.mtwilson.core.util</groupId>
+        <artifactId>oat-util-cpg</artifactId>
     </dependency>
   </dependencies>  
 </project>

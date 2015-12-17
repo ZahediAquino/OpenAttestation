@@ -38,7 +38,7 @@ public class OemBOTest {
 	@Before
 	public void setUp() throws Exception {
 		doReturn(emf).when(oemBO).getEntityManagerFactory();
-        doReturn(tblOemJpaController).when(oemBO).getTblOemJpaController();
+       //doReturn(tblOemJpaController).when(oemBO).getTblOemJpaController();
 	}
 
 	@After

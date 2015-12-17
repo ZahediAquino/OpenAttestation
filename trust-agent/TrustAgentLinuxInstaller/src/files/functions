@@ -721,7 +721,8 @@ java_detect() {
     for c in $JAVA_JDK_CANDIDATES
     do
         local java_bindir=`dirname $c`
-        if [ -f "$java_bindir/java" ]; then
+#        if [ -f "$java_bindir/java" ]; then
+         if [[ ! $java_bindir =~ "jre-abrt" && -f "$java_bindir/java" ]]; then
           JAVA_HOME=`dirname $java_bindir`
           java=$c
           JAVA_VERSION=`java_version`
@@ -738,7 +739,8 @@ java_detect() {
     for c in $JAVA_JRE_CANDIDATES
     do
         java_bindir=`dirname $c`
-        if [ -f "$java_bindir/java" ]; then
+#        if [ -f "$java_bindir/java" ]; then
+         if [[ ! $java_bindir =~ "jre-abrt" && -f "$java_bindir/java" ]]; then
           JAVA_HOME=`dirname $java_bindir`
           java=$c
           JAVA_VERSION=`java_version`
@@ -756,7 +758,8 @@ java_detect() {
     do
         java_bindir=`dirname $c`
         # in non-JDK and non-JRE folders the "java" command may be a symlink:
-        if [ -f "$java_bindir/java" ]; then
+#        if [ -f "$java_bindir/java" ]; then
+         if [[ ! $java_bindir =~ "jre-abrt" && -f "$java_bindir/java" ]]; then
           JAVA_HOME=`dirname $java_bindir`
           java=$c
           JAVA_VERSION=`java_version`
@@ -766,7 +769,8 @@ java_detect() {
           fi
         elif [ -h "$java_bindir/java" ]; then
           local javatarget=`readlink $c`
-          if [ -f "$javatarget" ]; then
+#          if [ -f "$javatarget" ]; then
+           if [[ ! $javatarget =~ "jre-abrt" && -f "$javatarget" ]]; then
             java_bindir=`dirname $javatarget`
             JAVA_HOME=`dirname $java_bindir`
             java=$javatarget

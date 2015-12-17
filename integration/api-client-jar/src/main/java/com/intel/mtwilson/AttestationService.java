@@ -15,6 +15,7 @@
 
 package com.intel.mtwilson;
 
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mountwilson.as.hostmanifestreport.data.HostManifestReportType;
 import com.intel.mountwilson.as.hosttrustreport.data.HostsTrustReportType;
 import com.intel.mtwilson.datatypes.*;
@@ -60,5 +61,14 @@ public interface AttestationService {
     
     AttestationReport getAttestationReport(Hostname hostname) throws IOException, ApiException, SignatureException;
 
-    X509Certificate getTlsCertificateForTrustedHost(Hostname hostname) throws IOException, ApiException, SignatureException;;
+    X509Certificate getTlsCertificateForTrustedHost(Hostname hostname) throws IOException, ApiException, SignatureException;
+    
+    String getSamlForHost(Hostname hostname) throws IOException, ApiException, SignatureException;
+    
+    String getSamlForHost(Hostname hostname, boolean forceVerify) throws IOException, ApiException, SignatureException;
+    
+    String getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException;
+    
+    //List<HostTrustXmlResponse> getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException;
+    
 }

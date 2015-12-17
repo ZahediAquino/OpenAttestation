@@ -20,7 +20,7 @@ package com.intel.mountwilson.controller;
 
 import com.intel.mountwilson.common.TDPConfig;
 import com.intel.mtwilson.ApiClient;
-import com.intel.mtwilson.crypto.SimpleKeystore;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import java.io.File;
 import java.net.URL;
 import java.security.cert.X509Certificate;

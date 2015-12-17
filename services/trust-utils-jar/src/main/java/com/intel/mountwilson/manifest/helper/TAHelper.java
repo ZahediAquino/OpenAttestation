@@ -56,10 +56,20 @@ import com.intel.mountwilson.manifest.data.PcrManifest;
 import com.intel.mountwilson.ta.data.ClientRequestType;
 import com.intel.mtwilson.as.data.TblHosts;
 import com.intel.mtwilson.datatypes.ErrorCode;
+import com.intel.mtwilson.util.model.Measurement;
+import com.intel.mtwilson.util.crypto.Sha1Digest;
+import com.intel.mtwilson.util.model.PcrEventLog;
+import com.intel.mtwilson.util.model.PcrIndex;
 
 import java.util.ArrayList;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import org.apache.commons.lang.ArrayUtils;
 
 import org.bouncycastle.openssl.PEMWriter;
 import org.slf4j.Logger;
@@ -90,6 +100,7 @@ public class TAHelper {
    
    public static final String BEGIN_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----";
    public static final String END_PUBLIC_KEY = "-----END PUBLIC KEY-----";
+   private String[] openSourceHostSpecificModules = {"initrd","vmlinuz"};
 
    
     public TAHelper(/*EntityManagerFactory entityManagerFactory*/) {
@@ -193,24 +204,39 @@ public class TAHelper {
             }
             else {
                 saveCertificate(trustedAik, sessionId); // XXX we only need to save the certificate when registring the host ... when we are just getting a quote we don't need it            
+                log.info( "extracted aik cert from database: "+trustedAik);                
                 log.info( "saved database-provided trusted AIK certificate with session id: "+sessionId);                
             }
             
-            
             saveNonce(nonce,sessionId);
-            
-            log.info( "saved nonce with session id: "+sessionId);
+            log.info( "TAHelper - src: saved nonce with session id: "+sessionId);
             
             createRSAKeyFile(sessionId);
+            
 
             log.info( "created RSA key file for session id: "+sessionId);
+            byte[] eventLogBytes = Base64.decodeBase64(clientRequestType.getEventLog());// issue #879
+            HashMap<String, PcrManifest> pcrMap;
+            if(eventLogBytes != null) {
+                String decodedEventLog = new String(eventLogBytes);
+                pcrMap = verifyQuoteAndGetPcr(sessionId, decodedEventLog);
+                log.info( "Got PCR map");
+                
+            }
+            else {
+                pcrMap = verifyQuoteAndGetPcr(sessionId, null);
+                log.info( "Got PCR map");
+                
+            }
             
-            HashMap<String, PcrManifest> pcrMap = verifyQuoteAndGetPcr(sessionId);
             
-            log.info( "Got PCR map");
-            //log.log(Level.INFO, "PCR map = "+pcrMap); // need to untaint this first
             
             return pcrMap;
+            
+            
+            //log.log(Level.INFO, "PCR map = "+pcrMap); // need to untaint this first
+            
+            
         
     }
 
@@ -333,6 +359,11 @@ public class TAHelper {
             log.info( "adding newlines to certificate END tag");            
             aikCertificate = aikCertificate.replace("-----END CERTIFICATE-----", "\n-----END CERTIFICATE-----");
         }
+        
+        if( aikCertificate.indexOf("-----END CERTIFICATE-----\n") < 0 && aikCertificate.indexOf("-----END CERTIFICATE-----") >= 0 ) {
+            log.info( "adding newlines to certificate END tag again"); 
+            aikCertificate = aikCertificate.replace("-----END CERTIFICATE-----", "-----END CERTIFICATE-----\n");
+        }
 
         saveFile(getCertFileName(sessionId), aikCertificate.getBytes());
 
@@ -403,7 +434,7 @@ public class TAHelper {
     }
 
     // BUG #497 need to rewrite this to return List<Pcr> ... the Pcr.equals()  does same as (actually more than) IManifest.verify() because Pcr ensures the index is the same and IManifest does not!  and also it is less redundant, because this method returns Map< pcr index as string, manifest object containing pcr index and value >  
-    private HashMap<String,PcrManifest> verifyQuoteAndGetPcr(String sessionId) {
+    private HashMap<String,PcrManifest> verifyQuoteAndGetPcr(String sessionId, String eventLog) {
         //Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         HashMap<String,PcrManifest> pcrMp = new HashMap<String,PcrManifest>();
         String setUpFile;
@@ -420,11 +451,12 @@ public class TAHelper {
                 String fileLocation = setUpFile.substring(0, setUpFile.indexOf("attestation-service.properties"));
                 String PrivacyCaCertFileName = "PrivacyCA.cer";
                 //X509Certificate machineCertificate = pemToX509Certificate(certFileName);
-                X509Certificate machineCertificate = certFromFile(certFileName);
-                X509Certificate pcaCert = certFromFile(fileLocation + PrivacyCaCertFileName);
-                if (pcaCert !=null)
-                    machineCertificate.verify(pcaCert.getPublicKey());
+                //X509Certificate machineCertificate = certFromFile(certFileName);
+                certFromFile(certFileName);
+                //X509Certificate pcaCert = certFromFile(fileLocation + PrivacyCaCertFileName);
+                certFromFile(fileLocation + PrivacyCaCertFileName);
                 log.info("passed the verification");
+               
         } catch (Exception e){
             log.error("Machine certificate was not signed by the privacy CA." + e.toString());
             throw new RuntimeException(e);
@@ -455,6 +487,79 @@ public class TAHelper {
             else {
             	log.warn( "Result PCR invalid");
             }
+        }
+        
+        // Now that we captured the PCR details, we need to capture the module information also into the PcrManifest object
+        // Sample Format:
+        // <modules>
+        //<module><pcrNumber>17</pcrNumber><name>tb_policy</name><value>9704353630674bfe21b86b64a7b0f99c297cf902</value></module>
+        //<module><pcrNumber>18</pcrNumber><name>xen.gz</name><value>dfdffe5d3bdff697c4d7447115440e34fa27c1a4</value></module>
+        //<module><pcrNumber>19</pcrNumber><name>vmlinuz</name><value>d3f525b0dc6f7d7c9a3af165bcf6c3e3e02b2599</value></module>
+        //<module><pcrNumber>19</pcrNumber><name>initrd</name><value>3dfa5762c78623ccfc778498ab4cb7136bb3f5ab</value></module>
+        //</modules>
+        if(eventLog != null) {
+            log.debug("About to start processing eventLog");
+            try {
+                XMLInputFactory xif = XMLInputFactory.newInstance();
+                StringReader sr = new StringReader(eventLog);
+                XMLStreamReader reader = xif.createXMLStreamReader(sr);
+                
+                int extendedToPCR = -1;
+                String digestValue = "";
+                String componentName = "";
+                
+                while (reader.hasNext()) {
+                    if (reader.getEventType() == XMLStreamConstants.START_ELEMENT && reader.getLocalName().equalsIgnoreCase("module")) {
+                        reader.next();
+                        // Get the PCR Number to which the module is extended to
+                        if (reader.getLocalName().equalsIgnoreCase("pcrNumber")) {
+                            extendedToPCR = Integer.parseInt(reader.getElementText());
+                        }
+
+                        reader.next();
+                        // Get the Module name 
+                        if (reader.getLocalName().equalsIgnoreCase("name")) {
+                            componentName = reader.getElementText();
+                        }
+
+                        reader.next();
+                        // Get the Module hash value 
+                        if (reader.getLocalName().equalsIgnoreCase("value")) {
+                            digestValue = reader.getElementText();
+                        }                 
+                        
+                        boolean useHostSpecificDigest = false;
+                        if (ArrayUtils.contains(openSourceHostSpecificModules, componentName)) {
+                            useHostSpecificDigest = true;
+                        }
+                        
+                        // Attach the PcrEvent logs to the corresponding pcr indexes.
+                        // Note: Since we will not be processing the even logs for 17 & 18, we will ignore them for now.
+                        
+                        Measurement m = convertHostTpmEventLogEntryToMeasurement(extendedToPCR, componentName, digestValue, useHostSpecificDigest); 
+                        if (pcrMp.containsKey(String.valueOf(extendedToPCR))){
+                            if(pcrMp.get(String.valueOf(extendedToPCR)).containsPcrEventLog(extendedToPCR)) {
+                                pcrMp.get(String.valueOf(extendedToPCR)).getPcrEventLog(extendedToPCR).getEventLog().add(m);
+                            }
+                            else {
+                                PcrIndex pcrIndex = new PcrIndex(extendedToPCR);
+                                ArrayList<Measurement> list = new ArrayList<Measurement>();
+                                list.add(m);
+                                PcrEventLog eventlog = new PcrEventLog(pcrIndex, list);
+                                pcrMp.get(String.valueOf(extendedToPCR)).setPcrEventLog(eventlog);
+                                //pcrMf.setPcrEventLog(new PcrEventLog(new PcrIndex(extendedToPCR), list));
+                            }
+                        }
+                    }
+                    reader.next();
+                }
+            } catch (FactoryConfigurationError | XMLStreamException | NumberFormatException ex) {
+                // bug #2171 we need to throw an exception to prevent the host from being registered with an error manifest
+                //log.error(ex.getMessage(), ex); 
+                throw new IllegalStateException("Invalid measurement log", ex);
+            }
+                
+            
         }
         
         return pcrMp;
@@ -692,7 +797,7 @@ public class TAHelper {
             java.security.cert.CertificateException {
         InputStream certStream = new FileInputStream(filename);
 //      byte [] certBytes = new byte[certStream.available()];
-        byte[] certBytes = new byte[2048];
+        byte[] certBytes = new byte[5000];
         try {
             int k = certStream.read(certBytes);
 
@@ -702,7 +807,9 @@ public class TAHelper {
         finally{
                  certStream.close();
         }
+        
         javax.security.cert.X509Certificate cert = javax.security.cert.X509Certificate.getInstance(certBytes);
+        
         return convertX509Cert(cert);
     }
     
@@ -719,5 +826,33 @@ public class TAHelper {
             javax.security.cert.CertificateException {
         java.security.cert.CertificateFactory cf = java.security.cert.CertificateFactory.getInstance("X.509");
         return (java.security.cert.X509Certificate)cf.generateCertificate(new ByteArrayInputStream(cert.getEncoded()));
+    }
+    
+    
+    /**
+     * Helper method to create the Measurement Object.
+     *
+     * @param extendedToPcr
+     * @param moduleName
+     * @param moduleHash
+     * @return
+     */
+    private static Measurement convertHostTpmEventLogEntryToMeasurement(int extendedToPcr, String moduleName, String moduleHash, boolean useHostSpecificDigest) {
+        HashMap<String, String> info = new HashMap<String, String>();
+        info.put("EventName", "OpenSource.EventName");  // For OpenSource since we do not have any events associated, we are creating a dummy one.
+        // Removing the prefix of "OpenSource" as it is being captured in the event type
+        info.put("ComponentName", moduleName); 
+        info.put("PackageName", "");
+        info.put("PackageVendor", "");
+        info.put("PackageVersion", "");
+        info.put("ExtendedToPCR", String.valueOf(extendedToPcr));
+        if(useHostSpecificDigest) {
+            info.put("UseHostSpecificDigest", "true");
+        }
+        else {
+            info.put("UseHostSpecificDigest", "false");
+        }
+
+        return new Measurement(new Sha1Digest(moduleHash), moduleName, info);
     }
 }

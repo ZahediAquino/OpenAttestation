@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Welcome</title>
+<title>Whitelist Manager</title>
 	
 	<link rel="stylesheet" type="text/css" href="CSS/home.css" />
 	<link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/jquery.ui.menubar.css" />
@@ -31,7 +31,7 @@
 <body>
 	<div>
 	<div class="header">
-       <div class="title"><h1>White List Manager Portal</h1></div>
+       <div class="title"><h1>OAT Whitelist Manager</h1></div>
        <!--
        <div class="loginDisplay">
            <span id="loginStatusValue" style="margin-right:40px">Welcome <%=session.getAttribute("username") %></span>
@@ -85,7 +85,7 @@
        </div>
        
        <div class="footer">
-       	<h4>@ Intel Corp | 2013</h4>
+       	<h4>© Intel Corp | 2015</h4>
        </div>
         
         

@@ -9,13 +9,16 @@
   <parent>
     <groupId>com.intel.mtwilson.core</groupId>
     <artifactId>oat</artifactId>
-    <version>2.2</version>
+    <version>2.3</version>
   </parent>
   
   <modules>
     <module>http-authorization</module>
     <module>api-datatypes-jar</module>
     <module>api-client-jar</module>
+    <module>oat-tag-selection-json</module>
+    <module>oat-tag-selection-xml</module>
+    <module>oat-configuration</module>
   </modules>
 
 </project>

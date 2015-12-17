@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>com.intel.mtwilson.core.trustagent</groupId>
 		<artifactId>trust-agent-parent</artifactId>
-		<version>2.2</version>
+		<version>2.3</version>
 	</parent>
 
 	<!-- these dependencies are only for including the api client, they are 

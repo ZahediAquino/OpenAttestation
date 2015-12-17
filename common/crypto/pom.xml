@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.intel.mtwilson.core.common</groupId>
         <artifactId>oat-common</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </parent>
 
     <build>
@@ -19,8 +19,8 @@
                 <inherited>true</inherited>
                 <version>2.3.2</version>     
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <skip>false</skip>
                 </configuration>
             </plugin>
@@ -84,6 +84,10 @@
             <artifactId>httpclient</artifactId>
             <version>4.2</version>
             <scope>provided</scope>
+        </dependency>
+         <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-cpg</artifactId>
         </dependency>
 
     </dependencies>  

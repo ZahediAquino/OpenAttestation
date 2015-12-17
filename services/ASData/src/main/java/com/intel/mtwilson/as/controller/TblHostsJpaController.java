@@ -297,5 +297,30 @@ public class TblHostsJpaController implements Serializable {
         
         return hostList;      
     }
+	
+	public TblHosts findByHwUUID(String hardware_uuid) {
+
+        TblHosts host = null;
+        EntityManager em = getEntityManager();
+        try {
+
+            Query query = em.createNamedQuery("TblHosts.findByHwUUID");
+
+            query.setParameter("hardware_uuid", hardware_uuid);
+          
+
+            List<TblHosts> list = query.getResultList();
+
+            if (list != null && list.size() > 0) {
+                host = list.get(0);
+               
+            }
+        } finally {
+                em.close();
+        }
+
+        return host;
+
+    }
 
 }

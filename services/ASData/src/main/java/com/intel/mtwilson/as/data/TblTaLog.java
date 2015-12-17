@@ -55,6 +55,8 @@ public class TblTaLog implements Serializable {
     @Column(name = "Updated_On")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedOn;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "taLogId")
+    private Collection<TblModuleManifestLog> tblModuleManifestLogCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,6 +80,10 @@ public class TblTaLog implements Serializable {
     private boolean trustStatus;
     @Column(name = "Error")
     private String error;
+    @Column(name = "uuid_hex")
+    private String uuid_hex;
+    @Column(name = "mle_uuid_hex")
+    private String mle_uuid_hex;
 
     public TblTaLog() {
     }
@@ -159,6 +165,24 @@ public class TblTaLog implements Serializable {
     public void setUpdatedOn(Date updatedOn) {
         this.updatedOn = updatedOn;
     }
+    
+    
+    public String getUuid_hex() {
+        return uuid_hex;
+    }
+
+    public void setUuid_hex(String uuid_hex) {
+        this.uuid_hex = uuid_hex;
+    }
+
+    public String getMle_uuid_hex() {
+        return mle_uuid_hex;
+    }
+
+    public void setMle_uuid_hex(String mle_uuid_hex) {
+        this.mle_uuid_hex = mle_uuid_hex;
+    }
+  
 
     @Override
     public int hashCode() {
@@ -186,4 +210,13 @@ public class TblTaLog implements Serializable {
     }
 
 
+    @XmlTransient
+    public Collection<TblModuleManifestLog> getTblModuleManifestLogCollection() {
+        return tblModuleManifestLogCollection;
+    }
+
+    public void setTblModuleManifestLogCollection(Collection<TblModuleManifestLog> tblModuleManifestLogCollection) {
+        this.tblModuleManifestLogCollection = tblModuleManifestLogCollection;
+    }
+    
 }

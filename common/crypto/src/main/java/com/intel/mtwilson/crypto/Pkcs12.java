@@ -15,7 +15,7 @@
 
 package com.intel.mtwilson.crypto;
 
-import com.intel.mtwilson.io.Resource;
+import com.intel.mtwilson.util.io.Resource;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;

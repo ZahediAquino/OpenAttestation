@@ -15,9 +15,10 @@
 
 package com.intel.mtwilson.tls;
 
-import com.intel.mtwilson.crypto.SimpleKeystore;
-import com.intel.mtwilson.crypto.X509Util;
-import com.intel.mtwilson.datatypes.InternetAddress;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
+//import com.intel.mtwilson.crypto.X509Util;
+import com.intel.mtwilson.util.x509.X509Util;
+import com.intel.mtwilson.util.net.InternetAddress;
 import com.intel.mtwilson.x500.DN;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -104,7 +105,6 @@ public class KeystoreCertificateRepository implements MutableCertificateReposito
     public void addCertificate(X509Certificate certificate) throws KeyManagementException {
         keystore.addTrustedSslCertificate(certificate, certificate.getSubjectX500Principal().getName());
         try {
-            log.debug("Saving keystore");
             keystore.save();
         }
         catch(KeyStoreException e) {

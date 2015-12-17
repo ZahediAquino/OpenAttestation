@@ -71,11 +71,11 @@ public class MleBOTest {
 	@Before
 	public void setUp() throws Exception {
 		doReturn(emf).when(mleBO).getEntityManagerFactory();
-        doReturn(tblMleJpaController).when(mleBO).getTblMleJpaController();
+        /*doReturn(tblMleJpaController).when(mleBO).getTblMleJpaController();
         doReturn(tblPcrManifestJpaController).when(mleBO).getTblPcrManifestJpaController();
         doReturn(tblOemJpaController).when(mleBO).getTblOemJpaController();
         doReturn(tblOsJpaController).when(mleBO).getTblOsJpaController();
-        doReturn(mleSourceJpaController).when(mleBO).getMleSourceJpaController();
+        doReturn(mleSourceJpaController).when(mleBO).getMleSourceJpaController();*/
 	}
 
 	@After

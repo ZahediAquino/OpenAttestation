@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,8 +40,13 @@ import org.slf4j.LoggerFactory;
 public class CommandUtil {
 
     private static final Logger log = LoggerFactory.getLogger(CommandUtil.class.getName());
-
+    
+    
     public static List<String> runCommand(String commandLine) throws TAException, IOException {
+	     return runCommand(commandLine, null);
+    }
+    
+    public static List<String> runCommand(String commandLine, String[] envp) throws TAException, IOException {
 
 
         if(StringUtils.isBlank(commandLine))
@@ -59,7 +65,13 @@ public class CommandUtil {
             log.info( "commandLine: " + commandLine);
         }
 
-        Process p = Runtime.getRuntime().exec(commandLine);
+        Process p;
+        if( envp == null ) {
+           p = Runtime.getRuntime().exec(commandLine);
+        }
+        else {
+           p = Runtime.getRuntime().exec(commandLine, envp);
+        }
 
         List<String> result = new ArrayList<String>();
 
@@ -102,6 +114,66 @@ public class CommandUtil {
 
         return result;
     }
+    
+     public static CommandResult runCommand2(String commandLine) throws TAException, IOException {
+        return runCommand2(commandLine, null);
+    }
+    
+    public static CommandResult runCommand2(String commandLine, String[] envp) throws TAException, IOException {
+        
+        if(StringUtils.isBlank(commandLine))
+            throw new TAException(ErrorCode.ERROR,"Command cannot be empty.");
+        
+        String[] command = commandLine.split(" ");
+        
+        if(new File(Config.getBinPath() + File.separator + command[0]).exists())
+            commandLine = Config.getBinPath() + File.separator + commandLine;
+
+        if(new File(Config.getBinPath() + File.separator + commandLine).exists())
+            commandLine = Config.getBinPath() + File.separator + commandLine;
+        
+        log.debug("Command to be executed is :" + commandLine);
+
+        Process p;
+        if( envp == null ) {
+            p = Runtime.getRuntime().exec(commandLine);
+        }
+        else {
+            p = Runtime.getRuntime().exec(commandLine, envp);
+        }
+        // read stdout
+        InputReader stdout = new InputReader(p.getInputStream());
+        Thread stdoutThread = new Thread(stdout);
+        stdoutThread.start();
+        // read stderr
+        InputReader stderr = new InputReader(p.getErrorStream());
+        Thread stderrThread = new Thread(stderr);
+        stderrThread.start();
+        CommandResult result = new CommandResult();
+        try {
+        // wait until the process exits
+        result.exitcode = p.waitFor();
+        // after the process exits the stdout and stderr threads will terminate
+        stdoutThread.join(); // throws InterruptedException
+        stderrThread.join(); // throws InterruptedException
+        }
+        catch(InterruptedException e) {
+            log.error("Interrupted", e);
+        }
+        
+        log.debug("stdout:\n{}", stdout.getResult());
+        log.debug("stderr:\n{}", stderr.getResult());
+
+        result.command = commandLine;
+        result.stdout = stdout.getResult();
+        result.stderr = stderr.getResult();
+
+        if( result.exitcode != 0 ) {
+            throw new TAException(ErrorCode.FATAL_ERROR, result.exitcode + ": Error while running command: " + commandLine);            
+        }
+
+        return result;
+    }
 
     private static void checkError(int exitValue, String commandLine) throws TAException {
         log.info( "Return code: " + exitValue);
@@ -131,11 +203,9 @@ public class CommandUtil {
 
     public static byte[] readfile(String fileName) throws TAException {
 
-
-        InputStream fStream = null;
-        try {
+        try (InputStream fStream = new FileInputStream(fileName)) {
             int fileLength = (int) new File(fileName).length();
-            fStream = new FileInputStream(fileName);
+            //fStream = new FileInputStream(fileName);
             byte[] fileContents = new byte[fileLength];
             int read = fStream.read(fileContents);
             if (read != fileLength) {
@@ -144,13 +214,6 @@ public class CommandUtil {
             return fileContents;
         } catch (Exception ex) {
             throw new TAException(ErrorCode.ERROR, "Error while reading cert", ex);
-        } finally {
-           
-                try {
-                    fStream.close();
-                } catch (IOException e) {
-                    log.warn("Error while closing stream", e);
-                }
         }
 
 

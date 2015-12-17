@@ -3,14 +3,14 @@
 
   <groupId>com.intel.mtwilson.core.common</groupId>
   <artifactId>oat-common</artifactId>
-  <version>2.2</version>
+  <version>2.3</version>
   <packaging>pom</packaging>
 
   <name>Open Attestation Common Projects</name>
   <parent>
     <groupId>com.intel.mtwilson.core</groupId>
     <artifactId>oat</artifactId>
-    <version>2.2</version>
+    <version>2.3</version>
   </parent>
   
   <modules>

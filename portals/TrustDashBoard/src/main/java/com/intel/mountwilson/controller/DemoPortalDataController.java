@@ -39,6 +39,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.google.common.collect.Lists;
 import com.intel.mountwilson.Service.IDemoPortalServices;
+import com.intel.mountwilson.as.common.ASConfig;
 import com.intel.mountwilson.common.DemoPortalException;
 import com.intel.mountwilson.common.TDPConfig;
 import com.intel.mountwilson.constant.HelperConstant;
@@ -47,6 +48,8 @@ import com.intel.mountwilson.datamodel.HostVmMappingVO;
 import com.intel.mountwilson.util.JSONView;
 import com.intel.mtwilson.ApiClient;
 import com.intel.mtwilson.AttestationService;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
+import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,11 +81,15 @@ public class DemoPortalDataController extends MultiActionController {
 		Map<Integer, List<HostDetailsEntityVO>> map =null; 
 		ModelAndView responseView = new ModelAndView(new JSONView());
 		try {
+                        boolean forceVerify = Boolean.parseBoolean(req.getParameter("force_verify"));
 			//Get map view for All Host based on the value of Page_NO(this values is available from TDPConfig) 
 			map = getAllHostDetailsFromDB(req);
 			
 			//calling into a Service layer to get trust status for Host on Page No 1(using map.get(1)).
-			responseView.addObject("hostVo",demoPortalServices.getTrustStatusForHost(map.get(1),getAttestationService(req,AttestationService.class),getTrustedCertificates(req)));
+			//responseView.addObject("hostVo",demoPortalServices.getTrustStatusForHost(map.get(1),getAttestationService(req,AttestationService.class),getTrustedCertificates(req)));
+                        responseView.addObject("hostVo",demoPortalServices.getTrustStatusForHost(map.get(1),getAttestationService(req,AttestationService.class),getTrustedCertificates(req), forceVerify));
+                        
+                        
 			
 			//setting no of page required to show all Host data while applying pagination in JSP
 			responseView.addObject("noOfPages", map.size());
@@ -116,13 +123,14 @@ public class DemoPortalDataController extends MultiActionController {
 		try {
 			//getting selected Page No.
 			int selectedPage = Integer.parseInt(req.getParameter("pageNo"));
+                        boolean forceVerify = Boolean.parseBoolean(req.getParameter("force_verify"));
 			HttpSession session = req.getSession();
 			@SuppressWarnings("unchecked")
 			//getting Map view of all Host stored into session while calling getDashBoardData().
 			Map<Integer, List<HostDetailsEntityVO>> mapOfData  = (Map<Integer, List<HostDetailsEntityVO>>) session.getAttribute("HostVoList");
 			
 			//calling into a Service layer to get trust status of Host for selected Page No.
-			responseView.addObject("hostVo", demoPortalServices.getTrustStatusForHost(mapOfData.get(selectedPage), getAttestationService(req,AttestationService.class),getTrustedCertificates(req)));
+			responseView.addObject("hostVo", demoPortalServices.getTrustStatusForHost(mapOfData.get(selectedPage), getAttestationService(req,AttestationService.class),getTrustedCertificates(req), forceVerify));
 			responseView.addObject("noOfPages", mapOfData.size());
 		} catch (Exception e) {
 			log.error(e.toString());
@@ -148,7 +156,8 @@ public class DemoPortalDataController extends MultiActionController {
 		log.info("DemoPortalDataController.getHostTrustStatus >>");
 		ModelAndView responseView = new ModelAndView(new JSONView());
 		try {
-			responseView.addObject("hostVo", demoPortalServices.getSingleHostTrust(req.getParameter("hostName"),getAttestationService(req,AttestationService.class),getTrustedCertificates(req)));
+                        boolean forceVerify = Boolean.parseBoolean(req.getParameter("force_verify"));
+			responseView.addObject("hostVo", demoPortalServices.getSingleHostTrust(req.getParameter("hostName"),getAttestationService(req,AttestationService.class),getTrustedCertificates(req), forceVerify));
 		} catch (DemoPortalException e) {
 			log.error("getHostTrustStatus: " + e.toString());
 			e.printStackTrace();
@@ -566,7 +575,8 @@ public class DemoPortalDataController extends MultiActionController {
     	if(session !=null){
     		try{
     			//getting Object from Session and downcast that object to X509Certificate. 
-    			trustedCertificate = (X509Certificate[])session.getAttribute("trustedCertificates");    
+    			trustedCertificate = (X509Certificate[])session.getAttribute("trustedCertificates");
+                        
     		} catch (Exception e) {
     			log.error("Error while creating ApiCliennt Object. "+e.getMessage());
     			throw new DemoPortalException("Error while creating ApiCliennt Object. "+e.getMessage(),e);

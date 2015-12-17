@@ -216,8 +216,9 @@ function fnGetNewHostData() {
 	hostVo.biosName = $('#MainContent_LstBIOS option:selected').attr('biosname');
 	hostVo.biosBuildNo = $('#MainContent_LstBIOS option:selected').attr('biosver');
 	var vmm = $('#MainContent_LstVmm').val().split(':');
-	hostVo.vmmName = vmm[0];
-	hostVo.vmmBuildNo = vmm[1];
+        //We re-insert : to separate OS and its version
+	hostVo.vmmName = vmm[0]+":"+vmm[1];
+	hostVo.vmmBuildNo = vmm[2];
 	hostVo.emailAddress = $('#MainContent_tbEmailAddress').val();
 	hostVo.oemName = $('#MainContent_ddlOEM').val();
 		

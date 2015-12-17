@@ -433,7 +433,7 @@ public abstract class PersistenceManager implements ServletContextListener {
     * @param jpaProperties
     * @return 
     */    
-    private static DataSource createDataSource(Properties jpaProperties) {
+    public static DataSource createDataSource(Properties jpaProperties) {
         BasicManagedDataSource ds = new BasicManagedDataSource();
         Current tm = new Current();
         ds.setAccessToUnderlyingConnectionAllowed(true);

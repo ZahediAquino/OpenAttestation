@@ -44,6 +44,13 @@ function getShowReportPage() {
 	sendHTMLAjaxRequest(false, 'getView/showReportsPage.html', null, fnDisplayContent, null,'showReportsPage');
 }
 
+function getAssetCertificatePage() {
+	$('#mainContainer').html('<div id="AssetCertificatePage"></div>');
+        $('#AssetCertificatePage').html('<iframe scrolling="no" frameborder="0" src="' + assetTagUrl + '" width="100%" height="2000" > </iframe>');
+        //$('#AssetCertificatePage').html('<iframe scrolling="no" frameborder="0" src="' + assetTagUrl + "/#certificates" + '" width="900" height="850" > </iframe>');
+}
+
+
 
 /*
  * Method for Edit Host Page .... !!
@@ -138,13 +145,13 @@ function fnDeleteHostInfo(element) {
 function fnDeleteHostInfoSuccess(response,element) {
 	$('#disabledDiv').remove();
 	if (response.result) {
+                $('#mleMessage').html('<div class="successMessage">Host has been successfully deleted.</div>');
 		if (selectedPageNo > (response.noOfPages)) {
 			selectedPageNo = response.noOfPages;
 		}
 		populateEditHostDataIntoTable(response.hostVo);
 		applyPagination('editHostPaginationDiv',response.noOfPages,fngetEditHostNextPage,selectedPageNo);
-		//$(element).parent().parent().remove();
-		$('#mleMessage').html('<div class="successMessage">Host has been successfully deleted.</div>');
+		//$(element).parent().parent().remove();		
 	}else {
 		$('#mleMessage').html('<div class="errorMessage">'+getHTMLEscapedMessage(response.message)+'</div>');
 	}

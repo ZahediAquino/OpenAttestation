@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Welcome to Mt.Wilson</title>
+<title>Trust Dashboard</title>
 	
 	<link rel="stylesheet" type="text/css" href="CSS/home.css" />
 	
@@ -16,7 +16,7 @@
 <body>
 	<div>
 	<div class="header">
-       <div class="title"><h1>Welcome to Trust Dashboard</h1></div>
+       <div class="title"><h1>OAT Trust Dashboard</h1></div>
             <!-- <div class="clear hideSkiplink">
 				<div style="clear: left;"></div><a id="NavigationMenu_SkipLink"></a>
             </div> -->
@@ -42,7 +42,7 @@
         	</div>
         </div>
         <div class="footer">
-        	<h4>@ Intel Corp | 2013</h4>
+        	<h4>© Intel Corp | 2015</h4>
         </div>
         
         

@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import com.intel.mtwilson.util.io.Resource;
 
 /**
  * A simple implementation of Resource using a byte[] as the storage.

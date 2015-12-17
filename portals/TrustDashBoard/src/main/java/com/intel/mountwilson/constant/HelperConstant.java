@@ -48,6 +48,7 @@ public interface HelperConstant {
 	
 	// Separator used while displaying vmmInfo in Edit, View and Add host page.
 	String OS_VMM_INFORMATION_SEPERATOR = "|";
+        String OS_VERSION_INFORMATION_SEPERATOR = ":";
 	
 	//Separator used in key while storing HostVmMappingVO Object into a map for VM and Host mapping information. 
 	String VM_HOST_MAPPING_SEPERATOR = "-";

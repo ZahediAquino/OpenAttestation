@@ -14,10 +14,16 @@
  */
 
 package com.intel.mtwilson;
+
+import com.intel.mtwilson.util.net.Hostname;
+import com.intel.mtwilson.util.crypto.RsaCredential;
+import com.intel.mtwilson.tls.TlsPolicy;
 import com.intel.mountwilson.as.hostmanifestreport.data.HostManifestReportType;
 import com.intel.mountwilson.as.hosttrustreport.data.HostsTrustReportType;
-import com.intel.mtwilson.crypto.SimpleKeystore;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import com.intel.mtwilson.datatypes.*;
+import com.intel.mtwilson.datatypes.xml.HostTrustXmlResponse;
+import com.intel.mtwilson.datatypes.xml.HostTrustXmlResponseList;
 import com.intel.mtwilson.io.ConfigurationUtil;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +36,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBContext;
@@ -61,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.5.2
  * @author jbuhacoff
  */
-public class ApiClient implements AttestationService, WhitelistService {
+public class ApiClient implements AttestationService, WhitelistService, AssetTagService {
     private static Logger log = LoggerFactory.getLogger(ApiClient.class);
 //    private JerseyHttpClient httpClient;
     private ApacheHttpClient httpClient;
@@ -158,7 +165,6 @@ public class ApiClient implements AttestationService, WhitelistService {
             throw new ClientException("Cannot initialize client", e);
         }
     }
-    
     
     private void setBaseURL(URL url) {
         if( url == null ) {
@@ -469,6 +475,9 @@ public class ApiClient implements AttestationService, WhitelistService {
                     else if(subParts[0].equals("VMM")) {
                             trustStatus.vmm = subParts[1].equals("1");
                     }
+                    else if(subParts[0].equals("ATag")) {
+                            trustStatus.asset_tag = subParts[1].equals("1");
+                    }
             }
             return trustStatus;
     }
@@ -484,7 +493,9 @@ public class ApiClient implements AttestationService, WhitelistService {
         MultivaluedMap<String,String> query = new MultivaluedMapImpl();
         query.add("hostName", hostname.toString());
         // need to support both formats:  "BIOS:1,VMM:1" from 0.5.1 and JSON from 0.5.2
+        log.debug("Getting status for host: {}", hostname);
         ApiResponse response = httpClient.get(asurl("/hosts/trust", query));
+        log.debug("Server Response: {}",text(response));
         HostTrustResponse trust;
         if( response.httpStatusCode == HttpStatus.SC_OK ) {            
             if( APPLICATION_JSON_TYPE.equals(response.contentType) ) {
@@ -556,10 +567,21 @@ public class ApiClient implements AttestationService, WhitelistService {
     @Override
     public List<TxtHostRecord> queryForHosts(String searchCriteria) throws IOException, ApiException, SignatureException {
         MultivaluedMap<String,String> query = new MultivaluedMapImpl();
-        query.add("searchCriteria", searchCriteria);        
+        query.add("searchCriteria", searchCriteria); 
         ListHostData results = fromJSON(httpGet(asurl("/hosts", query)), ListHostData.class);
         return results;                
     }
+    
+    @Override
+    public List<TxtHostRecord> queryForHosts(String searchCriteria, boolean includeHardware) throws IOException, ApiException, SignatureException {
+        log.debug("queryForHosts includeHardwareUuid["+includeHardware+"]");
+        MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+        query.add("searchCriteria", searchCriteria);        
+        query.add("includeHardwareUuid",String.valueOf(includeHardware));
+        //query.add("includeTlsPolicy",String.valueOf(false));
+        ListHostData results = fromJSON(httpGet(asurl("/hosts", query)), ListHostData.class);
+        return results;
+    }    
 
     /**
      * javax.ws.rs.core.MediaType.APPLICATION_XML   application/xml
@@ -823,5 +845,67 @@ public class ApiClient implements AttestationService, WhitelistService {
         String result = text(httpGet(wlmurl("/mles/source", query)));
         return result;                        
     }
+    
+    @Override
+    public boolean importAssetTagCertificate(AssetTagCertCreateRequest aTagObj) throws IOException, ApiException, SignatureException {
+        String result = text(httpPost(asurl("/assetTagCert"), toJSON(aTagObj)));
+        return "true".equals(result);
+    }
+    
+    @Override
+    public boolean revokeAssetTagCertificate(AssetTagCertRevokeRequest aTagObj) throws IOException, ApiException, SignatureException {
+        String result = text(httpPut(asurl("/assetTagCert"), toJSON(aTagObj)));
+        return "true".equals(result);
+    }
+    
+    @Override
+    public String getSamlForHost(Hostname hostname) throws IOException, ApiException, SignatureException {
+        MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+        query.add("hostName", hostname.toString());
+        // By default we will get it from cache.
+        query.add("force_verify", Boolean.toString(false));
+        String saml = text(httpGet(asurl("/saml/assertions/host", query))); // NOTE: we are returning the raw XML document, we don't try to instantiate any Java object via the xml() funciton. The client can create a TrustAssertion object using this XML string in order to parse it.
+        return saml;
+    }
+    @Override
+    public String getSamlForHost(Hostname hostname, boolean forceVerify) throws IOException, ApiException, SignatureException {
+        MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+        query.add("hostName", hostname.toString());
+        query.add("force_verify", Boolean.toString(forceVerify));
+        String saml = text(httpGet(asurl("/saml/assertions/host", query))); // NOTE: we are returning the raw XML document, we don't try to instantiate any Java object via the xml() funciton. The client can create a TrustAssertion object using this XML string in order to parse it.
+        return saml;
+    }
+    /*
+    @Override
+    public List<HostTrustXmlResponse> getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException {
+            // prepare the request
+            log.info("LOGGING +++++++++++ hostnames.size: " + hostnames.size());
+            log.info("LOGGING +++++++++++ forceVerify" + forceVerify);
+            String hostnamesCSV = StringUtils.join(hostnames, ","); // calls toString() on each hostname
+            MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+            query.add("hosts", hostnamesCSV);
+            query.add("force_verify", Boolean.toString(forceVerify));
+            // make the request and parse the xml response
+            //Print String URL
+            HostTrustXmlResponseList list = xml(httpGet(asurl("/hosts/bulk/trust/saml", query)), HostTrustXmlResponseList.class);
+            if(list.getHost() !=null) log.info("LOGGING +++++++++++ list.getHost().size()" + list.getHost().size()); else log.info("LOGGING +++++++++++ list.getHost() EVALUATES TO NULL!)");
+            List<HostTrustXmlResponse> responses = list.getHost();
+            for (Iterator<HostTrustXmlResponse> it = responses.iterator(); it.hasNext();) {
+                 HostTrustXmlResponse  xmlResponse = it.next();
+                 if(xmlResponse.getAssertion() != null) log.info("\"LOGGING +++++++++++ xmlResponse.getAssertion()" + xmlResponse.getAssertion()); else log.info("\"LOGGING +++++++++++ xmlResponse.getAssertion validates to NULL!");
+                 
+                
+            }
+            return list.getHost(); // get the list of <Host> elements inside the root <Hosts> element... it's an automatically generated method name. would have been nice if they named it getHostList()
+        }*/
+    public String getSamlForMultipleHosts(Set<Hostname> hostnames, boolean forceVerify) throws IOException, ApiException, SignatureException {
+            // prepare the request
+            String hostnamesCSV = StringUtils.join(hostnames, ","); // calls toString() on each hostname
+            MultivaluedMap<String,String> query = new MultivaluedMapImpl();
+            query.add("hosts", hostnamesCSV);
+            query.add("force_verify", Boolean.toString(forceVerify));
+            ApiResponse result = httpGet(asurl("/hosts/bulk/trust/saml", query));
+            return new String(result.content, "UTF-8");
+        }
 
 }

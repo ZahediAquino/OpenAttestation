@@ -17,7 +17,7 @@ package com.intel.mtwilson.client.cmd;
 
 import com.intel.mtwilson.client.AbstractCommand;
 import com.intel.mtwilson.crypto.RsaUtil;
-import com.intel.mtwilson.crypto.SimpleKeystore;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import com.intel.mtwilson.io.Filename;
 import java.io.BufferedReader;
 import java.io.File;

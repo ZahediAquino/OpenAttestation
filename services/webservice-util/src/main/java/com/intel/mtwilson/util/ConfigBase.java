@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * ASCommon) Hard-coded defaults (defined in this class)
  */
 public abstract class ConfigBase {
-
+    
     private Logger log = LoggerFactory.getLogger(getClass());
     private Configuration config = null;
     private final String propertyFileName;
@@ -52,7 +52,7 @@ public abstract class ConfigBase {
         return config;
     }
 
-    public ConfigBase(String propertyFileName/*, Properties defaultProperties*/) {
+    public ConfigBase(String propertyFileName) {
         this.propertyFileName = propertyFileName;
 //        this.defaultProperties = defaultProperties;
     }
@@ -163,6 +163,9 @@ public abstract class ConfigBase {
         dumpConfiguration(composite, "composite");
         return composite;
     }
+    
+   
+    
     /*
 
      public static Configuration loadConfiguration(String propertiesFilename) {

@@ -254,14 +254,25 @@ function manifestList(name,value) {
 	this.value=value;
 }
 
-//Function to clear all pre entered data in input:text. 
+//Function to clear all pre entered data in input:text and input:checkbox
 function clearAllFiled(divID) {
 	$('#'+divID).find('input:text').each(function() {
 		if ($(this).attr('disabled') != 'disabled') {
 			$(this).val('');
 			$('#'+divID).parent().find('.errorMessage').remove();
 		}
+                if ($(this).attr('id').match("MainContent_check*")){
+                    this.disabled = 'disabled'; 
+                }
+                if($(this).attr('id').includes("MainContent_tb17") ||$(this).attr('id').includes("MainContent_tb18") || $(this).attr('id').includes("MainContent_tb19") || $(this).attr('id').includes("MainContent_tb20")){
+                    this.disabled = 'disabled';
+                    
+                }
 	});
+        $('#'+divID).find('input:checkbox').each(function() 
+        { 
+                this.checked = false; 
+        }); 
 }
 
 function fnGetMleData(isNewMle) {

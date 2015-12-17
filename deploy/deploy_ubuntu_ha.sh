@@ -9,7 +9,7 @@ mysql_port=${mysql_port:-3306}
 saml_password=${saml_password:-samlpasswd2}
 portal_password=${portal_password:-portalpasswd2}
 p12_password=${p12_password:-p2}
-log_dir=${log_dir:-/var/log/tomcat6}
+log_dir=${log_dir:-/var/log/tomcat7}
 
 example()
 {
@@ -70,13 +70,13 @@ TOP_DIR=$(cd .. && pwd)
 conf_dir=${conf_dir:-/etc/intel/cloudsecurity}
 [ -d $conf_dir ] && rm -rf $csonf_dir
 install -d  $conf_dir
-chown -R tomcat6:tomcat6 $conf_dir
+chown -R tomcat7:tomcat7 $conf_dir
 
-tomcat_dir=${tomcat_dir:-/var/lib/tomcat6}
+tomcat_dir=${tomcat_dir:-/var/lib/tomcat7}
 oat_home_dir=${oat_home_dir:-$HOME/.oat}
 [ -d $oat_home_dir ] && rm -rf $oat_home_dir
 install -d  $oat_home_dir
-chown -R tomcat6:tomcat6 $oat_home_dir
+chown -R tomcat7:tomcat7 $oat_home_dir
 
 ###MySQL ### 
 mysql_status="`netstat -vulntp |grep -i mysql`"
@@ -152,7 +152,7 @@ com.intel.mountwilson.as.attestation.hostTimeout=60
 com.intel.mountwilson.as.home=/var/opt/intel/aikverifyhome
 com.intel.mountwilson.as.aikqverify.cmd=aikqverify
 com.intel.mountwilson.as.openssl.cmd=openssl.sh
-saml.key.aslias=samlkey1
+saml.key.alias=samlkey1
 saml.keystore.file=SAML.jks
 saml.keystore.password=SAML_KEYSTORE_PASSWD
 saml.validity.seconds=3600
@@ -251,11 +251,11 @@ if [ -n "$ha_master" ]; then
         done
 
         # set permissions
-        chown -R tomcat6:tomcat6 $conf_dir
-        chown -R tomcat6:tomcat6 $tomcat_dir/Certificate
-        chown -R tomcat6:tomcat6 /var/opt        
+        chown -R tomcat7:tomcat7 $conf_dir
+        chown -R tomcat7:tomcat7 $tomcat_dir/Certificate
+        chown -R tomcat7:tomcat7 /var/opt        
 
-        service tomcat6 restart
+        service tomcat7 restart
         exit 0
         fi
 fi
@@ -289,7 +289,7 @@ trust_tdb_parse()
       grep "$1" | awk -F= '{print $2}'
 }
 
-saml_key_aslias="`att_parse "saml.key.aslias"`"
+saml_key_alias="`att_parse "saml.key.alias"`"
 saml_keystore_file="`att_parse "saml.keystore.file"`"
 saml_keystore_password="`att_parse "saml.keystore.password"`"
 saml_key_password="`att_parse "saml.key.password"`"
@@ -297,12 +297,12 @@ server_keystore_password="`date  +%s%N`"
 server_key_password=$server_keystore_password
 
 ### Create SAML Signing Key ###
-keytool -genkey -alias $saml_key_aslias -keyalg RSA -keysize 2048 \
+keytool -genkey -alias $saml_key_alias -keyalg RSA -keysize 2048 \
         -keystore $saml_keystore_file -storepass $saml_keystore_password \
         -dname "CN=OpenAttestation, O=My Org, OU=Mt Wilson, C=US" \
         -validity 3650 -keypass $saml_key_password
 
-keytool -export -alias $saml_key_aslias -keystore $saml_keystore_file \
+keytool -export -alias $saml_key_alias -keystore $saml_keystore_file \
         -storepass $saml_keystore_password -file $oat_home_dir/saml.crt
 
 ### Create EK Signing Certificate ###
@@ -314,7 +314,7 @@ popd
 cp $conf_dir/clientfiles/PrivacyCA.cer $conf_dir
 
 ### change the configuration folder user group to tomcat:tomcat ###
-chown -R tomcat6:tomcat6 $conf_dir
+chown -R tomcat7:tomcat7 $conf_dir
 
 ### aikqverify install ###
 install_aikverify
@@ -332,8 +332,8 @@ install_aikverify
 ### Create Attestation Server Certificate ###
 privacyca_server="`att_parse "privacyca.server"`"
 install -d $tomcat_dir/Certificate
-chown -R tomcat6:tomcat6 $tomcat_dir/Certificate
-chown -R tomcat6:tomcat6 /var/opt
+chown -R tomcat7:tomcat7 $tomcat_dir/Certificate
+chown -R tomcat7:tomcat7 /var/opt
 
 [ -e $tomcat_dir/Certificate/keystore.jks ] && \
      rm -f $tomcat_dir/Certificate/keystore.jks
@@ -383,6 +383,14 @@ copy_war_package "WhiteListPortal"
 copy_war_package "AttestationService"
 copy_war_package "TrustDashBoard"
 
-### tomcat6 restart ###
-service tomcat6 restart
+#Create cacert and key
+export javaCmd="'$TOP_DIR/services/AttestationService/target/AttestationService-2.3/WEB-INF/lib/AttestationService-2.3.jar:$TOP_DIR/services/AttestationService/target/AttestationService-2.3/WEB-INF/lib/*' com.intel.mtwilson.tag.setup.cmd.TagCreateCaKey 'CN=asset-tag-service,OU=oat'"
+echo "#!/bin/bash
+java -cp $javaCmd" > javaCmdScript.sh
+chmod +x javaCmdScript.sh
+./javaCmdScript.sh
+rm javaCmdScript.sh
+
+### tomcat7 restart ###
+service tomcat7 restart
 

@@ -33,18 +33,27 @@ import com.intel.mtwilson.AttestationService;
 import com.intel.mtwilson.WhitelistService;
 import com.intel.mtwilson.datatypes.AttestationReport;
 import com.intel.mtwilson.datatypes.HostTrustResponse;
-import com.intel.mtwilson.datatypes.Hostname;
+import com.intel.mtwilson.util.net.Hostname;
 import com.intel.mtwilson.datatypes.PcrLogReport;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
+import com.intel.mtwilson.datatypes.xml.HostTrustXmlResponse;
+import com.intel.mtwilson.saml.TrustAssertion;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import com.intel.mtwilson.ApiException;
+import com.intel.mtwilson.saml.TrustAssertion.HostTrustAssertion;
+import java.security.SignatureException;
+
 /**
  * @author yuvrajsx
  *
@@ -68,14 +77,14 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	 * @throws DemoPortalException
 	 */
 	@Override
-	public List<TrustedHostVO> getTrustStatusForHost(List<HostDetailsEntityVO> hostList, AttestationService apiClientServices,X509Certificate[] trustedCertificates) throws DemoPortalException {
+	public List<TrustedHostVO> getTrustStatusForHost(List<HostDetailsEntityVO> hostList, AttestationService apiClientServices,X509Certificate[] trustedCertificates, boolean forceVerify) throws DemoPortalException {
                                 //List contains data to be return.
                                 List<TrustedHostVO> hostVOs = new ArrayList<TrustedHostVO>();
 
                                 //check size of List of Host for which Trust is required if its empty Throw Exception with specific message to Controller.
                                 if (hostList!=null && hostList.size() > 0) {
                                         for (HostDetailsEntityVO hostDetailsEntityVO : hostList) {
-                                            hostVOs.add(getSingleHostTrust(hostDetailsEntityVO.getHostName(), apiClientServices, trustedCertificates));
+                                            hostVOs.add(getSingleHostTrust(hostDetailsEntityVO.getHostName(), apiClientServices, trustedCertificates, forceVerify));
                                         }
 			
                                 } else {
@@ -149,32 +158,42 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	 * @throws DemoPortalException
 	 */
 	@Override
-	public TrustedHostVO getSingleHostTrust(String hostName,AttestationService apiClientServices,X509Certificate[] trustedCertificates)throws DemoPortalException {
+	public TrustedHostVO getSingleHostTrust(String hostName, AttestationService apiClientServices,X509Certificate[] trustedCertificates, boolean forceVerify)throws DemoPortalException {
 		
 		TrustedHostVO hostVO = null;
-		HostDetailsEntityVO hostDetailsEntityVO = new HostDetailsEntityVO();
-		hostDetailsEntityVO.setHostName(hostName);
-		String xmloutput = null;
-        
-        
-                                            HostTrustResponse hostTrustResponse = null;
-                                                try {
-                                                        log.info("Getting trust Information for Host "+hostName);
-                                                        hostTrustResponse = apiClientServices.getHostTrust(new Hostname(hostDetailsEntityVO.getHostName()));
-                                                        List<TxtHostRecord> hosts = apiClientServices.queryForHosts(hostDetailsEntityVO.getHostName());
-                                                        TxtHostRecord txtHostRecord = null;
-                                                        for(TxtHostRecord record : hosts) {
-                                                            if( record.HostName.equals(hostDetailsEntityVO.getHostName())) {
-                                                                txtHostRecord = record;
-                                                            }
-                                                        }
-                                                        hostVO = ConverterUtil.getTrustedHostVoFromHostTrustResponseAndTxtHostRecord(hostTrustResponse, txtHostRecord);
-                                                } catch (Exception e) {
-                                                    
-                                                    hostVO = ConverterUtil.getTrustedHostVoFromHostTrustResponseAndErrorMessage(hostName, e.getMessage());
-                                                }
-        
-		return hostVO;
+	           HostDetailsEntityVO hostDetailsEntityVO = new HostDetailsEntityVO();
+            hostDetailsEntityVO.setHostName(hostName);
+            String xmloutput = null;
+
+            HostTrustResponse hostTrustResponse = null;
+            try {
+                log.info("Getting trust Information for Host " + hostName);
+		//xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), false);
+                // forceVerify=false when loading dashboard, it is true when refreshing host (Refresh button)
+                xmloutput = apiClientServices.getSamlForHost(new Hostname(hostName), forceVerify);
+                
+                TrustAssertion trustAssertion = new TrustAssertion(trustedCertificates, xmloutput);
+                HostTrustAssertion hostTrustAssertion = trustAssertion.getTrustAssertion(hostName);  
+		
+                //Set<Hostname> hostnames = new HashSet<Hostname>();
+                //hostnames.add(new Hostname(hostName));
+                //xmloutput = ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, false));
+                
+                hostTrustResponse = apiClientServices.getHostTrust(new Hostname(hostDetailsEntityVO.getHostName()));
+                List<TxtHostRecord> hosts = apiClientServices.queryForHosts(hostDetailsEntityVO.getHostName());
+                TxtHostRecord txtHostRecord = null;
+                for (TxtHostRecord record : hosts) {
+                    if (record.HostName.equals(hostDetailsEntityVO.getHostName())) {
+                        txtHostRecord = record;
+                    }
+                }
+                hostVO = ConverterUtil.getTrustedHostVoFromHostTrustResponseAndTxtHostRecord(hostTrustResponse, txtHostRecord, hostTrustAssertion);
+            } catch (Exception e) {
+
+                hostVO = ConverterUtil.getTrustedHostVoFromHostTrustResponseAndErrorMessage(hostName, e.getMessage());
+            }
+
+            return hostVO;
 	}
 	
 	/**
@@ -281,6 +300,8 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 		try {
 			//Call to Services to Update pre-configure host information.
 			apiClientServices.updateHost(ConverterUtil.getTxtHostFromHostVO(dataVO));
+                        // Updating the SAML host report
+                        apiClientServices.getSamlForHost(new Hostname(dataVO.getHostName()), true);
 			result = true;
 		} catch (Exception e) {
 			log.error("Errror While Updating Host.");
@@ -325,10 +346,63 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
 	 * @param trustedCertificates
 	 * @return
 	 * @throws DemoPortalException
+     * @throws java.io.IOException
+     * @throws com.intel.mtwilson.ApiException
 	 */
 	@Override
-	public String trustVerificationDetails(String hostName,AttestationService apiClientServices,X509Certificate[] trustedCertificates)throws DemoPortalException {
-        return ConverterUtil.formateXMLString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<error>Operation Not Supported</error>\n");
+	public String trustVerificationDetails(String hostName,AttestationService apiClientServices,X509Certificate[] trustedCertificates)throws DemoPortalException{
+        //return ConverterUtil.formateXMLString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<error>Not implemented</error>\n");
+        
+        Set<Hostname> hostnames = new HashSet<Hostname>();
+        hostnames.add(new Hostname(hostName));
+        try{
+            return ConverterUtil.formateXMLString(apiClientServices.getSamlForMultipleHosts(hostnames, true));
+        }
+        catch(IOException | ApiException | SignatureException e){
+            log.error(e.getMessage());
+            return ConverterUtil.formateXMLString("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<error>Not implemented</error>\n");
+        }
+        
+//        log.info("DemoPortalServicesImpl.trustVerificationDetails >>");
+//	    String xmloutput = null;
+//            Set<Hostname> hostnames = new HashSet<Hostname>();
+//            //log.info("<<<<<<Hostname: " + hostName + ">>>>>>>");
+//            hostnames.add(new Hostname(hostName));
+//            try {
+//                //calling into Services to get SAML for a Host.
+//                List<HostTrustXmlResponse> trust = apiClientServices.getSamlForMultipleHosts(hostnames, false);
+//
+//                for (HostTrustXmlResponse hostTrustXmlResponse : trust) {
+//                    if(trustedCertificates != null)
+//                        log.info("TrustCertificates: " + trustedCertificates.toString());
+//                    else
+//                        log.info("TrustCertificates is null");
+//                    if(hostTrustXmlResponse != null)
+//                        log.info("HostTrustXMLResponse: " + hostTrustXmlResponse.getAssertion());
+//                    else
+//                        log.info("HostTrustXMLResponse is null");
+//                    
+//                    TrustAssertion trustAssertion = new TrustAssertion(trustedCertificates, hostTrustXmlResponse.getAssertion());
+//                    
+//                    if(trustAssertion != null)
+//                        log.info("TrustAssertion: " + trustAssertion.toString());
+//                    else
+//                        log.info("TrustAssertion is null");
+//                    if (trustAssertion.isValid()) {
+//                        //Store SAML Assertion into a String.
+//                        xmloutput = hostTrustXmlResponse.getAssertion();
+//                    } else {
+//                        log.error("Error While Getting SAML ." + hostTrustXmlResponse.getErrorCode() + ". " + hostTrustXmlResponse.getErrorMessage());
+//                        throw new DemoPortalException("Error While Getting SAML. " + hostTrustXmlResponse.getErrorCode() + ". " + hostTrustXmlResponse.getErrorMessage());
+//                    }
+//                }
+//            } catch (Exception e) {
+//                log.error(e.getMessage());
+//                e.printStackTrace();
+//                throw ConnectionUtil.handleDemoPortalException(e);
+//            }
+            //format a SAML String into a XML type using helper Function.
+//            return ConverterUtil.formateXMLString(xmloutput);
 	}
 	
         
@@ -367,7 +441,8 @@ public class DemoPortalServicesImpl implements IDemoPortalServices {
     
 	@Override
 	public HostDetailsEntityVO getSingleHostDetailFromDB(String hostName,AttestationService service) throws DemoPortalException {
-		HostDetailsEntityVO hostDetailsEntityVO  = new HostDetailsEntityVO();
+		//HostDetailsEntityVO hostDetailsEntityVO  = new HostDetailsEntityVO();
+            HostDetailsEntityVO hostDetailsEntityVO;
 		try{
 			hostDetailsEntityVO = ConverterUtil.getHostVOObjectFromTxtHostRecord(service.queryForHosts(hostName).get(0));
 		} catch (Exception e) {

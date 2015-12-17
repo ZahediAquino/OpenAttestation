@@ -30,12 +30,14 @@ import com.intel.mtwilson.datatypes.HostTrustResponse;
 import com.intel.mtwilson.datatypes.MleData;
 import com.intel.mtwilson.datatypes.TxtHost;
 import com.intel.mtwilson.datatypes.TxtHostRecord;
+import com.intel.mtwilson.saml.TrustAssertion;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -57,7 +59,7 @@ public class ConverterUtil {
 	
     
 	public static String getOSAndVMMInfoString(MleDetailsEntityVO mleObject){
-		return mleObject.getOsName()+" "+mleObject.getOsVersion()+HelperConstant.OS_VMM_INFORMATION_SEPERATOR+mleObject.getMleName()+":"+mleObject.getMleVersion();
+		return mleObject.getOsName()+HelperConstant.OS_VERSION_INFORMATION_SEPERATOR+mleObject.getOsVersion()+HelperConstant.OS_VMM_INFORMATION_SEPERATOR+mleObject.getMleName()+":"+mleObject.getMleVersion();
 	}
 
 	public static TxtHost getTxtHostFromHostVO(HostDetailsEntityVO dataVO) {
@@ -74,7 +76,7 @@ public class ConverterUtil {
 		
 		String[] osVMMInfo = dataVO.getVmmName().split(Pattern.quote(HelperConstant.OS_VMM_INFORMATION_SEPERATOR));
 		String osNameWithVer = osVMMInfo[0];
-                String[] s = osNameWithVer.split(" ");
+                String[] s = osNameWithVer.split(HelperConstant.OS_VERSION_INFORMATION_SEPERATOR);
 		String osName =  s[0];
 		String osVer = "";
 		
@@ -110,7 +112,7 @@ public class ConverterUtil {
         
         return hostVO;
     }
-	public static TrustedHostVO getTrustedHostVoFromHostTrustResponseAndTxtHostRecord(HostTrustResponse hostTrustResponse, TxtHostRecord txtHostRecord) {
+	public static TrustedHostVO getTrustedHostVoFromHostTrustResponseAndTxtHostRecord(HostTrustResponse hostTrustResponse, TxtHostRecord txtHostRecord, TrustAssertion.HostTrustAssertion hostTrustAssertion) {
 		TrustedHostVO hostVO = new TrustedHostVO();
 		hostVO.setHostName(hostTrustResponse.hostname.toString());
         if( hostTrustResponse.trust.bios ) {
@@ -125,7 +127,24 @@ public class ConverterUtil {
         else {
 				hostVO.setVmmStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_FALSE));
         }
-        if( hostTrustResponse.trust.bios && hostTrustResponse.trust.vmm ) {
+        if( hostTrustResponse.trust.asset_tag ) {
+				hostVO.setAssetTagStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_TRUE));
+                                
+                                // We will get the asset tag specific attributes here 
+                                StringBuilder atdBuilder = new StringBuilder();
+                                Set<String> attributeNames = hostTrustAssertion.getAttributeNames();
+                                for(String attrName : attributeNames) {
+                                    if(attrName.startsWith("ATAG") && !attrName.contains("UUID")) {
+                                        atdBuilder.append(hostTrustAssertion.getStringAttribute(attrName) + "\n");
+                                    }
+                                }
+                                hostVO.setAssetTagDetails(atdBuilder.toString());
+        }
+        else {
+				hostVO.setAssetTagStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_FALSE));
+                                hostVO.setAssetTagDetails("Un-Trusted");
+        }
+        if( hostTrustResponse.trust.bios && hostTrustResponse.trust.vmm /*&& hostTrustResponse.trust.asset_tag*/) {
 				hostVO.setOverAllStatus(TDPConfig.getConfiguration().getString(HelperConstant.IMAGE_TRUSTED_TRUE));
 				hostVO.setOverAllStatusBoolean(true);
         }
@@ -164,7 +183,7 @@ public class ConverterUtil {
 			for (hostOS hostOSType : hostOSTypes) {
 				if (osName.toLowerCase().contains(hostOSType.getValue().toLowerCase())) {
 					hostVO.setOsName(TDPConfig.getConfiguration().getString(HelperConstant.IMAGES_ROOT_PATH)+hostOSType.getImageName()); // xxx should be in javascript?
-                                        if (hostOSType.getVmmImageNeeded().toString().equals("false"))
+                                        if (hostOSType.getVmmImageNeeded().equals("false"))
                                             skipAddingVMMImage = true;
                                         break;
 				}
@@ -234,7 +253,7 @@ public class ConverterUtil {
 	public static List<MleDetailsEntityVO> getMleVOListWhereOEMNotNull(List<MleData> mleDataList) {
 		List<MleDetailsEntityVO> detailsEntityVOs = new ArrayList<MleDetailsEntityVO>();
 		for (MleData data : mleDataList) {
-			if (data.getOemName() != null && !(data.getOemName().equals(""))) {
+			if (data.getOemName() != null && !(data.getOemName().length() == 0)) {
 				MleDetailsEntityVO entityVO = new MleDetailsEntityVO();
 				entityVO.setMleId(null);
 				entityVO.setMleName(data.getName());
@@ -254,7 +273,7 @@ public class ConverterUtil {
 	public static List<MleDetailsEntityVO> getMleVOListWhereOEMIsNull(List<MleData> searchMLE) {
 		List<MleDetailsEntityVO> detailsEntityVOs = new ArrayList<MleDetailsEntityVO>();
 		for (MleData data : searchMLE) {
-			if (data.getOemName() == null || data.getOemName().equals("")) {
+			if (data.getOemName() == null || data.getOemName().length() == 0) {
 				MleDetailsEntityVO entityVO = new MleDetailsEntityVO();
 				entityVO.setMleId(null);
 				entityVO.setMleName(data.getName());

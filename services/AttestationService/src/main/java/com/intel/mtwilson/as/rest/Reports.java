@@ -22,7 +22,8 @@ import com.intel.mtwilson.as.helper.ASComponentFactory;
 import com.intel.mountwilson.as.hostmanifestreport.data.HostManifestReportType;
 import com.intel.mountwilson.as.hosttrustreport.data.HostsTrustReportType;
 import com.intel.mtwilson.datatypes.AttestationReport;
-import com.intel.mtwilson.datatypes.Hostname;
+import com.intel.mtwilson.util.net.Hostname;
+import java.io.IOException;
 import javax.ejb.Stateless;
 
 import javax.ws.rs.Path;
@@ -136,7 +137,7 @@ public class Reports {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/attestationreport")
     public AttestationReport getAttestationReport(@QueryParam("hostName")String hostName,
-            @QueryParam("failure_only") @DefaultValue("false") Boolean failureOnly) {
+            @QueryParam("failure_only") @DefaultValue("false") Boolean failureOnly) throws NumberFormatException, IOException {
         return reportsBO.getAttestationReport(new Hostname(hostName),failureOnly); // datatype.Hostname        
     }
     

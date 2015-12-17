@@ -42,6 +42,7 @@ import com.intel.mtwilson.datatypes.ManifestData;
 import com.intel.mtwilson.datatypes.MleData;
 import com.intel.mtwilson.datatypes.MleSource;
 import com.intel.mtwilson.datatypes.PCRWhiteList;
+import com.intel.mtwilson.util.io.UUID;
 import java.util.*;
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
@@ -72,7 +73,8 @@ public class MleBO extends BaseBO {
 	 * @param mleData
 	 * @return
 	 */
-     public String addMLe(MleData mleData) {
+     public String addMLe(MleData mleData, String mleUuid) {
+         String osOemUuid = null;
     	 try {
              TblMle tblMle = getMleDetails(mleData.getName(),
                              mleData.getVersion(), mleData.getOsName(),
@@ -88,6 +90,17 @@ public class MleBO extends BaseBO {
                              throw new ASException(ErrorCode.WS_ESX_MLE_NOT_SUPPORTED);
                      }
              }
+             if (mleData.getMleType().equals("VMM")) {
+                TblOs osObj = new TblOsJpaController(getEntityManagerFactory())
+				.findTblOsByNameVersion(mleData.getOsName(), mleData.getOsVersion());
+                //TblOs osObj = My.jpa().mwOs().findTblOsByNameVersion(mleData.getOsName(), mleData.getOsVersion());
+                osOemUuid = osObj.getUuid_hex();
+            } else if (mleData.getMleType().equals("BIOS")) {
+                TblOem oemObj = new TblOemJpaController(getEntityManagerFactory())
+				.findTblOemByName(mleData.getOemName());
+                //TblOem oemObj = My.jpa().mwOem().findTblOemByName(mleData.getOemName());
+                osOemUuid = oemObj.getUuid_hex();
+            }
              /*
              if (mleData.getMleType().equalsIgnoreCase("BIOS")){
                  if (mleData.getManifestList() != null){
@@ -108,7 +121,7 @@ public class MleBO extends BaseBO {
                      }
                  }
              }*/
-             tblMle = getTblMle(mleData);
+             tblMle = getTblMle(mleData, mleUuid, osOemUuid);
              mleJpaController.create(tblMle);
              addPcrManifest(tblMle, mleData.getManifestList());
      } catch (ASException ase) {
@@ -338,7 +351,7 @@ public class MleBO extends BaseBO {
          * @param mleData
          * @return 
          */
-	private TblMle getTblMle(MleData mleData) {
+	private TblMle getTblMle(MleData mleData, String mleUuid, String osOemUuid) {
 		TblMle tblMle = new TblMle();
 
 		tblMle.setMLEType(mleData.getMleType());
@@ -348,10 +361,18 @@ public class MleBO extends BaseBO {
 		tblMle.setDescription(mleData.getDescription());
 		tblMle.setRequiredManifestList(getRequiredManifestList(mleData
                 .getManifestList()));
+                if (mleUuid != null && !mleUuid.isEmpty()) {
+                    tblMle.setUuid_hex(mleUuid);
+                } else {
+                    tblMle.setUuid_hex(new UUID().toString());
+                }
+
 		if (mleData.getMleType().equals("VMM")) {
 			tblMle.setOsId(getTblOs(mleData.getOsName(), mleData.getOsVersion()));
+                        tblMle.setOs_uuid_hex(osOemUuid);
 		} else if (mleData.getMleType().equals("BIOS")) {
 			tblMle.setOemId(getTblOem(mleData.getOemName()));
+                        tblMle.setOem_uuid_hex(osOemUuid);
 		}
 
 		return tblMle;
@@ -413,7 +434,7 @@ public class MleBO extends BaseBO {
 		
 		tblPcrManifests.addAll(tblMle.getTblPcrManifestCollection());
 		tblMle.setTblPcrManifestCollection(tblPcrManifests);
-		String oldRequiredManifestList = tblMle.getRequiredManifestList() ==null || tblMle.getRequiredManifestList().equals("") ? "":tblMle.getRequiredManifestList()+",";
+		String oldRequiredManifestList = tblMle.getRequiredManifestList() ==null || tblMle.getRequiredManifestList().length() == 0 ? "":tblMle.getRequiredManifestList()+",";
 		tblMle.setRequiredManifestList(oldRequiredManifestList +getRequiredManifestList(mleManifests));
 		mleJpaController.edit(tblMle);
 

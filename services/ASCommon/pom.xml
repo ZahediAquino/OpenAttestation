@@ -8,7 +8,7 @@
     <parent>
 		<groupId>com.intel.mtwilson.core.services</groupId>
 		<artifactId>oat-services</artifactId>
-		<version>2.2</version>
+		<version>2.3</version>
     </parent>
 
 
@@ -20,8 +20,8 @@
                 <inherited>true</inherited>
 		<version>2.3.2</version>     
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <!-- <skip>true</skip> -->
                 </configuration>
             </plugin>
@@ -40,8 +40,6 @@
     <dependency>
 		<groupId>javax</groupId>
 		<artifactId>javaee-web-api</artifactId>
-		<version>6.0</version>
-		<scope>provided</scope>
 	</dependency>
 	<dependency>
 		<groupId>org.glassfish</groupId>
@@ -94,7 +92,7 @@
     <dependency>
         <groupId>com.sun.jersey</groupId>
         <artifactId>jersey-server</artifactId>
-        <version>1.9-ea04</version>
+        <version>${jersey-version}</version>
     </dependency>
 	<dependency>
 	    <groupId>com.intel.mtwilson.core.integration</groupId>
@@ -102,15 +100,21 @@
 	    <version>${project.version}</version>
   	</dependency>
 	<dependency>
-	    <groupId>com.intel.mtwilson.core.services</groupId>
-	    <artifactId>webservice-util</artifactId>
-	    <version>${project.version}</version>
-  	</dependency>
-    <dependency>
-		<groupId>org.apache.commons</groupId>
-		<artifactId>commons-math3</artifactId>
-		<version>3.0</version>
-	</dependency>
+            <groupId>com.intel.mtwilson.core.services</groupId>
+            <artifactId>webservice-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.0</version>
+        </dependency>
+         <dependency>
+            <groupId>com.intel.mtwilson.core.common</groupId>
+            <artifactId>oat-io</artifactId>
+            <version>2.3</version>
+        </dependency>
+        
   	
   </dependencies>  
 </project>

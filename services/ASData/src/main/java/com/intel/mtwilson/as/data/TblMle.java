@@ -59,7 +59,8 @@ import org.eclipse.persistence.annotations.Customizer;
     @NamedQuery(name = "TblMle.findBiosMle", query = "SELECT t FROM TblMle t WHERE t.name = :name and t.version = :version and t.oemId.name = :oemName"),
     @NamedQuery(name = "TblMle.findVmmMle", query = "SELECT t FROM TblMle t WHERE t.name = :name and t.version = :version and t.osId.name = :osName and t.osId.version =:osVersion"),
     @NamedQuery(name = "TblMle.findVmmMleByNameSearchCriteria", query = "SELECT t FROM TblMle t WHERE t.name like :search or t.osId.name like :search"),
-    @NamedQuery(name = "TblMle.findBiosMleByNameSearchCriteria", query = "SELECT t FROM TblMle t WHERE t.name like :search or t.oemId.name like :search")})
+    @NamedQuery(name = "TblMle.findBiosMleByNameSearchCriteria", query = "SELECT t FROM TblMle t WHERE t.name like :search or t.oemId.name like :search"),
+    @NamedQuery(name = "TblMle.findByUUID_Hex", query = "SELECT t FROM TblMle t WHERE t.uuid_hex = :uuid_hex")})
 //
 public class TblMle implements Serializable {
 
@@ -92,12 +93,21 @@ public class TblMle implements Serializable {
     private String requiredManifestList;
     @Column(name = "Description")
     private String description;
+    @Column(name = "uuid_hex")
+    private String uuid_hex;
+    @Column(name = "oem_uuid_hex")
+    private String oem_uuid_hex;
+    @Column(name = "os_uuid_hex")
+    private String os_uuid_hex;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "vmmMleId")
     private Collection<TblHosts> tblHostsCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "biosMleId")
     private Collection<TblHosts> tblHostsCollection1;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mleId")
     private Collection<TblPcrManifest> tblPcrManifestCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mleId")
+    private Collection<TblModuleManifest> tblModuleManifestCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "mleId")
     private Collection<MwMleSource> mwMleSourceCollection;
     
@@ -172,6 +182,30 @@ public class TblMle implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    public String getUuid_hex() {
+        return uuid_hex;
+    }
+
+    public void setUuid_hex(String uuid_hex) {
+        this.uuid_hex = uuid_hex;
+    }
+    
+    public String getOem_uuid_hex() {
+        return oem_uuid_hex;
+    }
+
+    public void setOem_uuid_hex(String oem_uuid_hex) {
+        this.oem_uuid_hex = oem_uuid_hex;
+    }
+    
+    public String getOs_uuid_hex() {
+        return os_uuid_hex;
+    }
+
+    public void setOs_uuid_hex(String os_uuid_hex) {
+        this.os_uuid_hex = os_uuid_hex;
+    }
 
     @XmlTransient
     public Collection<TblHosts> getTblHostsCollection() {
@@ -198,6 +232,15 @@ public class TblMle implements Serializable {
 
     public void setTblPcrManifestCollection(Collection<TblPcrManifest> tblPcrManifestCollection) {
         this.tblPcrManifestCollection = tblPcrManifestCollection;
+    }
+
+    @XmlTransient
+    public Collection<TblModuleManifest> getTblModuleManifestCollection() {
+        return tblModuleManifestCollection;
+    }
+
+    public void setTblModuleManifestCollection(Collection<TblModuleManifest> tblModuleManifestCollection) {
+        this.tblModuleManifestCollection = tblModuleManifestCollection;
     }
 
     @XmlTransient

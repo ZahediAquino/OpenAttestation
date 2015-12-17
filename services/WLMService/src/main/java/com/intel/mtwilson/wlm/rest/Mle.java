@@ -107,7 +107,7 @@ public class Mle {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public String addMle(MleData mleData) {
-        return mleBO.addMLe(mleData);
+        return mleBO.addMLe(mleData,"");
     }
 
     /**

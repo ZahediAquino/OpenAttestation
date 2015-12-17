@@ -22,9 +22,10 @@ import com.intel.mountwilson.common.WLMPConfig;
 import com.intel.mountwilson.common.WLMPPersistenceManager;
 import com.intel.mtwilson.ApiClient;
 import com.intel.mtwilson.as.controller.MwKeystoreJpaController;
-import com.intel.mtwilson.crypto.SimpleKeystore;
+import com.intel.mtwilson.util.crypto.SimpleKeystore;
 import java.io.File;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +67,7 @@ public class CheckLoginController extends AbstractController {
 		try{
                     //this line will throw exception if file with username is not present in specific dir.
                     keystoreFile = new File(keystoreFilename);
+                    
                 }catch(Exception e){
                     logger.severe("File Not found on server >> "+keystoreFilename);
                     view.addObject("message", "Key store is not configured/saved correctly in " + keystoreFilename + ".");
@@ -99,6 +101,11 @@ public class CheckLoginController extends AbstractController {
                     session.setAttribute("username",username);
                     session.setAttribute("apiClientObject",rsaApiClient);
                     session.setMaxInactiveInterval(WLMPConfig.getConfiguration().getInt("mtwilson.wlmp.sessionTimeOut"));
+                    
+                    X509Certificate[] trustedCertificates = keystore.getTrustedCertificates(SimpleKeystore.SAML);
+                    
+                    session.setAttribute("trustedCertificates",trustedCertificates);
+                    
 	        
                     //Redirecting user to a home page after successful login.
                     res.sendRedirect("home.html");

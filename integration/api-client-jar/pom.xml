@@ -15,7 +15,7 @@
     <parent>
 		<groupId>com.intel.mtwilson.core.integration</groupId>
 		<artifactId>oat-integration</artifactId>
-		<version>2.2</version>
+		<version>2.3</version>
     </parent>
 
     <build>
@@ -223,17 +223,17 @@
 
 
   <dependencies>
-        <dependency>
+        <!--dependency>
             <groupId>com.intel.mtwilson.core.common</groupId>
             <artifactId>oat-crypto</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
 		<!-- stdalex 1/15 jks2db!disk -->
-		<dependency>
-            <groupId>com.intel.mtwilson.core.services</groupId>
-            <artifactId>ASData</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+      <!--dependency>
+          <groupId>com.intel.mtwilson.core.services</groupId>
+          <artifactId>ASData</artifactId>
+          <version>${project.version}</version>
+      </dependency-->
         <dependency>
             <groupId>com.intel.mtwilson.core.common</groupId>
             <artifactId>oat-io</artifactId>
@@ -344,7 +344,10 @@
       <version>${jersey-version}</version>
       <type>jar</type>
     </dependency>
-
+    <!--dependency>
+        <groupId>com.intel.mtwilson.core.util</groupId>
+        <artifactId>oat-util-cpg</artifactId>
+    </dependency-->
     
   </dependencies>  
 
