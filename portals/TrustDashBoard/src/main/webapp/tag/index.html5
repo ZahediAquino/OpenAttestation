@@ -1,0 +1,356 @@
+
+<!DOCTYPE html>
+
+
+
+<html lang="en">
+
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title data-i18n="title.asset_tag">Asset Tag Management</title>
+        <meta name="application-name" content="Mt Wilson Asset Tag Management"/>
+        <meta name="description" content="A web-based tool for defining tags and provisioning asset certificates" />
+        <meta name="keywords" content="Mt Wilson, attestation, asset, inventory, management, security, cloud, data center" />
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+        <link rel="resources" type="application/vnd.mtwilson.resource+json" href="resources.json">
+        
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+        
+        
+        <!-- Add mtwilson libraries -->
+        <!--link rel="stylesheet" href="images/at.css" type="text/css" /-->
+        <link rel="stylesheet" type="text/css" href="CSS/home.css" />
+        <link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/jquery.ui.menubar.css" />
+        <link rel="stylesheet" type="text/css" href="CSS/JQueryHelperCSS/style.css" />
+        <link href="CSS/JQueryHelperCSS/multi-select.css" media="screen" rel="stylesheet" type="text/css">
+        
+        <!-- Workaround for IE8 issue: Console object does not exist and hence console.log errors out with an exception -->
+        <script type="text/javascript">
+            var console=console||{"log":function(){}};
+        </script>
+        <script type="text/javascript" src="JQuery/jquery-1.7.2.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.json-1.3.min.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.ui.core.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.ui.dialog.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.effects.core.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.ui.widget.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.ui.position.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.ui.menu.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.ui.menubar.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.paginate.js"></script>
+        <script type="text/javascript" src="Scripts/ajaxfileupload.js"></script>
+        <script type="text/javascript" src="JQuery/jquery.popupWindow.js"></script>
+        <script src="JQuery/jquery.multi-select.js" type="text/javascript"></script>
+          
+     
+        <script src="watch.js" type="text/javascript"></script> <!-- required to use rivets -->
+        <script src="prototype-1.7.2.js" type="text/javascript"></script> <!-- required by log.js -->
+        
+        
+        <!-- ui tools -->
+        <script src="scriptaculous-1.9.0/scriptaculous.js" type="text/javascript"></script> 
+        <script src="livepipe/livepipe.js" type="text/javascript"></script>
+        <script src="livepipe/contextmenu.js" type="text/javascript"></script>
+        <script src="livepipe/cookie.js" type="text/javascript"></script>
+        <script src="livepipe/event_behavior.js" type="text/javascript"></script>
+        <script src="livepipe/hotkey.js" type="text/javascript"></script>
+        <script src="livepipe/progressbar.js" type="text/javascript"></script>
+        <script src="livepipe/rating.js" type="text/javascript"></script>
+        <script src="livepipe/resizable.js" type="text/javascript"></script>
+        <script src="livepipe/scrollbar.js" type="text/javascript"></script>
+        <script src="livepipe/selection.js" type="text/javascript"></script>
+        <script src="livepipe/selectmultiple.js" type="text/javascript"></script>
+        <script src="livepipe/tabs.js" type="text/javascript"></script>
+        <script src="livepipe/textarea.js" type="text/javascript"></script>
+        <script src="livepipe/window.js" type="text/javascript"></script>
+        <script src="URI.js" type="text/javascript"></script>
+        <script src="validation.js" type="text/javascript"></script>
+        <script src="input.js" type="text/javascript"></script>
+        <script src="array.js" type="text/javascript"></script>
+        <script src="merge.js" type="text/javascript"></script>
+        <script src="date.js" type="text/javascript"></script> <!-- required by log.js -->
+        <script src="log.js" type="text/javascript"></script> <!-- requires prototype.js, date.js -->
+        <script src="form.js" type="text/javascript"></script>
+        <script src="rivets.js" type="text/javascript"></script>
+        <script src="findx.js" type="text/javascript"></script>
+        <script src="rivets-adapter-watch-findx.js" type="text/javascript"></script> <!-- requires rivets, watch.js, and findx -->
+
+        <script src="base64.js" type="text/javascript"></script>
+        <script src="ajax.js" type="text/javascript"></script>
+         <script src="token.js" type="text/javascript"></script>
+         <script src="atclient.js" type="text/javascript"></script>
+        
+        <script type="text/javascript" src="Scripts/commonUtils.js"></script>
+        <script type="text/javascript" src="../Scripts/safe.js"></script>
+        <script type="text/javascript" src="Scripts/CommonMessage.js"></script>
+        <script type="text/javascript" src="Scripts/home.js"></script>
+        <script type="text/javascript" src="i18next-1.7.1.min.js"></script>
+        <script type="text/javascript" src="i18n_util_jquery.js"></script>
+
+        <script type="text/javascript">
+            var ws = mtwilson.atag; // local name for the asset tag web service
+        </script>
+
+        <script type="text/javascript">
+// credit for isNumber (creative commons share alike 3.0) http://stackoverflow.com/questions/18082/validate-numbers-in-javascript-isnumeric/1830844#1830844
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}            
+            
+            // watch adapter, from https://github.com/mikeric/rivets/wiki/Adapters
+            rivets.configure({
+                adapter: rivets_watch_findx_adapter,
+                prefix: 'bind' // so data binding happens for data-bind-whatever attributes (instead of data-whatever) ; which allows us to use input.js because it uses data-alt.
+                /*
+                binders: {
+                    'alt': function(el,value) { } // do nothing; this allows input.js to continue using data-alt for its default display text. another way to do it would be to use the 'prefix' configuration of rivets like  prefix:'bind' and then use data-bind-whatever instead of just data-whatever in the forms.
+                }
+                 */
+            });
+            
+            // input like timestamp 1377839054000 or text date format like yyyy-MM-dd, output like:  2013-08-30T05:04:14.000Z
+                rivets.formatters.isodate = function(value) {
+                        if( isNumber(value) ) {
+                            return new Date(value).toISOString();
+                        }
+                        else {
+                            return Date.parse(value).toISOString();
+                        }
+                    };
+                rivets.formatters.date = function(value) {
+                    var date;
+                    if( isNumber(value) ) {
+                        date = new Date(value).toString();
+                    }
+                    else {
+                        date = Date.parse(value).toString();
+                    }
+                    return date.toISOString()
+                };
+                rivets.formatters.translate = function(value) {
+                    var key = "label." + value.toLowerCase();
+                    return i18n.t(key);
+                };
+                    // input any value that evaluates to true/false, output either "yes" or "no" or replace those with your own "yes value" and "no value" for example "Active" and "Inactive" instead of "yes" and "no"
+               rivets.formatters.yesno = function(value,yestext,notext) {
+                   if( value ) {
+                       return yestext ? yestext : "yes";
+                   }
+                   else {
+                       return notext ? notext : "no";
+                   }
+               };
+               // input any hex or base64 value and this will return the value with newlines inserted
+               rivets.formatters.wrap = function(text,columns,sep) {
+                   var i=0, result="";
+                   columns = columns ? parseInt(columns) : 20;
+                   sep = sep || " ";
+                   log.debug("wrap text: "+text+"  length: "+text.length+"  columns: "+columns);
+                   while(i<text.length) { result += text.slice(i,i+columns) + sep; i += columns; }
+                   log.debug("wrap result: "+Object.toJSON(result));
+                   return result;
+               };
+
+                rivets.formatters.escapeAttribute = function(value) {
+                        return escapeForHTMLAttributes(value);
+                };
+
+               
+//                }
+
+
+            
+        </script>
+        
+
+    </head>
+    
+    <body style="background: #ffffff">
+        
+            <style>
+                li
+                {
+                display:inline;
+                }
+            </style>
+ 
+
+            <!--header -->
+            <div id="innerHeader_mtw" class="header" style="display: none;">
+                <div class="title"><h1>Mt. Wilson</h1></div>
+                
+                <div class="clear hideSkiplink">
+                    <div id="NavigationMenu" class="menu" style="float: left;">
+                                    <li><a href="#log">Log</a></li>
+
+                                </ul>
+                            </li>
+                        </ul-->
+                        
+                        <nav id="nav">
+                            <ul id="navtabs"> 
+                                <li ><a href="#certificates">Certificate Management</a></li>		
+                            </ul>
+                        </nav>		
+
+                    </div>
+                    <div style="clear: left;"></div><a id="NavigationMenu_SkipLink"></a>
+                </div>
+            </div>
+            				
+            <div id="notifications_container" style="clear: both; width: 840px; height: 20px; max-height: 50px;  margin-top: 0px;">
+            </div>
+           
+                            <div id="nameOfPage" class="NameHeader" style="margin-bottom: 6px;display:none;"><span data-i18n="header.certificate_browse">Browse Certificates</span>&nbsp;&nbsp; 
+                                <a  style='font-size: 0.8em'>(<span data-i18n="link.search">Search</span>)</a>
+                            </div> 
+
+                            <form id="certificate-search-form" action="#" onsubmit="return false;" style="display: none">
+
+                                <div class="singleDiv">
+                                    <div class="labelDiv" data-i18n="input.subject">Subject:</div> 
+                                    <div class="valueDiv">
+                                        <select class="ddlBox_small_Border" id="certificate-search-subject-criteria"> 
+                                            <option value="EqualTo" data-i18n="select.is">is</option>
+                                            <option value="Contains" data-i18n="select.contains">contains</option>
+                                        </select>
+
+                                        <input type="text" class="textBox_Border" style="width: 395px;" id="certificate-search-subject"  name="subject" data-i18n="[placeholder]placeholder.host_uuid"/>
+
+                                    </div>
+                                </div>
+
+                                <div class="singleDiv">
+                                    <div class="labelDiv" data-i18n="input.issuer">Issuer:</div> 
+                                    <div class="valueDiv">
+                                        <select class="ddlBox_small_Border" id="certificate-search-issuer-criteria"> 
+                                            <option value="EqualTo" data-i18n="select.is">is</option>
+                                            <option value="Contains" data-i18n="select.contains">contains</option>
+                                        </select>
+
+                                        <input type="text" class="textBox_Border" style="width: 395px;" id="certificate-search-issuer" name="issuer" data-i18n="[placeholder]placeholder.issuer_name"/>
+
+                                    </div>
+                                </div>
+
+                                 <div class="singleDiv">
+                                    <div class="labelDiv" data-i18n="input.validity_date">Validity Date:</div> 
+                                    <div class="valueDiv">
+                                        <select class="ddlBox_small_Border" id="certificate-search-valid-criteria"> 
+                                            <option value="On" data-i18n="select.on">on</option>
+                                            <option value="Before" data-i18n="select.before">before</option>
+                                            <option value="After" data-i18n="select.after">after</option>
+                                        </select>
+
+                                        <input type="text" class="textBox_Border" style="width: 395px;" id="certificate-search-valid" name="valid" data-i18n="[placeholder]placeholder.date" onblur='(function(){var currentValue = $("certificate-search-valid").value; if( currentValue ) { var parsedValue = Date.parse(currentValue); if( parsedValue ) { $("certificate-search-valid").value = parsedValue.toISOString(); }}})()'/>
+                                        <script>console.log("timedelta is "+ajax.timeDelta); document.getElementById('certificate-search-valid').value = Date.parse('now').addMilliseconds(ajax.timeDelta).toISOString()</script>
+                                        <span class="help" data-i18n="label.date_hint">Try "today", "next tuesday", or most reasonable date formats</span>
+
+                                    </div>
+                                </div>
+
+                                <div class="singleDiv">
+                                    <div class="labelDiv" data-i18n="input.sha1">SHA-1:</div> 
+                                    <div class="valueDiv">
+                                        <input type="text" class="textBox_Border" style="width: 395px;" id="certificate-search-sha1" name="sha1" data-i18n="[placeholder]placeholder.hex_40_chars"/>
+                                    </div>
+                                </div>
+
+                                <div class="singleDiv">
+                                    <div class="labelDiv" data-i18n="input.sha256">SHA256:</div> 
+                                    <div class="valueDiv">
+                                        <input type="text" class="textBox_Border" style="width: 395px;" id="certificate-search-sha256" name="sha256" data-i18n="[placeholder]placeholder.hex_64_chars"/>
+                                    </div>
+                                </div>
+
+                                <div class="singleDiv">
+                                    <div class="labelDiv" data-i18n="input.status">Status:</div> 
+                                    <div class="valueDiv">
+                                        <input type="hidden" id="certificate-search-revoked-criteria" value=""/>
+                                        <select class="ddlBox_small_Border" id="certificate-search-revoked">
+                                            <option value="" data-i18n="select.any">Any</option>
+                                            <option value="false" data-i18n="select.active" selected>Active</option>
+                                            <option value="true" data-i18n="select.revoked">Revoked</option>
+                                        </select>
+
+                                        <input type="submit" class="uploadButton" id="searchCertButton" value="Search" data-i18n="[value]button.search" onclick="ws.searchCertificates(this); return false;"/>
+                                        <input type="button" class="uploadButton" id="searchCertButton" value="Cancel" data-i18n="[value]button.cancel" onclick="$('certificate-search-form').reset(); ws.searchCertificates(this); return false;"/>
+                                    </div>
+                                </div>
+                            <div class="singleDiv" style="height: 8px;"></div>
+
+                            </form>
+           
+            <div class="main" id="mainContainer">
+
+                    <div id="main">
+
+                       <div class="singleDiv" style="height: 25px;"></div>
+                        <div id="nameOfPage" class="NameHeader">Browse Certificates</div> 
+                        <!--h2>Browse Certificates</h2-->
+                        
+                        <div  class="tableDisplayScroll_big">
+                        <table id="certificate-browse-table" class="tableDisplayBind" cellpadding=0 cellspacing=0>
+                            <thead>
+                                <tr>
+                                    <th class="row9" style="width: 100px;">Subject (Host ID)</th>
+                                    <th class="row9" style="width: 100px;">Issuer</th>
+                                    <th class="row9" style="width: 100px;">Not Before</th>
+                                    <th class="row9" style="width: 100px;">Not After</th>
+                                    <th class="row9" style="width: 100px;">Status</th>
+                                    <th class="row9" style="width: 100px;">Fingerprint (SHA-1)</th>
+                                    <th class="row9" style="width: 100px;">Fingerprint (SHA256)</th>
+                                    <th class="row12" style="width: 100px;">Certificate</th>
+                                </tr>
+                            </thead>                            
+                        </table>
+                        <div id='certInfo'>
+                        </div>
+                        </div>                                              
+
+                </div>
+            </div>
+            <div>
+                <span id="alert_valid_ca" data-i18n="alert.valid_ca" style="display: none;">form is valid, update ca</span>
+                <span id="alert_not_valid_ca" data-i18n="alert.not_valid_ca" style="display: none;">form NOT valid, update ca</span>
+                <span id="alert_provision_select_tag_xml" data-i18n="alert.provision_select_tag_xml" style="display: none;">Please select the tag XML to be provisioned.</span>
+                <span id="alert_provision_select_server" data-i18n="alert.provision_select_server" style="display: none;">Select at least one server to provision the tags</span>
+                <span id="alert_provision_upload_tag_xml" data-i18n="alert.provision_upload_tag_xml" style="display: none;">Upload a tag XML or choose a selection to provision</span>
+            </div>
+            
+            <!-- footer starts -->
+            <div class="footer" style="display: none;">
+                <p>&copy; 2012-2013 Intel Corporation.<br/></p>
+            </div>
+            <!-- footer ends-->	
+
+
+       
+
+
+        <script>
+            
+            var alertView, tagview, rdfview, selectionview, tagviewCertificateRequests, certificateView /*, appview */, configurationView;
+      
+            document.observe('dom:loaded', function() {
+                ws.initialize({
+                    options: {
+                        baseurl: 'http://localhost:8080'
+                    }
+                    
+                });
+                console.log("Getting certificates list");
+                log.debug("done initializing ws");
+            });
+
+            certificateView = rivets.bind(document.getElementById('certificate-browse-table'), ws.data); 
+            document.observe('mtwilson:ready', function() {
+                log.debug("after init (mtwilson:ready), data: "+Object.toJSON(ws.data));
+                console.log("Getting certificates list1");
+                document.getElementById("searchCertButton").click();
+            });
+            
+        </script>
+    </body>
+</html>

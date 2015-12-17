@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.intel.mtwilson.core.util</groupId>
+    <artifactId>oat-util</artifactId>
+    <packaging>pom</packaging>
+    <name>Open Attestation Utility Projects</name>
+    <description>OAT Utility Projects are reusable components</description>
+
+    <parent>
+    <groupId>com.intel.mtwilson.core</groupId>
+    <artifactId>oat</artifactId>
+    <version>2.3</version>
+  </parent>
+  
+    <modules>
+        <module>oat-util-xml</module>
+        <module>oat-util-cpg</module>
+        <module>oat-util-jdbi</module>
+        <module>oat-util-jaxrs2-server</module>
+        <module>oat-util-configuration</module>
+    </modules>
+
+</project>

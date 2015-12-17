@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.intel.mtwilson.core.services</groupId>
+        <artifactId>oat-services</artifactId>
+        <version>2.3</version>
+    </parent>
+    <artifactId>oat-saml</artifactId>
+    <packaging>jar</packaging>
+    <description>SAML generation used by oat</description>
+    <build>
+	
+        <plugins>
+		    
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+        </plugins>
+        
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>opensaml</artifactId>
+            <version>2.5.1-1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <!-- this exclusion is here because we are providing our own patched version of xmltooling, see below and the "other" projects folder -->
+                <exclusion>
+                    <groupId>org.opensaml</groupId>
+                    <artifactId>xmltooling</artifactId>
+                </exclusion>
+            </exclusions>	
+        </dependency>
+        <dependency>
+            <groupId>org.opensaml</groupId>
+            <artifactId>xmltooling</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intel.mtwilson.core.integration</groupId>
+            <artifactId>api-datatypes</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intel.mtwilson.core.util</groupId>
+            <artifactId>oat-util-configuration</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intel.mtwilson.core.services</groupId>
+            <artifactId>ASCommon</artifactId>
+            <version>2.3</version>
+        </dependency>
+    </dependencies>
+</project>
